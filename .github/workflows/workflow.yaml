@@ -3,9 +3,12 @@ name: Tests, Code Quality, Build
 on:
   push:
     branches:
-      - "*"
+      - main
     tags:
-      - "**"
+      - "*"
+  pull_request:
+    branches:
+      - main
 
 jobs:
 
@@ -116,23 +119,27 @@ jobs:
 
   upload-pypi:
     name: Upload to PyPi
-    needs: [build]
+    needs: [ build ]
     runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/p/order-matching/
+    permissions:
+      id-token: write
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
       - uses: actions/download-artifact@v3
         with:
           name: wheels
           path: dist
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-          packages_dir: dist/
+          packages-dir: dist/
 
   release:
     name: Release on GitHub
-    needs: [build]
+    needs: [ build ]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
