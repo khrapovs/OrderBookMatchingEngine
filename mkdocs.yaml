@@ -12,7 +12,7 @@ theme:
         icon: material/brightness-7
         name: Switch to dark mode
 
-repo_url: https://github.com/chintai-platform/OrderBookMatchingEngine
+repo_url: https://github.com/khrapovs/OrderBookMatchingEngine
 
 nav:
   - Home: index.md

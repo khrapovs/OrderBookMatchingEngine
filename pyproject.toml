@@ -2,7 +2,7 @@
 name = "order-matching"
 description = "Order Book Matching Engine"
 authors = [
-    {name = "Stanislav Khrapov", email = "stanislav.khrapov@chintai.io"},
+    {name = "Stanislav Khrapov", email = "khrapovs@gmail.com"},
     {name = "Akanksha Toshniwal", email = "akanksha.toshniwal@chintai.io"},
     {name = "Shannen Tioniwar", email = "shannen.tioniwar@chintai.io"}
 ]
@@ -21,7 +21,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Source = "https://github.com/chintai-platform/OrderBookMatchingEngine"
+Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
 Documentation = "https://order-book-matching-engine.readthedocs.io/"
 
 [project.optional-dependencies]
@@ -40,9 +40,6 @@ doc = [
     "pymdown-extensions"
 ]
 dev = [
-    "black",
-    "ruff",
-    "mypy",
     "pre-commit",
 ]
 
