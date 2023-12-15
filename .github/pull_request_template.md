@@ -1,7 +1,5 @@
 ## Issue
 
-JIRA-APP-
-
 - If applicable, describe briefly what has been corrected in this PR.
 
 ## Changes

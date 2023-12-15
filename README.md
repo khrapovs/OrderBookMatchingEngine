@@ -1,6 +1,6 @@
 # Order Book Matching Engine
 
-![pytest](https://github.com/chintai-platform/OrderBookMatchingEngine/actions/workflows/workflow.yaml/badge.svg)
+![pytest](https://github.com/khrapovs/OrderBookMatchingEngine/actions/workflows/workflow.yaml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/order-book-matching-engine/badge/?version=latest)](https://order-book-matching-engine.readthedocs.io/en/latest/?badge=latest)
 [![!pypi](https://img.shields.io/pypi/v/order-matching)](https://pypi.org/project/order-matching/)
 [![!python-versions](https://img.shields.io/pypi/pyversions/order-matching)](https://pypi.org/project/order-matching/)
@@ -71,7 +71,7 @@ source venv/bin/activate
 ```
 Install development dependencies:
 ```shell
-pip install -e ".[dev]"
+pip install -e .[dev]
 ```
 and use pre-commit to make sure that your code is formatted using [black](https://github.com/PyCQA/isort) and [isort](https://pycqa.github.io/isort/index.html) automatically:
 ```shell
@@ -79,7 +79,7 @@ pre-commit install
 ```
 Run tests:
 ```shell
-pip install -e ".[test]"
+pip install -e .[test]
 pytest
 ```
 Run benchmark and see the result either in the terminal or as a plot in `benchmark_history.svg`:
@@ -88,6 +88,6 @@ Run benchmark and see the result either in the terminal or as a plot in `benchma
 ```
 Build and serve documentation website:
 ```shell
-pip install -e ".[doc]"
+pip install -e .[doc]
 mkdocs serve
 ```
