@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
   pull_request:
     branches:
       - main
@@ -110,3 +112,40 @@ jobs:
         run: |
           python -m pip install build
           python -m build --wheel --sdist --outdir dist
+      - uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist/*
+
+  upload-pypi:
+    name: Upload to PyPi
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/p/order-matching/
+    permissions:
+      id-token: write
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: dist
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  release:
+    name: Release on GitHub
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
