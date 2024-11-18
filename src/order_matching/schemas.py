@@ -1,4 +1,4 @@
-from pandera import Field, SchemaModel
+from pandera import DataFrameModel, Field
 from pandera.typing import DateTime, Series
 
 from order_matching.execution import Execution
@@ -6,7 +6,7 @@ from order_matching.side import Side
 from order_matching.status import Status
 
 
-class BaseOrderSchema(SchemaModel):
+class BaseOrderSchema(DataFrameModel):
     """Base order schema."""
 
     side: Series[str] = Field(isin=[Side.BUY.name, Side.SELL.name])
