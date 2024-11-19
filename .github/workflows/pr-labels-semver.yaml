@@ -16,5 +16,5 @@ jobs:
         with:
           mode: exactly
           count: 1
-          labels: "patch, minor, major"
+          labels: "patch, minor, major, skip-release"
           add_comment: true

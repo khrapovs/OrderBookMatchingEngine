@@ -5,7 +5,7 @@
 .benchmarks/
 benchmark.json
 benchmark_history.svg
-__pycache__/*
+__pycache__/
 venv/
 site/
 *.egg-info

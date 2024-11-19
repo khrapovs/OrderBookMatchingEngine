@@ -2,53 +2,39 @@
 name = "order-matching"
 description = "Order Book Matching Engine"
 authors = [
-    {name = "Stanislav Khrapov", email = "khrapovs@gmail.com"},
-    {name = "Akanksha Toshniwal", email = "akanksha.toshniwal@chintai.io"},
-    {name = "Shannen Tioniwar", email = "shannen.tioniwar@chintai.io"}
+  { name = "Stanislav Khrapov", email = "khrapovs@gmail.com" },
+  { name = "Akanksha Toshniwal", email = "akanksha.toshniwal@chintai.io" },
+  { name = "Shannen Tioniwar", email = "shannen.tioniwar@chintai.io" },
 ]
 readme = "README.md"
 classifiers = [
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
 requires-python = ">=3.10"
-dependencies = [
-    "pandas",
-    "pandera",
-    "faker"
-]
+dependencies = ["pandas", "pandera", "faker"]
 dynamic = ["version"]
 
 [project.urls]
 Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
 Documentation = "https://order-book-matching-engine.readthedocs.io/"
 
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-xdist",
-    "pytest-benchmark[histogram]"
-]
+[dependency-groups]
+test = ["pytest", "pytest-cov", "pytest-xdist", "pytest-benchmark[histogram]"]
 doc = [
-    "mkdocs-material",
-    "mkdocstrings[python]",
-    "mkdocs-gen-files",
-    "mkdocs-literate-nav",
-    "mkdocs-macros-plugin",
-    "pymdown-extensions"
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "mkdocs-gen-files",
+  "mkdocs-literate-nav",
+  "mkdocs-macros-plugin",
+  "pymdown-extensions",
 ]
-dev = [
-    "pre-commit",
-]
+dev = ["pre-commit"]
 
 [build-system]
-requires = [
-    "setuptools>=45",
-    "wheel",
-    "setuptools_scm[toml]>=6.2"
-]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
@@ -65,7 +51,18 @@ line-length = 120
 select = ["E", "F", "D", "B", "I", "ARG"]
 target-version = "py310"
 src = ["src", "tests"]
-ignore = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D213", "D417"]
+ignore = [
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D106",
+  "D107",
+  "D213",
+  "D417",
+]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
