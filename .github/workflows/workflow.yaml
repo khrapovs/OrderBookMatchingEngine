@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --group test
       - name: Run test suite
-        run: pytest --cov=order_matching
+        run: uv run pytest --cov=order_matching
 
   benchmark:
     name: Run benchmark
@@ -51,7 +51,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --group test
       - name: Run benchmark
-        run: ./benchmark.sh
+        run: uv run ./benchmark.sh
       - name: Download previous benchmark data
         uses: actions/cache@v3
         with:
@@ -107,7 +107,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --group doc
       - name: Build documentation
-        run: mkdocs build -s -c
+        run: uv run mkdocs build -s -c
 
   build:
     name: Build wheels
