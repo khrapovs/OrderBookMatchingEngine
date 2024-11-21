@@ -43,14 +43,13 @@ testpaths = ["tests", "src", "README.md"]
 
 [tool.setuptools_scm]
 
-[tool.black]
-line-length = 120
-
 [tool.ruff]
 line-length = 120
-select = ["E", "F", "D", "B", "I", "ARG"]
-target-version = "py310"
+target-version = "py312"
 src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "D", "B", "I", "ARG"]
 ignore = [
   "D100",
   "D101",
