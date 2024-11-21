@@ -77,7 +77,6 @@ non_interactive = true
 no_strict_optional = true
 
 [tool.commitizen]
-name = "cz_conventional_commits"
 version_scheme = "semver"
 version_provider = "pep621"
 update_changelog_on_bump = true
