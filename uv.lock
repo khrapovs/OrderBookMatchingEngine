@@ -662,7 +662,7 @@ wheels = [
 
 [[package]]
 name = "order-matching"
-version = "0.3.6.dev3+ge400646.d20241119"
+version = "0.3.6"
 source = { editable = "." }
 dependencies = [
     { name = "faker" },
