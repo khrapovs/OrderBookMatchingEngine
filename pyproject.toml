@@ -68,12 +68,9 @@ convention = "numpy"
 
 [tool.mypy]
 ignore_missing_imports = true
-install_types = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
-non_interactive = true
-no_strict_optional = true
 
 [tool.commitizen]
 version_scheme = "semver"

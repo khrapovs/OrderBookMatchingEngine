@@ -18,7 +18,7 @@ class Orders:
     orders
     """
 
-    def __init__(self, orders: Sequence[Order] = None) -> None:
+    def __init__(self, orders: Sequence[Order] | None = None) -> None:
         self.orders = list() if orders is None else list(orders)
         self._sort_orders_inplace()
 

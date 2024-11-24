@@ -40,14 +40,14 @@ class MatchingEngine:
            timestamp=Timestamp('2023-01-02 00:00:00'))]
     """
 
-    def __init__(self, seed: int = None) -> None:
+    def __init__(self, seed: int | None = None) -> None:
         self._seed = seed
         self._faker = get_faker(seed=seed)
         self._queue = Orders()
         self.unprocessed_orders = OrderBook()
         self._timestamp: pd.Timestamp | None = None
 
-    def match(self, timestamp: pd.Timestamp, orders: Orders = None) -> ExecutedTrades:
+    def match(self, timestamp: pd.Timestamp, orders: Orders | None = None) -> ExecutedTrades:
         """Match incoming orders in price-time priority.
 
         Parameters
