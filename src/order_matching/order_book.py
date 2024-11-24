@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 from typing import cast
 
 import pandas as pd
@@ -18,7 +19,7 @@ class OrderBook:
     def __init__(self) -> None:
         self.bids: OrderBookOrdersType = defaultdict(Orders)
         self.offers: OrderBookOrdersType = defaultdict(Orders)
-        self.orders_by_expiration: dict[pd.Timestamp, Orders] = defaultdict(Orders)
+        self.orders_by_expiration: dict[datetime, Orders] = defaultdict(Orders)
 
     def append(self, incoming_order: Order) -> None:
         """Add one order to the order book.
@@ -101,7 +102,7 @@ class OrderBook:
             case Side.BUY:
                 return self.offers
 
-    def get_subset(self, expiration: pd.Timestamp) -> Orders:
+    def get_subset(self, expiration: datetime) -> Orders:
         """Get orders with given expiration time.
 
         Parameters

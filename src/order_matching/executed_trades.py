@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import asdict
+from datetime import datetime
 
 import pandas as pd
 from pandera.typing import DataFrame
@@ -22,7 +23,7 @@ class ExecutedTrades:
     """
 
     def __init__(self, trades: list[Trade] | None = None) -> None:
-        self._trades: dict[pd.Timestamp, list[Trade]] = defaultdict(list)
+        self._trades: dict[datetime, list[Trade]] = defaultdict(list)
         if trades:
             self.add(trades=trades)
 
@@ -45,7 +46,7 @@ class ExecutedTrades:
         for trade in trades:
             self._trades[trade.timestamp].append(trade)
 
-    def get(self, timestamp: pd.Timestamp) -> list[Trade]:
+    def get(self, timestamp: datetime) -> list[Trade]:
         """Get subset by timestamp.
 
         Returns

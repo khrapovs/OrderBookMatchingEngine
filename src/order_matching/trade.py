@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-
-import pandas as pd
+from datetime import datetime
 
 from order_matching.execution import Execution
 from order_matching.side import Side
@@ -17,4 +16,4 @@ class Trade:
     book_order_id: str
     execution: Execution
     trade_id: str
-    timestamp: pd.Timestamp = None
+    timestamp: datetime

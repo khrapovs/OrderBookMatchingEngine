@@ -1,6 +1,6 @@
 from copy import deepcopy
+from datetime import datetime, timedelta
 
-import pandas as pd
 import pytest
 
 from order_matching.order import LimitOrder, Order
@@ -94,14 +94,14 @@ class TestOrders:
 
     @staticmethod
     def _get_test_orders() -> list[Order]:
-        timestamp = pd.Timestamp.now()
+        timestamp = datetime.now()
         return [
             LimitOrder(side=Side.SELL, price=4.0, size=10.0, timestamp=timestamp, order_id="a", trader_id="x"),
             LimitOrder(
                 side=Side.BUY,
                 price=4.0,
                 size=12.0,
-                timestamp=timestamp - pd.Timedelta(1, unit="D"),
+                timestamp=timestamp - timedelta(days=1),
                 order_id="b",
                 trader_id="x",
             ),

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 import pytest
 
@@ -23,8 +25,8 @@ class TestOrder:
         side: Side,
         price: float,
         size: float,
-        timestamp: pd.Timestamp,
-        expiration: pd.Timestamp,
+        timestamp: datetime,
+        expiration: datetime,
         order_id: str,
         trader_id: str,
         execution: Execution,
@@ -68,7 +70,7 @@ class TestLimitOrder:
         side: Side,
         price: float,
         size: float,
-        timestamp: pd.Timestamp,
+        timestamp: datetime,
         order_id: str,
         trader_id: str,
         price_number_of_digits: int,
@@ -100,7 +102,7 @@ class TestMarketOrder:
     @pytest.mark.parametrize("order_id", ["a", "b"])
     @pytest.mark.parametrize("trader_id", ["x", "y"])
     def test_order_required_defaults(
-        self, side: Side, size: float, timestamp: pd.Timestamp, order_id: str, trader_id: str
+        self, side: Side, size: float, timestamp: datetime, order_id: str, trader_id: str
     ) -> None:
         order = MarketOrder(side=side, size=size, timestamp=timestamp, order_id=order_id, trader_id=trader_id)
         assert order.side == side
