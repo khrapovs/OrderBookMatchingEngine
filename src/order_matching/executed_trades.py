@@ -21,7 +21,7 @@ class ExecutedTrades:
         Trades
     """
 
-    def __init__(self, trades: list[Trade] = None) -> None:
+    def __init__(self, trades: list[Trade] | None = None) -> None:
         self._trades: dict[pd.Timestamp, list[Trade]] = defaultdict(list)
         if trades:
             self.add(trades=trades)
