@@ -1,4 +1,4 @@
-import pandas as pd
+from datetime import datetime
 
 from order_matching.executed_trades import ExecutedTrades
 from order_matching.order import Order
@@ -19,13 +19,14 @@ class MatchingEngine:
 
     Examples
     --------
+    >>> from datetime import datetime, timedelta
     >>> from pprint import pp
     >>> from order_matching.matching_engine import MatchingEngine
     >>> from order_matching.order import LimitOrder
     >>> from order_matching.side import Side
     >>> matching_engine = MatchingEngine(seed=123)
-    >>> timestamp = pd.Timestamp("2023-01-01")
-    >>> transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+    >>> timestamp = datetime(2023, 1, 1)
+    >>> transaction_timestamp = timestamp + timedelta(days=1)
     >>> buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="a", trader_id="x")
     >>> sell_order = LimitOrder(side=Side.SELL, price=0.8, size=1.6, timestamp=timestamp, order_id="b", trader_id="y")
     >>> executed_trades = matching_engine.match(orders=Orders([buy_order, sell_order]), timestamp=transaction_timestamp)
@@ -37,7 +38,7 @@ class MatchingEngine:
            book_order_id='a',
            execution=LIMIT,
            trade_id='c4da537c-1651-4dae-8486-7db30d67b366',
-           timestamp=Timestamp('2023-01-02 00:00:00'))]
+           timestamp=datetime.datetime(2023, 1, 2, 0, 0))]
     """
 
     def __init__(self, seed: int | None = None) -> None:
@@ -45,9 +46,9 @@ class MatchingEngine:
         self._faker = get_faker(seed=seed)
         self._queue = Orders()
         self.unprocessed_orders = OrderBook()
-        self._timestamp: pd.Timestamp | None = None
+        self._timestamp: datetime
 
-    def match(self, timestamp: pd.Timestamp, orders: Orders | None = None) -> ExecutedTrades:
+    def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
         """Match incoming orders in price-time priority.
 
         Parameters

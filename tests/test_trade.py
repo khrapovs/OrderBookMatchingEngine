@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from datetime import datetime
 
 import pandas as pd
 import pytest
@@ -23,7 +24,7 @@ class TestTrade:
         side: Side,
         price: float,
         size: float,
-        timestamp: pd.Timestamp,
+        timestamp: datetime,
         incoming_order_id: str,
         book_order_id: str,
         trade_id: str,

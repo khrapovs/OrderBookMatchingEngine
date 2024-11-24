@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -10,7 +11,7 @@ from order_matching.trade import Trade
 
 
 class TestExecutedTrades:
-    timestamp = pd.Timestamp.now()
+    timestamp = datetime.now()
 
     def test_init(self) -> None:
         executed_trades = ExecutedTrades()
@@ -45,7 +46,7 @@ class TestExecutedTrades:
         assert executed_trades.get(timestamp=self.timestamp) == [first_trade, second_trade]
 
         third_trade = deepcopy(first_trade)
-        third_trade.timestamp += pd.Timedelta(1, unit="D")
+        third_trade.timestamp += timedelta(days=1)
         executed_trades.add(trades=[third_trade])
 
         assert executed_trades.get(timestamp=self.timestamp) == [first_trade, second_trade]

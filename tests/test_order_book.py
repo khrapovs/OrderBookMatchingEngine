@@ -1,4 +1,4 @@
-import pandas as pd
+from datetime import datetime, timedelta
 
 from order_matching.order import LimitOrder
 from order_matching.order_book import OrderBook
@@ -8,7 +8,7 @@ from order_matching.side import Side
 
 
 class TestOrderBook:
-    timestamp = pd.Timestamp.now()
+    timestamp = datetime.now()
 
     def test_init(self) -> None:
         order_book = OrderBook()
@@ -90,8 +90,8 @@ class TestOrderBook:
         first_buy_order = self._get_sample_orders().orders[0]
         second_buy_order = self._get_sample_orders().orders[2]
         third_buy_order = self._get_sample_orders().orders[4]
-        timedelta = pd.Timedelta(1, unit="D")
-        third_buy_order.expiration = self.timestamp + timedelta
+        time_delta = timedelta(days=1)
+        third_buy_order.expiration = self.timestamp + time_delta
 
         assert first_buy_order.price == second_buy_order.price
         assert first_buy_order.price != third_buy_order.price
@@ -115,7 +115,7 @@ class TestOrderBook:
             third_buy_order.price: Orders([third_buy_order]),
         }
         assert order_book.get_subset(expiration=self.timestamp) == Orders([first_buy_order, second_buy_order])
-        assert order_book.get_subset(expiration=self.timestamp + timedelta) == Orders([third_buy_order])
+        assert order_book.get_subset(expiration=self.timestamp + time_delta) == Orders([third_buy_order])
 
         order_book.remove(incoming_order=first_buy_order)
 
@@ -124,13 +124,13 @@ class TestOrderBook:
             third_buy_order.price: Orders([third_buy_order]),
         }
         assert order_book.get_subset(expiration=self.timestamp) == Orders([second_buy_order])
-        assert order_book.get_subset(expiration=self.timestamp + timedelta) == Orders([third_buy_order])
+        assert order_book.get_subset(expiration=self.timestamp + time_delta) == Orders([third_buy_order])
 
         order_book.remove(incoming_order=second_buy_order)
 
         assert order_book.bids == {third_buy_order.price: Orders([third_buy_order])}
         assert order_book.get_subset(expiration=self.timestamp) == Orders()
-        assert order_book.get_subset(expiration=self.timestamp + timedelta) == Orders([third_buy_order])
+        assert order_book.get_subset(expiration=self.timestamp + time_delta) == Orders([third_buy_order])
 
         order_book.remove(incoming_order=third_buy_order)
 

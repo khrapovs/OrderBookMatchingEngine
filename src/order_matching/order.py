@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
-
-import pandas as pd
+from datetime import datetime
 
 from order_matching.execution import Execution
 from order_matching.side import Side
@@ -14,11 +13,11 @@ class Order:
     side: Side
     price: float
     size: float
-    timestamp: pd.Timestamp
+    timestamp: datetime
     order_id: str
     trader_id: str
     execution: Execution
-    expiration: pd.Timestamp = pd.NaT
+    expiration: datetime = datetime.max
     status: Status = Status.OPEN
     price_number_of_digits: int = 1
 
