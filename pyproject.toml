@@ -21,6 +21,9 @@ dependencies = ["pandas", "pandera", "faker"]
 Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
 Documentation = "https://order-book-matching-engine.readthedocs.io/"
 
+[tool.uv]
+default-groups = ["dev", "test", "doc"]
+
 [dependency-groups]
 test = ["pytest", "pytest-cov", "pytest-xdist", "pytest-benchmark[histogram]"]
 doc = [
