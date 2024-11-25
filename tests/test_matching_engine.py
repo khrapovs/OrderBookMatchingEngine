@@ -1,6 +1,6 @@
 from copy import deepcopy
+from datetime import datetime, timedelta
 
-import pandas as pd
 from pytest_benchmark.fixture import BenchmarkFixture
 
 from order_matching.matching_engine import MatchingEngine
@@ -15,7 +15,7 @@ from order_matching.trade import Trade
 class TestMatchingEngine:
     def test_matching_with_no_orders(self) -> None:
         matching_engine = MatchingEngine()
-        executed_trades = matching_engine.match(timestamp=pd.Timestamp.now())
+        executed_trades = matching_engine.match(timestamp=datetime.now())
 
         assert matching_engine.unprocessed_orders.bids == dict()
         assert matching_engine.unprocessed_orders.offers == dict()
@@ -28,8 +28,8 @@ class TestMatchingEngine:
         assert order_book.unprocessed_orders.offers == dict()
         assert order_book.unprocessed_orders.current_price == float("inf")
 
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = LimitOrder(
             side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x"
         )
@@ -72,8 +72,8 @@ class TestMatchingEngine:
     def test_matching_with_matching_offer_same_size(self) -> None:
         order_book = MatchingEngine(seed=42)
         size = 1
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         sell_order = LimitOrder(side=Side.SELL, price=3, size=size, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
 
@@ -103,8 +103,8 @@ class TestMatchingEngine:
     def test_matching_with_matching_bid_same_size(self) -> None:
         order_book = MatchingEngine(seed=42)
         size = 1
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=4, size=size, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
 
@@ -132,8 +132,8 @@ class TestMatchingEngine:
 
     def test_matching_with_matching_offer_smaller_size(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         sell_order = LimitOrder(side=Side.SELL, price=3, size=2, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
 
@@ -164,8 +164,8 @@ class TestMatchingEngine:
 
     def test_matching_with_matching_bid_smaller_size(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=4, size=2, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
 
@@ -196,8 +196,8 @@ class TestMatchingEngine:
 
     def test_matching_with_matching_offer_bigger_size(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         sell_order = LimitOrder(side=Side.SELL, price=3, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
 
@@ -228,8 +228,8 @@ class TestMatchingEngine:
 
     def test_matching_with_matching_offer_bigger_size_and_multiple_bids(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         matching_order = LimitOrder(side=Side.BUY, price=5, size=1, timestamp=timestamp, order_id="c", trader_id="x")
         buy_orders = [
             LimitOrder(side=Side.BUY, price=3, size=2, timestamp=timestamp, order_id="a", trader_id="x"),
@@ -272,8 +272,8 @@ class TestMatchingEngine:
 
     def test_matching_with_matching_bid_bigger_size_and_multiple_offers(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         matching_order = LimitOrder(side=Side.SELL, price=6, size=1, timestamp=timestamp, order_id="c", trader_id="x")
         sell_orders = [
             LimitOrder(side=Side.SELL, price=7, size=2, timestamp=timestamp, order_id="a", trader_id="x"),
@@ -316,8 +316,8 @@ class TestMatchingEngine:
 
     def test_matching_with_matching_bid_bigger_size(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
 
@@ -348,8 +348,8 @@ class TestMatchingEngine:
 
     def test_matching_with_multiple_matching_offers_bigger_size(self) -> None:
         order_book = MatchingEngine(seed=42)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         sell_order_first = LimitOrder(
             side=Side.SELL, price=3, size=1, timestamp=timestamp, order_id="abc", trader_id="x"
         )
@@ -406,8 +406,8 @@ class TestMatchingEngine:
 
     def test_matching_with_multiple_matching_bids_bigger_size(self) -> None:
         order_book = MatchingEngine(seed=66)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_first])), timestamp=transaction_timestamp)
 
@@ -462,8 +462,8 @@ class TestMatchingEngine:
 
     def test_matching_does_not_leave_zero_size_orders_behind(self) -> None:
         order_book = MatchingEngine(seed=66)
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="a", trader_id="x")
         buy_order_second = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="b", trader_id="x")
         executed_trades = order_book.match(
@@ -512,15 +512,15 @@ class TestMatchingEngine:
     def test_matching_time_preference(self) -> None:
         order_book = MatchingEngine(seed=42)
 
-        timestamp = pd.Timestamp(2022, 1, 5)
-        timedelta = pd.Timedelta(1, unit="D")
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime(2022, 1, 5)
+        time_delta = timedelta(days=1)
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
         buy_order_second = LimitOrder(
-            side=Side.BUY, price=4, size=1, timestamp=timestamp - timedelta, order_id="qwe", trader_id="x"
+            side=Side.BUY, price=4, size=1, timestamp=timestamp - time_delta, order_id="qwe", trader_id="x"
         )
         sell_order = LimitOrder(
-            side=Side.SELL, price=4, size=0.5, timestamp=timestamp + timedelta, order_id="xyz", trader_id="x"
+            side=Side.SELL, price=4, size=0.5, timestamp=timestamp + time_delta, order_id="xyz", trader_id="x"
         )
         executed_trades = order_book.match(
             orders=deepcopy(Orders([sell_order, buy_order_first, buy_order_second])), timestamp=transaction_timestamp
@@ -553,8 +553,8 @@ class TestMatchingEngine:
         assert order_book.unprocessed_orders.offers == dict()
         assert order_book.unprocessed_orders.current_price == float("inf")
 
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = MarketOrder(side=Side.BUY, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x")
         executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_first])), timestamp=transaction_timestamp)
 
@@ -587,8 +587,8 @@ class TestMatchingEngine:
     def test_matching_with_sell_market_order_after_limit_orders(self) -> None:
         order_book = MatchingEngine(seed=42)
 
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_orders = [
             LimitOrder(side=Side.BUY, price=5.6, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x"),
             LimitOrder(side=Side.BUY, price=6.5, size=3.2, timestamp=timestamp, order_id="qwe", trader_id="x"),
@@ -632,8 +632,8 @@ class TestMatchingEngine:
     def test_matching_with_buy_market_orders_after_limit_orders(self) -> None:
         order_book = MatchingEngine(seed=2)
 
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         sell_orders = [
             LimitOrder(side=Side.SELL, price=5.6, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x"),
             LimitOrder(side=Side.SELL, price=6.5, size=3.2, timestamp=timestamp, order_id="qwe", trader_id="x"),
@@ -677,8 +677,8 @@ class TestMatchingEngine:
     def test_matching_with_order_cancellation(self) -> None:
         order_book = MatchingEngine()
 
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x")
         order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
 
@@ -693,8 +693,8 @@ class TestMatchingEngine:
     def test_matching_with_order_cancellation_after_trading(self) -> None:
         order_book = MatchingEngine()
 
-        timestamp = pd.Timestamp.now()
-        transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+        timestamp = datetime.now()
+        transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=1.2, size=3.0, timestamp=timestamp, order_id="xyz", trader_id="x")
         sell_order = MarketOrder(side=Side.SELL, size=2.0, timestamp=timestamp, order_id="abc", trader_id="y")
         order_book.match(orders=deepcopy(Orders([buy_order, sell_order])), timestamp=transaction_timestamp)
@@ -717,9 +717,9 @@ class TestMatchingEngine:
     def test_cancellation_of_expired_orders(self) -> None:
         matching_engine = MatchingEngine()
 
-        timestamp = pd.Timestamp.now()
-        timedelta = pd.Timedelta(1, unit="D")
-        expiration = timestamp + timedelta
+        timestamp = datetime.now()
+        time_delta = timedelta(days=1)
+        expiration = timestamp + time_delta
         order = LimitOrder(
             side=Side.BUY,
             price=1.2,
@@ -734,7 +734,7 @@ class TestMatchingEngine:
         assert matching_engine.unprocessed_orders.bids == {order.price: Orders([order])}
         assert matching_engine.unprocessed_orders.offers == dict()
 
-        matching_engine.match(timestamp=timestamp + timedelta / 2)
+        matching_engine.match(timestamp=timestamp + time_delta / 2)
 
         assert matching_engine.unprocessed_orders.bids == {order.price: Orders([order])}
         assert matching_engine.unprocessed_orders.offers == dict()

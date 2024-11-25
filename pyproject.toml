@@ -13,6 +13,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
 dependencies = ["pandas", "pandera", "faker"]
@@ -20,6 +21,9 @@ dependencies = ["pandas", "pandera", "faker"]
 [project.urls]
 Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
 Documentation = "https://order-book-matching-engine.readthedocs.io/"
+
+[tool.uv]
+default-groups = ["dev", "test", "doc"]
 
 [dependency-groups]
 test = ["pytest", "pytest-cov", "pytest-xdist", "pytest-benchmark[histogram]"]

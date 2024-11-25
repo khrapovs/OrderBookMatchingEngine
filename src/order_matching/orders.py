@@ -70,6 +70,12 @@ class Orders:
                     OrderDataSchema.side: lambda df: df[OrderDataSchema.side].astype(str),
                     OrderDataSchema.execution: lambda df: df[OrderDataSchema.execution].astype(str),
                     OrderDataSchema.status: lambda df: df[OrderDataSchema.status].astype(str),
+                    OrderDataSchema.timestamp: lambda df: pd.to_datetime(
+                        df[OrderDataSchema.timestamp], errors="coerce"
+                    ),
+                    OrderDataSchema.expiration: lambda df: pd.to_datetime(
+                        df[OrderDataSchema.expiration], errors="coerce"
+                    ),
                 }
             )
 

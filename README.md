@@ -28,6 +28,7 @@ pip install order-matching
 ## Usage
 
 ```python
+>>> from datetime import datetime, timedelta
 >>> from pprint import pp
 >>> import pandas as pd
 
@@ -37,8 +38,8 @@ pip install order-matching
 >>> from order_matching.orders import Orders
 
 >>> matching_engine = MatchingEngine(seed=123)
->>> timestamp = pd.Timestamp("2023-01-01")
->>> transaction_timestamp = timestamp + pd.Timedelta(1, unit="D")
+>>> timestamp = datetime(2023, 1, 1)
+>>> transaction_timestamp = timestamp + timedelta(days=1)
 >>> buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="a", trader_id="x")
 >>> sell_order = LimitOrder(side=Side.SELL, price=0.8, size=1.6, timestamp=timestamp, order_id="b", trader_id="y")
 >>> executed_trades = matching_engine.match(orders=Orders([buy_order, sell_order]), timestamp=transaction_timestamp)
@@ -51,7 +52,7 @@ pip install order-matching
        book_order_id='a',
        execution=LIMIT,
        trade_id='c4da537c-1651-4dae-8486-7db30d67b366',
-       timestamp=Timestamp('2023-01-02 00:00:00'))]
+       timestamp=datetime.datetime(2023, 1, 2, 0, 0))]
 
 
 ```
