@@ -1,3 +1,9 @@
+## 0.3.9 (2024-12-04)
+
+### Fix
+
+- Fix docs build. Convert uv groups to pip extras (#16)
+
 ## 0.3.8 (2024-12-04)
 
 ### Fix
