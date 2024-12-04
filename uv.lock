@@ -662,7 +662,7 @@ wheels = [
 
 [[package]]
 name = "order-matching"
-version = "0.3.6"
+version = "0.3.8"
 source = { editable = "." }
 dependencies = [
     { name = "faker" },
@@ -670,7 +670,7 @@ dependencies = [
     { name = "pandera" },
 ]
 
-[package.dev-dependencies]
+[package.optional-dependencies]
 dev = [
     { name = "pre-commit" },
 ]
@@ -692,25 +692,19 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "faker" },
+    { name = "mkdocs-gen-files", marker = "extra == 'doc'" },
+    { name = "mkdocs-literate-nav", marker = "extra == 'doc'" },
+    { name = "mkdocs-macros-plugin", marker = "extra == 'doc'" },
+    { name = "mkdocs-material", marker = "extra == 'doc'" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'doc'" },
     { name = "pandas" },
     { name = "pandera" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pre-commit" }]
-doc = [
-    { name = "mkdocs-gen-files" },
-    { name = "mkdocs-literate-nav" },
-    { name = "mkdocs-macros-plugin" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extras = ["python"] },
-    { name = "pymdown-extensions" },
-]
-test = [
-    { name = "pytest" },
-    { name = "pytest-benchmark", extras = ["histogram"] },
-    { name = "pytest-cov" },
-    { name = "pytest-xdist" },
+    { name = "pre-commit", marker = "extra == 'dev'" },
+    { name = "pymdown-extensions", marker = "extra == 'doc'" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-benchmark", extras = ["histogram"], marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'test'" },
+    { name = "pytest-xdist", marker = "extra == 'test'" },
 ]
 
 [[package]]
