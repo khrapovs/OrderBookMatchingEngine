@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 
 from order_matching.executed_trades import ExecutedTrades
 from order_matching.order import Order
@@ -63,6 +64,7 @@ class MatchingEngine:
         ExecutedTrades
             Executed trades storage object
         """
+        sleep(0.1)
         self._timestamp = timestamp
         self._queue += orders if orders else Orders()
         self._queue += self._get_expired_orders()
