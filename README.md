@@ -10,6 +10,7 @@
 ## Overview
 
 This package is a simple order book matching engine implementation in Python. Its main features are:
+
 - price-time priority
 - limit and market orders
 - order cancellation and expiration
@@ -53,8 +54,6 @@ pip install order-matching
        execution=LIMIT,
        trade_id='c4da537c-1651-4dae-8486-7db30d67b366',
        timestamp=datetime.datetime(2023, 1, 2, 0, 0))]
-
-
 ```
 
 ## Related Projects
@@ -65,28 +64,39 @@ pip install order-matching
 ## Contribute
 
 Create a virtual environment and activate it:
+
 ```shell
 python -m venv venv
 source venv/bin/activate
 ```
+
 Install development dependencies:
+
 ```shell
 pip install -e .[dev]
 ```
+
 and use pre-commit to make sure that your code is formatted using [black](https://github.com/PyCQA/isort) and [isort](https://pycqa.github.io/isort/index.html) automatically:
+
 ```shell
 pre-commit install
 ```
+
 Run tests:
+
 ```shell
 pip install -e .[test]
 pytest
 ```
+
 Run benchmark and see the result either in the terminal or as a plot in `benchmark_history.svg`:
+
 ```shell
 ./benchmark.sh
 ```
+
 Build and serve documentation website:
+
 ```shell
 pip install -e .[doc]
 mkdocs serve
