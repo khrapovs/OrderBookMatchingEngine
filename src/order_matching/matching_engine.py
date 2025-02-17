@@ -64,7 +64,7 @@ class MatchingEngine:
         ExecutedTrades
             Executed trades storage object
         """
-        sleep(0.1)
+        sleep(1)
         self._timestamp = timestamp
         self._queue += orders if orders else Orders()
         self._queue += self._get_expired_orders()
