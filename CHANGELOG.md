@@ -1,3 +1,9 @@
+## 0.3.10 (2025-02-17)
+
+### Fix
+
+- Use token instead of ssh keys to push tags (#18)
+
 ## 0.3.9 (2024-12-04)
 
 ### Fix
