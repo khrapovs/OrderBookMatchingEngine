@@ -75,5 +75,5 @@ disallow_incomplete_defs = true
 
 [tool.commitizen]
 version_scheme = "semver"
-version_provider = "pep621"
+version_provider = "uv"
 update_changelog_on_bump = true
