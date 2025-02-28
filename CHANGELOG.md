@@ -1,3 +1,9 @@
+## 0.3.11 (2025-02-28)
+
+### Fix
+
+- Use uv provider from commitizen (#21)
+
 ## 0.3.10 (2025-02-17)
 
 ### Fix
