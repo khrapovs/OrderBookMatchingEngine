@@ -1,6 +1,6 @@
 [project]
 name = "order-matching"
-version = "0.3.11"
+version = "0.3.12"
 description = "Order Book Matching Engine"
 authors = [
   { name = "Stanislav Khrapov", email = "khrapovs@gmail.com" },

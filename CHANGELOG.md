@@ -1,3 +1,9 @@
+## 0.3.12 (2025-02-28)
+
+### Fix
+
+- Update download-artifact action version (#22)
+
 ## 0.3.11 (2025-02-28)
 
 ### Fix
