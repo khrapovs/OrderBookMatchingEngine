@@ -37,7 +37,9 @@ doc = [
   "mkdocs-macros-plugin",
   "pymdown-extensions",
 ]
-dev = ["pre-commit"]
+dev = [
+    "prek>=0.2.30",
+]
 
 [project.urls]
 Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
