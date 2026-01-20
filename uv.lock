@@ -805,10 +805,7 @@ dependencies = [
     { name = "pandera" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "prek" },
-]
+[package.optional-dependencies]
 doc = [
     { name = "mkdocs-gen-files" },
     { name = "mkdocs-literate-nav" },
@@ -816,6 +813,11 @@ doc = [
     { name = "mkdocs-material" },
     { name = "mkdocstrings", extra = ["python"] },
     { name = "pymdown-extensions" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "prek" },
 ]
 test = [
     { name = "pytest" },
@@ -827,20 +829,19 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "faker", specifier = ">=33.0.0" },
+    { name = "mkdocs-gen-files", marker = "extra == 'doc'" },
+    { name = "mkdocs-literate-nav", marker = "extra == 'doc'" },
+    { name = "mkdocs-macros-plugin", marker = "extra == 'doc'" },
+    { name = "mkdocs-material", marker = "extra == 'doc'" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'doc'" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pandera", specifier = ">=0.21.0" },
+    { name = "pymdown-extensions", marker = "extra == 'doc'" },
 ]
+provides-extras = ["doc"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "prek", specifier = ">=0.2.30" }]
-doc = [
-    { name = "mkdocs-gen-files" },
-    { name = "mkdocs-literate-nav" },
-    { name = "mkdocs-macros-plugin" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extras = ["python"] },
-    { name = "pymdown-extensions" },
-]
 test = [
     { name = "pytest", specifier = ">=8.3.3" },
     { name = "pytest-benchmark", extras = ["histogram"], specifier = ">=5.1.0" },

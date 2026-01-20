@@ -29,6 +29,10 @@ test = [
     "pytest-cov>=6.0.0",
     "pytest-xdist>=3.6.1",
 ]
+dev = [
+    "prek>=0.2.30",
+]
+[project.optional-dependencies]
 doc = [
   "mkdocs-material",
   "mkdocstrings[python]",
@@ -36,9 +40,6 @@ doc = [
   "mkdocs-literate-nav",
   "mkdocs-macros-plugin",
   "pymdown-extensions",
-]
-dev = [
-    "prek>=0.2.30",
 ]
 
 [project.urls]

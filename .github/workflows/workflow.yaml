@@ -104,7 +104,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install dependencies
-        run: uv sync --group doc
+        run: uv sync --extra doc
       - name: Build documentation
         run: uv run mkdocs build -s -c
 
