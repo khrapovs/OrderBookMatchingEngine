@@ -57,16 +57,16 @@ jobs:
         with:
           path: ./cache
           key: ${{ runner.os }}-benchmark
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          tool: pytest
-          output-file-path: benchmark.json
-          external-data-json-path: ./cache/benchmark-data.json
-          fail-on-alert: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-on-alert: true
-          alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
+#      - name: Store benchmark result
+#        uses: benchmark-action/github-action-benchmark@v1
+#        with:
+#          tool: pytest
+#          output-file-path: benchmark.json
+#          external-data-json-path: ./cache/benchmark-data.json
+#          fail-on-alert: false
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          comment-on-alert: true
+#          alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
 
   code-quality:
     name: Code quality checks
