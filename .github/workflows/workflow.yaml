@@ -84,7 +84,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --all-groups --all-extras
       - name: Run pre-commit
         run: uv run prek run -v --show-diff-on-failure
       - name: Run ty
