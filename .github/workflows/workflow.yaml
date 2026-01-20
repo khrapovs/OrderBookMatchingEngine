@@ -85,9 +85,9 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Install dependencies
-        run: pip install pre-commit
+        run: uv sync --group dev
       - name: Run pre-commit
-        run: pre-commit run -v --show-diff-on-failure
+        run: prek run -v --show-diff-on-failure
 
   docs:
     name: Documentation
