@@ -55,7 +55,6 @@ testpaths = ["tests", "src", "README.md"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
