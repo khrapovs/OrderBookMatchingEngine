@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Generator, Iterator, Sequence
+from typing import Generator, Iterator, Sequence, cast
 
 import pandas as pd
-from pandera.typing import DataFrame
+from pandera.typing.pandas import DataFrame
 
 from order_matching.order import Order
 from order_matching.schemas import OrderDataSchema
@@ -63,20 +63,23 @@ class Orders:
         DataFrame[OrderDataSchema]
         """
         if len(self.orders) == 0:
-            return pd.DataFrame()
+            return cast(DataFrame[OrderDataSchema], pd.DataFrame())
         else:
-            return pd.DataFrame.from_records([asdict(order) for order in self.orders]).assign(
-                **{
-                    OrderDataSchema.side: lambda df: df[OrderDataSchema.side].astype(str),
-                    OrderDataSchema.execution: lambda df: df[OrderDataSchema.execution].astype(str),
-                    OrderDataSchema.status: lambda df: df[OrderDataSchema.status].astype(str),
-                    OrderDataSchema.timestamp: lambda df: pd.to_datetime(
-                        df[OrderDataSchema.timestamp], errors="coerce"
-                    ),
-                    OrderDataSchema.expiration: lambda df: pd.to_datetime(
-                        df[OrderDataSchema.expiration], errors="coerce"
-                    ),
-                }
+            return cast(
+                DataFrame[OrderDataSchema],
+                pd.DataFrame.from_records([asdict(order) for order in self.orders]).assign(
+                    **{
+                        OrderDataSchema.side: lambda df: df[OrderDataSchema.side].astype(str),
+                        OrderDataSchema.execution: lambda df: df[OrderDataSchema.execution].astype(str),
+                        OrderDataSchema.status: lambda df: df[OrderDataSchema.status].astype(str),
+                        OrderDataSchema.timestamp: lambda df: pd.to_datetime(
+                            df[OrderDataSchema.timestamp], errors="coerce"
+                        ),
+                        OrderDataSchema.expiration: lambda df: pd.to_datetime(
+                            df[OrderDataSchema.expiration], errors="coerce"
+                        ),
+                    }
+                ),
             )
 
     @property

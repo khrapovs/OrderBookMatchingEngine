@@ -3,9 +3,10 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import asdict
 from datetime import datetime
+from typing import cast
 
 import pandas as pd
-from pandera.typing import DataFrame
+from pandera.typing.pandas import DataFrame
 
 from order_matching.schemas import TradeDataSchema
 from order_matching.trade import Trade
@@ -66,13 +67,16 @@ class ExecutedTrades:
         """
         trades = self.trades
         if len(trades) == 0:
-            return pd.DataFrame()
+            return cast(DataFrame[TradeDataSchema], pd.DataFrame())
         else:
-            return pd.DataFrame.from_records([asdict(trade) for trade in trades]).assign(
-                **{
-                    TradeDataSchema.side: lambda df: df[TradeDataSchema.side].astype(str),
-                    TradeDataSchema.execution: lambda df: df[TradeDataSchema.execution].astype(str),
-                }
+            return cast(
+                DataFrame[TradeDataSchema],
+                pd.DataFrame.from_records([asdict(trade) for trade in trades]).assign(
+                    **{
+                        TradeDataSchema.side: lambda df: df[TradeDataSchema.side].astype(str),
+                        TradeDataSchema.execution: lambda df: df[TradeDataSchema.execution].astype(str),
+                    }
+                ),
             )
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:
