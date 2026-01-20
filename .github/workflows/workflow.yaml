@@ -86,7 +86,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev
       - name: Run pre-commit
-        run: prek run -v --show-diff-on-failure
+        run: uv run prek run -v --show-diff-on-failure
 
   docs:
     name: Documentation
