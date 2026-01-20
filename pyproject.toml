@@ -86,7 +86,7 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
 [tool.ty.rules]
-no-matching-overload = "ignore"  # spark issue
+no-matching-overload = "ignore"
 
 [tool.commitizen]
 version_scheme = "semver"
