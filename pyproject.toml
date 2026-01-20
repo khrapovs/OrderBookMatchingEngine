@@ -31,6 +31,7 @@ test = [
 ]
 dev = [
     "prek>=0.2.30",
+    "ty>=0.0.12",
 ]
 [project.optional-dependencies]
 doc = [
@@ -83,6 +84,9 @@ ignore_missing_imports = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
+
+[tool.ty.rules]
+no-matching-overload = "ignore"  # spark issue
 
 [tool.commitizen]
 version_scheme = "semver"
