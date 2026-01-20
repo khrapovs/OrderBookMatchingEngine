@@ -16,14 +16,23 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pandas", "pandera", "faker"]
+dependencies = [
+    "faker>=33.0.0",
+    "pandas>=2.2.3",
+    "pandera>=0.21.0",
+]
 
-[project.urls]
-Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
-Documentation = "https://order-book-matching-engine.readthedocs.io/"
-
+[dependency-groups]
+test = [
+    "pytest>=8.3.3",
+    "pytest-benchmark[histogram]>=5.1.0",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=3.6.1",
+]
+dev = [
+    "prek>=0.2.30",
+]
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov", "pytest-xdist", "pytest-benchmark[histogram]"]
 doc = [
   "mkdocs-material",
   "mkdocstrings[python]",
@@ -32,7 +41,10 @@ doc = [
   "mkdocs-macros-plugin",
   "pymdown-extensions",
 ]
-dev = ["pre-commit"]
+
+[project.urls]
+Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
+Documentation = "https://order-book-matching-engine.readthedocs.io/"
 
 [build-system]
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
@@ -46,7 +58,6 @@ testpaths = ["tests", "src", "README.md"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
@@ -64,7 +75,7 @@ ignore = [
   "D417",
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.mypy]

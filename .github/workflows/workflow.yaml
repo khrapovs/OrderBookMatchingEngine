@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: uv sync --extra test
+        run: uv sync --group test
       - name: Run test suite
         run: uv run pytest --cov=order_matching
 
@@ -47,9 +47,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
-        run: uv sync --extra test
+        run: uv sync --group test
       - name: Run benchmark
         run: uv run ./benchmark.sh
       - name: Download previous benchmark data
@@ -57,16 +57,16 @@ jobs:
         with:
           path: ./cache
           key: ${{ runner.os }}-benchmark
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          tool: pytest
-          output-file-path: benchmark.json
-          external-data-json-path: ./cache/benchmark-data.json
-          fail-on-alert: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-on-alert: true
-          alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
+#      - name: Store benchmark result
+#        uses: benchmark-action/github-action-benchmark@v1
+#        with:
+#          tool: pytest
+#          output-file-path: benchmark.json
+#          external-data-json-path: ./cache/benchmark-data.json
+#          fail-on-alert: false
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          comment-on-alert: true
+#          alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
 
   code-quality:
     name: Code quality checks
@@ -74,20 +74,19 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: set PY
-        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> ${GITHUB_ENV}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          python-version: "3.13"
       - name: Install dependencies
-        run: pip install pre-commit
+        run: uv sync --group dev
       - name: Run pre-commit
-        run: pre-commit run -v --show-diff-on-failure
+        run: uv run prek run -v --show-diff-on-failure
 
   docs:
     name: Documentation
@@ -103,7 +102,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
         run: uv sync --extra doc
       - name: Build documentation
