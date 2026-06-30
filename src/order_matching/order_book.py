@@ -73,8 +73,11 @@ class OrderBook:
                 OrderBookSummarySchema.count: self._get_offer_counts(),
             }
         )
-        return pd.concat([bids, offers], ignore_index=True).assign(
-            **{OrderBookSummarySchema.count: lambda df: df[OrderBookSummarySchema.count].astype(int)}
+        return cast(
+            DataFrame[OrderBookSummarySchema],
+            pd.concat([bids, offers], ignore_index=True).assign(
+                **{OrderBookSummarySchema.count: lambda df: df[OrderBookSummarySchema.count].astype(int)}
+            ),
         )
 
     @property

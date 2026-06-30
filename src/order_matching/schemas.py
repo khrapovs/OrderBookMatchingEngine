@@ -1,5 +1,7 @@
+from datetime import datetime
+
 from pandera import DataFrameModel, Field
-from pandera.typing import DateTime, Series
+from pandera.typing import Series
 
 from order_matching.execution import Execution
 from order_matching.side import Side
@@ -27,8 +29,8 @@ class OrderBookSummarySchema(BaseOrderSchema):
 class OrderDataSchema(BaseOrderSchema):
     """Order data schema."""
 
-    timestamp: Series[DateTime]
-    expiration: Series[DateTime] = Field(nullable=True)
+    timestamp: Series[datetime]
+    expiration: Series[datetime] = Field(nullable=True)
     order_id: Series[str]
     trader_id: Series[str]
     execution: Series[str] = Field(isin=[Execution.MARKET.name, Execution.LIMIT.name])
@@ -42,7 +44,7 @@ class OrderDataSchema(BaseOrderSchema):
 class TradeDataSchema(BaseOrderSchema):
     """Trade data schema."""
 
-    timestamp: Series[DateTime]
+    timestamp: Series[datetime]
     incoming_order_id: Series[str]
     book_order_id: Series[str]
     trade_id: Series[str]
