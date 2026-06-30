@@ -33,7 +33,6 @@ dev = [
     "prek>=0.2.30",
     "ty>=0.0.12",
 ]
-[project.optional-dependencies]
 doc = [
   "mkdocs-material",
   "mkdocstrings[python]",

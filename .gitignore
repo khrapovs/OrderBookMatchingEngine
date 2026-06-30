@@ -12,3 +12,4 @@ site/
 docs/reference/
 *.egg-info
 .coverage
+dist/
