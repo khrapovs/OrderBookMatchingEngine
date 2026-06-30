@@ -110,10 +110,10 @@ jobs:
 
   publish:
     name: Build and publish wheels
-    needs: [ test ]
+    needs: [ test, benchmark, code-quality, docs ]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: release
       url: https://pypi.org/p/order-matching/
     permissions:
       id-token: write
