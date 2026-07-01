@@ -1,3 +1,9 @@
+## 0.3.15 (2026-07-01)
+
+### Fix
+
+- **25**: Fix non-removal of filled orders from orders_by_expiration (#33)
+
 ## 0.3.14 (2026-07-01)
 
 ### Refactor
