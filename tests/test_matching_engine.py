@@ -763,74 +763,34 @@ class TestMatchingEngine:
     def test_live_order_eviction(self) -> None:
         matching_engine = MatchingEngine(seed=1)
         timestamp = datetime(2023, 1, 1)
-        expiration1 = timestamp + timedelta(hours=1)
+        expiration = timestamp + timedelta(hours=1)
 
         # 1) rest "X" @100 with a finite expiration, then fully fill it
-        matching_engine.match(
-            timestamp=timestamp,
-            orders=Orders(
-                [
-                    LimitOrder(
-                        side=Side.BUY,
-                        price=100.0,
-                        size=10,
-                        timestamp=timestamp,
-                        order_id="X",
-                        trader_id="x",
-                        expiration=expiration1,
-                    )
-                ]
-            ),
+        order = LimitOrder(
+            side=Side.BUY, price=100.0, size=10, timestamp=timestamp, order_id="X", trader_id="x", expiration=expiration
         )
-        matching_engine.match(
+        matching_engine.match(timestamp=timestamp, orders=Orders(orders=[order]))
+        order = LimitOrder(
+            side=Side.SELL,
+            price=100.0,
+            size=10,
             timestamp=timestamp + timedelta(seconds=1),
-            orders=Orders(
-                [
-                    LimitOrder(
-                        side=Side.SELL,
-                        price=100.0,
-                        size=10,
-                        timestamp=timestamp + timedelta(seconds=1),
-                        order_id="B",
-                        trader_id="y",
-                    )
-                ]
-            ),
+            order_id="B",
+            trader_id="y",
         )
+        matching_engine.match(timestamp=timestamp + timedelta(seconds=1), orders=Orders(orders=[order]))
 
         # 2) a brand-new LIVE order re-uses id "X" at the same price (default far expiration)
-        matching_engine.match(
-            timestamp=timestamp + timedelta(seconds=2),
-            orders=Orders(
-                [
-                    LimitOrder(
-                        side=Side.BUY,
-                        price=100.0,
-                        size=5,
-                        timestamp=timestamp + timedelta(seconds=2),
-                        order_id="X",
-                        trader_id="z",
-                    )
-                ]
-            ),
+        order = LimitOrder(
+            side=Side.BUY, price=100.0, size=5, timestamp=timestamp + timedelta(seconds=2), order_id="X", trader_id="z"
         )
+        matching_engine.match(timestamp=timestamp + timedelta(seconds=2), orders=Orders(orders=[order]))
 
-        # 3) advance time past expiration1 with any order -> expiry sweep fires
-        matching_engine.match(
-            timestamp=timestamp + timedelta(hours=2),
-            orders=Orders(
-                [
-                    LimitOrder(
-                        side=Side.SELL,
-                        price=999.0,
-                        size=1,
-                        timestamp=timestamp + timedelta(hours=2),
-                        order_id="D",
-                        trader_id="w",
-                    )
-                ]
-            ),
+        # 3) advance time past expiration with any order -> expiry sweep fires
+        order = LimitOrder(
+            side=Side.SELL, price=999.0, size=1, timestamp=timestamp + timedelta(hours=2), order_id="D", trader_id="w"
         )
+        matching_engine.match(timestamp=timestamp + timedelta(hours=2), orders=Orders(orders=[order]))
 
         # the live re-used-id "X" was evicted; expected ['X']
         assert [o.order_id for v in matching_engine.unprocessed_orders.bids.values() for o in v] == ["X"]
