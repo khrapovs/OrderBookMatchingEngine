@@ -22,12 +22,6 @@ repos:
         args: [ --config, pyproject.toml ]
         types_or: [ python ]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.1.0
-    hooks:
-      - id: mypy
-        args: [--config, pyproject.toml]
-
   - repo: https://github.com/astral-sh/ty-pre-commit
     rev: v0.0.55
     hooks:

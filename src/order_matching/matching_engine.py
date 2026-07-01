@@ -41,14 +41,14 @@ class MatchingEngine:
            timestamp=datetime.datetime(2023, 1, 2, 0, 0))]
     """
 
-    def __init__(self, seed: int | None = None) -> None:
+    def __init__(self, seed: int | None = None):
         self._seed = seed
         self._faker = get_faker(seed=seed)
         self._queue = Orders()
         self.unprocessed_orders = OrderBook()
         self._timestamp: datetime | None = None
 
-    def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
+    def match(self, timestamp, orders: Orders | None = None) -> ExecutedTrades:
         """Match incoming orders in price-time priority.
 
         Parameters
