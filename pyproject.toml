@@ -47,14 +47,12 @@ Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
 Documentation = "https://order-book-matching-engine.readthedocs.io/"
 
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11.26,<0.12"]
+build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 addopts = "--cov-config=.coveragerc --doctest-modules --doctest-glob='*.md' -n=auto --benchmark-disable"
 testpaths = ["tests", "src", "README.md"]
-
-[tool.setuptools_scm]
 
 [tool.ruff]
 line-length = 120
