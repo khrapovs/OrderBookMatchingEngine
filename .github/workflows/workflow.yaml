@@ -107,6 +107,12 @@ jobs:
         run: uv sync --group doc
       - name: Build documentation
         run: uv run mkdocs build -s -c
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: true
 
   publish:
     name: Build and publish wheels
