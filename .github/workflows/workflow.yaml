@@ -135,3 +135,13 @@ jobs:
         run: uv build
       - name: Publish
         run: uv publish
+      - name: Install dependencies
+        run: uv sync --group doc
+      - name: Build documentation
+        run: uv run mkdocs build -c
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: true
