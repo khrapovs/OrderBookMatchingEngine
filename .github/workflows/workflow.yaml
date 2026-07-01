@@ -151,6 +151,12 @@ jobs:
         run: uv sync --group doc
       - name: Build documentation
         run: uv run mkdocs build -c
+      - name: Commit
+        run: |
+          git add --all
+          git config --global user.email "khrapovs@gmail.com"
+          git config --global user.name "Stanislav Khrapov"
+          git commit --all -m "sys: Build documentation"
       - name: Push
         uses: ad-m/github-push-action@master
         with:
