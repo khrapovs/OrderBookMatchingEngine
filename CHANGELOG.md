@@ -1,3 +1,9 @@
+## 0.3.16 (2026-07-01)
+
+### Refactor
+
+- Change next order type and initialize timestamp in __init__ method (#34)
+
 ## 0.3.15 (2026-07-01)
 
 ### Fix
