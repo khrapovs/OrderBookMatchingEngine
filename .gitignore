@@ -8,7 +8,6 @@ benchmark_history.svg
 __pycache__/
 venv/
 .venv/
-site/
 docs/reference/
 *.egg-info
 .coverage
