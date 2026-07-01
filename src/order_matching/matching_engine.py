@@ -106,6 +106,11 @@ class MatchingEngine:
             if book_order.size == 0:
                 zero_size_orders.append(book_order)
         opposite_side_orders[price].remove(orders=zero_size_orders)
+        for book_order in zero_size_orders:
+            expiration_orders = self.unprocessed_orders.orders_by_expiration[book_order.expiration]
+            expiration_orders.remove(orders=[book_order])
+            if len(expiration_orders) == 0:
+                self.unprocessed_orders.orders_by_expiration.pop(book_order.expiration)
         if len(list(filter(lambda order: order.size > 0, opposite_side_orders[price]))) == 0:
             opposite_side_orders.pop(price)
         return ExecutedTrades(trades=trades)
