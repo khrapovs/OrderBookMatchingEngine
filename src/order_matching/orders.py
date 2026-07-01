@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Generator, Iterator, Sequence, cast
+from typing import Iterator, Sequence, cast
 
 import pandas as pd
 from pandera.typing.pandas import DataFrame
@@ -102,8 +102,8 @@ class Orders:
     def __iter__(self) -> Iterator[Order]:
         return iter(self.orders)
 
-    def __next__(self) -> Generator[Order, None, None]:
-        yield next(self.__iter__())
+    def __next__(self) -> Order:
+        return next(self.__iter__())
 
     def __len__(self) -> int:
         return len(self.orders)

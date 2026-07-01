@@ -46,7 +46,7 @@ class MatchingEngine:
         self._faker = get_faker(seed=seed)
         self._queue = Orders()
         self.unprocessed_orders = OrderBook()
-        self._timestamp: datetime
+        self._timestamp: datetime | None = None
 
     def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
         """Match incoming orders in price-time priority.
@@ -73,7 +73,9 @@ class MatchingEngine:
 
     def _get_expired_orders(self) -> Orders:
         orders: list[Order] = list()
-        for timestamp in filter(lambda t: t <= self._timestamp, self.unprocessed_orders.orders_by_expiration.keys()):
+        assert self._timestamp is not None
+        current_timestamp = self._timestamp
+        for timestamp in filter(lambda t: t <= current_timestamp, self.unprocessed_orders.orders_by_expiration.keys()):
             orders.extend(self.unprocessed_orders.orders_by_expiration[timestamp])
         for order in orders:
             order.status = Status.CANCEL
@@ -116,6 +118,7 @@ class MatchingEngine:
         return ExecutedTrades(trades=trades)
 
     def _execute_trade(self, incoming_order: Order, book_order: Order) -> Trade:
+        assert self._timestamp is not None
         trade = Trade(
             side=incoming_order.side,
             price=book_order.price,
