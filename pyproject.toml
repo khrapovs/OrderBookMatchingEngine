@@ -60,7 +60,7 @@ line-length = 120
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "D", "B", "I", "ARG"]
+select = ["E", "F", "D", "B", "I", "ARG", "ANN"]
 ignore = [
   "D100",
   "D101",
@@ -76,12 +76,6 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
-
-[tool.mypy]
-ignore_missing_imports = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
 
 [tool.ty.rules]
 no-matching-overload = "ignore"
