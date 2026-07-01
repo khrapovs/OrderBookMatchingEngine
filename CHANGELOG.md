@@ -1,3 +1,9 @@
+## 0.3.14 (2026-07-01)
+
+### Refactor
+
+- Publish docs in GH pages (#29)
+
 ## 0.3.13 (2026-07-01)
 
 ### Refactor
