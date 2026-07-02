@@ -1,7 +1,6 @@
 from dataclasses import asdict
 from datetime import datetime
 
-import pandas as pd
 import polars as pl
 import pytest
 
@@ -15,7 +14,10 @@ class TestTrade:
     @pytest.mark.parametrize("side", [Side.BUY, Side.SELL])
     @pytest.mark.parametrize("price", [1.2, 2.4])
     @pytest.mark.parametrize("size", [10.0, 4.1])
-    @pytest.mark.parametrize("timestamp", pd.date_range(start="2022", periods=3))
+    @pytest.mark.parametrize(
+        "timestamp",
+        pl.datetime_range(start=datetime(2022, 1, 1), end=datetime(2022, 1, 3), interval="1d", eager=True).to_list(),
+    )
     @pytest.mark.parametrize("incoming_order_id", ["a", "abc"])
     @pytest.mark.parametrize("book_order_id", ["a", "abc"])
     @pytest.mark.parametrize("trade_id", ["t", "tr"])

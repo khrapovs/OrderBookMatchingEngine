@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import pandas as pd
+import polars as pl
 import pytest
 
 from order_matching.execution import Execution
@@ -13,8 +13,19 @@ class TestOrder:
     @pytest.mark.parametrize("side", [Side.BUY, Side.SELL])
     @pytest.mark.parametrize("price", [1.2, 2.4])
     @pytest.mark.parametrize("size", [10, 4.1])
-    @pytest.mark.parametrize("timestamp", pd.date_range(start="2022", periods=3))
-    @pytest.mark.parametrize("expiration", [None, *pd.date_range(start="2023", periods=3)])
+    @pytest.mark.parametrize(
+        "timestamp",
+        pl.datetime_range(start=datetime(2022, 1, 1), end=datetime(2022, 1, 3), interval="1d", eager=True).to_list(),
+    )
+    @pytest.mark.parametrize(
+        "expiration",
+        [
+            None,
+            *pl.datetime_range(
+                start=datetime(2023, 1, 1), end=datetime(2023, 1, 3), interval="1d", eager=True
+            ).to_list(),
+        ],
+    )
     @pytest.mark.parametrize("order_id", ["a", "b"])
     @pytest.mark.parametrize("trader_id", ["x", "y"])
     @pytest.mark.parametrize("execution", [Execution.LIMIT, Execution.MARKET])
@@ -61,7 +72,10 @@ class TestLimitOrder:
     @pytest.mark.parametrize("side", [Side.BUY, Side.SELL])
     @pytest.mark.parametrize("price", [1.2, 2.4])
     @pytest.mark.parametrize("size", [10, 4.1])
-    @pytest.mark.parametrize("timestamp", pd.date_range(start="2022", periods=3))
+    @pytest.mark.parametrize(
+        "timestamp",
+        pl.datetime_range(start=datetime(2022, 1, 1), end=datetime(2022, 1, 3), interval="1d", eager=True).to_list(),
+    )
     @pytest.mark.parametrize("order_id", ["a", "b"])
     @pytest.mark.parametrize("trader_id", ["x", "y"])
     @pytest.mark.parametrize("price_number_of_digits", [1, 3])
@@ -98,7 +112,10 @@ class TestLimitOrder:
 class TestMarketOrder:
     @pytest.mark.parametrize("side", [Side.BUY, Side.SELL])
     @pytest.mark.parametrize("size", [10, 4.1])
-    @pytest.mark.parametrize("timestamp", pd.date_range(start="2022", periods=3))
+    @pytest.mark.parametrize(
+        "timestamp",
+        pl.datetime_range(start=datetime(2022, 1, 1), end=datetime(2022, 1, 3), interval="1d", eager=True).to_list(),
+    )
     @pytest.mark.parametrize("order_id", ["a", "b"])
     @pytest.mark.parametrize("trader_id", ["x", "y"])
     def test_order_required_defaults(

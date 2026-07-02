@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
+
 import numpy as np
-import pandas as pd
 import pytest
 
 from order_matching.order import LimitOrder
@@ -14,7 +15,7 @@ def random_orders() -> Orders:
     rng = get_random_generator(seed=42)
     orders_per_timestamp, number_of_time_points = 100, 10
     time_intervals = np.array(rng.uniform(low=0, high=1, size=number_of_time_points))
-    random_timestamps = pd.Timestamp(2023, 1, 1) + pd.to_timedelta(time_intervals.cumsum(), unit="D")
+    random_timestamps = [datetime(2023, 1, 1) + timedelta(days=float(days)) for days in time_intervals.cumsum()]
     orders = list()
     for timestamp in random_timestamps:
         prices = rng.lognormal(mean=1, size=orders_per_timestamp).round(decimals=1)
