@@ -5,8 +5,8 @@ from dataclasses import asdict
 from datetime import datetime
 from typing import cast
 
-import pandas as pd
-from pandera.typing.pandas import DataFrame
+import polars as pl
+from pandera.typing.polars import DataFrame
 
 from order_matching.schemas import TradeDataSchema
 from order_matching.trade import Trade
@@ -58,25 +58,38 @@ class ExecutedTrades:
         return self._trades[timestamp]
 
     def to_frame(self) -> DataFrame[TradeDataSchema]:
-        """Get pandas DataFrame of all stored trades.
+        """Get polars DataFrame of all stored trades.
 
         Returns
         -------
         DataFrame[TradeDataSchema]
-            pandas DataFrame of all stored trades
+            polars DataFrame of all stored trades
         """
         trades = self.trades
         if len(trades) == 0:
-            return cast(DataFrame[TradeDataSchema], pd.DataFrame())
-        else:
             return cast(
                 DataFrame[TradeDataSchema],
-                pd.DataFrame.from_records([asdict(trade) for trade in trades]).assign(
-                    **{
-                        TradeDataSchema.side: lambda df: df[TradeDataSchema.side].astype(str),
-                        TradeDataSchema.execution: lambda df: df[TradeDataSchema.execution].astype(str),
+                pl.DataFrame(
+                    schema={
+                        TradeDataSchema.timestamp: pl.Datetime,
+                        TradeDataSchema.incoming_order_id: pl.Utf8,
+                        TradeDataSchema.book_order_id: pl.Utf8,
+                        TradeDataSchema.trade_id: pl.Utf8,
+                        TradeDataSchema.side: pl.Utf8,
+                        TradeDataSchema.execution: pl.Utf8,
+                        TradeDataSchema.price: pl.Float64,
+                        TradeDataSchema.size: pl.Float64,
                     }
                 ),
+            )
+        else:
+            data = [asdict(trade) for trade in trades]
+            for d in data:
+                d["side"] = d["side"].name
+                d["execution"] = d["execution"].name
+            return cast(
+                DataFrame[TradeDataSchema],
+                pl.DataFrame(data).with_columns([pl.col("timestamp").cast(pl.Datetime)]),
             )
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:

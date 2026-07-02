@@ -13,7 +13,7 @@ This package is a simple order book matching engine implementation in Python. It
 - price-time priority
 - limit and market orders
 - order cancellation and expiration
-- conversion into pandas DataFrame of orders, executed trades, order book summary
+- conversion into polars DataFrame of orders, executed trades, order book summary
 
 ## Install
 
@@ -30,7 +30,7 @@ pip install order-matching
 ```python
 >>> from datetime import datetime, timedelta
 >>> from pprint import pp
->>> import pandas as pd
+>>> import polars as pl
 
 >>> from order_matching.matching_engine import MatchingEngine
 >>> from order_matching.order import LimitOrder

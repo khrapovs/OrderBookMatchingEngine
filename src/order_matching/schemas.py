@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pandera.pandas import DataFrameModel, Field
+from pandera.polars import DataFrameModel, Field
 from pandera.typing import Series
 
 from order_matching.execution import Execution

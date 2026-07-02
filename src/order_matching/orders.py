@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Iterator, Sequence, cast
 
-import pandas as pd
-from pandera.typing.pandas import DataFrame
+import polars as pl
+from pandera.typing.polars import DataFrame
 
 from order_matching.order import Order
 from order_matching.schemas import OrderDataSchema
@@ -56,29 +56,43 @@ class Orders:
                 self.orders.remove(self._get_order(order_id=order_to_remove.order_id))
 
     def to_frame(self) -> DataFrame[OrderDataSchema]:
-        """Get pandas DataFrame with all orders in the storage.
+        """Get polars DataFrame with all orders in the storage.
 
         Returns
         -------
         DataFrame[OrderDataSchema]
         """
         if len(self.orders) == 0:
-            return cast(DataFrame[OrderDataSchema], pd.DataFrame())
-        else:
             return cast(
                 DataFrame[OrderDataSchema],
-                pd.DataFrame.from_records([asdict(order) for order in self.orders]).assign(
-                    **{
-                        OrderDataSchema.side: lambda df: df[OrderDataSchema.side].astype(str),
-                        OrderDataSchema.execution: lambda df: df[OrderDataSchema.execution].astype(str),
-                        OrderDataSchema.status: lambda df: df[OrderDataSchema.status].astype(str),
-                        OrderDataSchema.timestamp: lambda df: pd.to_datetime(
-                            df[OrderDataSchema.timestamp], errors="coerce"
-                        ),
-                        OrderDataSchema.expiration: lambda df: pd.to_datetime(
-                            df[OrderDataSchema.expiration], errors="coerce"
-                        ),
+                pl.DataFrame(
+                    schema={
+                        OrderDataSchema.timestamp: pl.Datetime,
+                        OrderDataSchema.expiration: pl.Datetime,
+                        OrderDataSchema.order_id: pl.Utf8,
+                        OrderDataSchema.trader_id: pl.Utf8,
+                        OrderDataSchema.side: pl.Utf8,
+                        OrderDataSchema.execution: pl.Utf8,
+                        OrderDataSchema.status: pl.Utf8,
+                        OrderDataSchema.price: pl.Float64,
+                        OrderDataSchema.size: pl.Float64,
+                        OrderDataSchema.price_number_of_digits: pl.Int64,
                     }
+                ),
+            )
+        else:
+            data = [asdict(order) for order in self.orders]
+            for d in data:
+                d["side"] = d["side"].name
+                d["execution"] = d["execution"].name
+                d["status"] = d["status"].name
+            return cast(
+                DataFrame[OrderDataSchema],
+                pl.DataFrame(data).with_columns(
+                    [
+                        pl.col("timestamp").cast(pl.Datetime),
+                        pl.col("expiration").cast(pl.Datetime),
+                    ]
                 ),
             )
 

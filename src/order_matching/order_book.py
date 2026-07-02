@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import cast
 
-import pandas as pd
+import polars as pl
 from pandera.typing import DataFrame
 
 from order_matching.order import Order
@@ -50,34 +50,79 @@ class OrderBook:
             self.orders_by_expiration.pop(incoming_order.expiration)
 
     def summary(self) -> DataFrame[OrderBookSummarySchema]:
-        """Summary of the order book as a pandas DataFrame.
+        """Summary of the order book as a polars DataFrame.
 
         Returns
         -------
         DataFrame[OrderBookSummarySchema]
-            Summary of the order book as a pandas DataFrame
+            Summary of the order book as a polars DataFrame
         """
-        bids = pd.DataFrame(
-            {
-                OrderBookSummarySchema.side: Side.BUY.name,
-                OrderBookSummarySchema.price: self._get_bid_prices(),
-                OrderBookSummarySchema.size: self._get_bid_sizes(),
-                OrderBookSummarySchema.count: self._get_bid_counts(),
+        bid_prices = self._get_bid_prices()
+        offer_prices = self._get_offer_prices()
+
+        if len(bid_prices) == 0 and len(offer_prices) == 0:
+            return cast(
+                DataFrame[OrderBookSummarySchema],
+                pl.DataFrame(
+                    schema={
+                        OrderBookSummarySchema.side: pl.Utf8,
+                        OrderBookSummarySchema.price: pl.Float64,
+                        OrderBookSummarySchema.size: pl.Float64,
+                        OrderBookSummarySchema.count: pl.Int64,
+                    }
+                ),
+            )
+
+        empty_df = pl.DataFrame(
+            schema={
+                OrderBookSummarySchema.side: pl.Utf8,
+                OrderBookSummarySchema.price: pl.Float64,
+                OrderBookSummarySchema.size: pl.Float64,
+                OrderBookSummarySchema.count: pl.Int64,
             }
         )
-        offers = pd.DataFrame(
-            {
-                OrderBookSummarySchema.side: Side.SELL.name,
-                OrderBookSummarySchema.price: self._get_offer_prices(),
-                OrderBookSummarySchema.size: self._get_offer_sizes(),
-                OrderBookSummarySchema.count: self._get_offer_counts(),
-            }
+
+        bids = (
+            pl.DataFrame(
+                {
+                    OrderBookSummarySchema.side: [Side.BUY.name] * len(bid_prices),
+                    OrderBookSummarySchema.price: bid_prices,
+                    OrderBookSummarySchema.size: self._get_bid_sizes(),
+                    OrderBookSummarySchema.count: self._get_bid_counts(),
+                }
+            ).cast(
+                {
+                    OrderBookSummarySchema.price: pl.Float64,
+                    OrderBookSummarySchema.size: pl.Float64,
+                    OrderBookSummarySchema.count: pl.Int64,
+                }
+            )
+            if len(bid_prices) > 0
+            else empty_df
         )
+
+        offers = (
+            pl.DataFrame(
+                {
+                    OrderBookSummarySchema.side: [Side.SELL.name] * len(offer_prices),
+                    OrderBookSummarySchema.price: offer_prices,
+                    OrderBookSummarySchema.size: self._get_offer_sizes(),
+                    OrderBookSummarySchema.count: self._get_offer_counts(),
+                }
+            ).cast(
+                {
+                    OrderBookSummarySchema.price: pl.Float64,
+                    OrderBookSummarySchema.size: pl.Float64,
+                    OrderBookSummarySchema.count: pl.Int64,
+                }
+            )
+            if len(offer_prices) > 0
+            else empty_df
+        )
+
         return cast(
             DataFrame[OrderBookSummarySchema],
-            pd.concat([bids, offers], ignore_index=True).assign(
-                **{OrderBookSummarySchema.count: lambda df: df[OrderBookSummarySchema.count].astype(int)}
-            ),
+            pl.concat([bids, offers], how="vertical"),
         )
 
     @property
@@ -186,11 +231,11 @@ class OrderBook:
             Market imbalance indicator
         """
         summary = self.summary()
-        if summary.empty:
+        if summary.is_empty():
             return 0
-        elif summary[summary[OrderBookSummarySchema.side] == Side.SELL.name].empty:
+        elif summary.filter(pl.col(OrderBookSummarySchema.side) == Side.SELL.name).is_empty():
             return 1
-        elif summary[summary[OrderBookSummarySchema.side] == Side.BUY.name].empty:
+        elif summary.filter(pl.col(OrderBookSummarySchema.side) == Side.BUY.name).is_empty():
             return -1
         else:
             return self._get_non_trivial_imbalance(price_range=price_range)
@@ -199,10 +244,17 @@ class OrderBook:
         schema = OrderBookSummarySchema
         upper_bound = self.current_price + price_range
         lower_bound = self.current_price - price_range
-        summary_subset = self.summary().pipe(lambda df: df[df[schema.price].between(lower_bound, upper_bound)])
-        summary_subset = cast(pd.DataFrame, summary_subset)
-        buy_volume = summary_subset.loc[summary_subset[schema.side] == Side.BUY.name, schema.size].sum()
-        sell_volume = summary_subset.loc[summary_subset[schema.side] == Side.SELL.name, schema.size].sum()
+        summary_subset = self.summary().filter(pl.col(schema.price).is_between(lower_bound, upper_bound))
+        buy_volume = (
+            summary_subset.filter(pl.col(schema.side) == Side.BUY.name).select(pl.col(schema.size).sum()).item()
+        )
+        sell_volume = (
+            summary_subset.filter(pl.col(schema.side) == Side.SELL.name).select(pl.col(schema.size).sum()).item()
+        )
+        if buy_volume is None:
+            buy_volume = 0
+        if sell_volume is None:
+            sell_volume = 0
         if buy_volume + sell_volume > 0:
             return (buy_volume - sell_volume) / (buy_volume + sell_volume)
         else:

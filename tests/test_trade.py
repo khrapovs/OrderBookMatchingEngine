@@ -2,6 +2,7 @@ from dataclasses import asdict
 from datetime import datetime
 
 import pandas as pd
+import polars as pl
 import pytest
 
 from order_matching.execution import Execution
@@ -48,10 +49,8 @@ class TestTrade:
         assert trade.book_order_id == book_order_id
         assert trade.execution == execution
         assert trade.trade_id == trade_id
-        trades = pd.DataFrame(asdict(trade), index=pd.Index([0])).assign(
-            **{
-                TradeDataSchema.side: lambda df: df[TradeDataSchema.side].astype(str),
-                TradeDataSchema.execution: lambda df: df[TradeDataSchema.execution].astype(str),
-            }
-        )
+        trade_dict = asdict(trade)
+        trade_dict["side"] = trade_dict["side"].name
+        trade_dict["execution"] = trade_dict["execution"].name
+        trades = pl.DataFrame([trade_dict])
         TradeDataSchema.validate(trades, lazy=True)
