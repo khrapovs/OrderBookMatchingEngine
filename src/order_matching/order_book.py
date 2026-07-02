@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import cast
 
 import polars as pl
-from pandera.typing import DataFrame
+from pandera.typing.polars import DataFrame
 
 from order_matching.order import Order
 from order_matching.orders import Orders
