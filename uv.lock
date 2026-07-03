@@ -877,7 +877,7 @@ wheels = [
 
 [[package]]
 name = "order-matching"
-version = "0.3.16"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "faker" },

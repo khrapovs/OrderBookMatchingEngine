@@ -1,3 +1,9 @@
+## 0.4.0 (2026-07-03)
+
+### Feat
+
+- Migrate from pandas to polars (#37)
+
 ## 0.3.16 (2026-07-01)
 
 ### Refactor
