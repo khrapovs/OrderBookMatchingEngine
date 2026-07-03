@@ -61,27 +61,14 @@ class OrderBook:
         offer_prices = self._get_offer_prices()
 
         if len(bid_prices) == 0 and len(offer_prices) == 0:
-            return cast(
-                DataFrame[OrderBookSummarySchema],
-                pl.DataFrame(
-                    schema={
-                        OrderBookSummarySchema.side: pl.Utf8,
-                        OrderBookSummarySchema.price: pl.Float64,
-                        OrderBookSummarySchema.size: pl.Float64,
-                        OrderBookSummarySchema.count: pl.Int64,
-                    }
-                ),
-            )
+            return OrderBookSummarySchema.empty()
 
-        empty_df = pl.DataFrame(
-            schema={
-                OrderBookSummarySchema.side: pl.Utf8,
-                OrderBookSummarySchema.price: pl.Float64,
-                OrderBookSummarySchema.size: pl.Float64,
-                OrderBookSummarySchema.count: pl.Int64,
-            }
-        )
-
+        empty_df = OrderBookSummarySchema.empty()
+        dtypes = [
+            pl.col(OrderBookSummarySchema.price).cast(pl.Float64),
+            pl.col(OrderBookSummarySchema.size).cast(pl.Float64),
+            pl.col(OrderBookSummarySchema.count).cast(pl.Int64),
+        ]
         bids = (
             pl.DataFrame(
                 {
@@ -90,13 +77,7 @@ class OrderBook:
                     OrderBookSummarySchema.size: self._get_bid_sizes(),
                     OrderBookSummarySchema.count: self._get_bid_counts(),
                 }
-            ).cast(
-                {
-                    OrderBookSummarySchema.price: pl.Float64,
-                    OrderBookSummarySchema.size: pl.Float64,
-                    OrderBookSummarySchema.count: pl.Int64,
-                }
-            )
+            ).with_columns(dtypes)
             if len(bid_prices) > 0
             else empty_df
         )
@@ -109,13 +90,7 @@ class OrderBook:
                     OrderBookSummarySchema.size: self._get_offer_sizes(),
                     OrderBookSummarySchema.count: self._get_offer_counts(),
                 }
-            ).cast(
-                {
-                    OrderBookSummarySchema.price: pl.Float64,
-                    OrderBookSummarySchema.size: pl.Float64,
-                    OrderBookSummarySchema.count: pl.Int64,
-                }
-            )
+            ).with_columns(dtypes)
             if len(offer_prices) > 0
             else empty_df
         )
