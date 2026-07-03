@@ -13,7 +13,7 @@ This package is a simple order book matching engine implementation in Python. It
 - price-time priority
 - limit and market orders
 - order cancellation and expiration
-- conversion into polars DataFrame of orders, executed trades, order book summary
+- conversion into polars LazyFrame of orders, executed trades, order book summary
 
 ## Install
 
