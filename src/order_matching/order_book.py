@@ -223,10 +223,6 @@ class OrderBook:
         sell_volume = (
             summary_subset.filter(pl.col(schema.side) == Side.SELL.name).select(pl.col(schema.size).sum()).item()
         )
-        if buy_volume is None:
-            buy_volume = 0
-        if sell_volume is None:
-            sell_volume = 0
         if buy_volume + sell_volume > 0:
             return (buy_volume - sell_volume) / (buy_volume + sell_volume)
         else:
