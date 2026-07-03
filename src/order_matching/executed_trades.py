@@ -85,11 +85,11 @@ class ExecutedTrades:
         else:
             data = [asdict(trade) for trade in trades]
             for d in data:
-                d["side"] = d["side"].name
-                d["execution"] = d["execution"].name
+                d[TradeDataSchema.side] = d[TradeDataSchema.side].name
+                d[TradeDataSchema.execution] = d[TradeDataSchema.execution].name
             return cast(
                 DataFrame[TradeDataSchema],
-                pl.DataFrame(data).with_columns([pl.col("timestamp").cast(pl.Datetime)]),
+                pl.DataFrame(data).with_columns([pl.col(TradeDataSchema.timestamp).cast(pl.Datetime)]),
             )
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:

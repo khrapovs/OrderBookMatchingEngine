@@ -83,15 +83,15 @@ class Orders:
         else:
             data = [asdict(order) for order in self.orders]
             for d in data:
-                d["side"] = d["side"].name
-                d["execution"] = d["execution"].name
-                d["status"] = d["status"].name
+                d[OrderDataSchema.side] = d[OrderDataSchema.side].name
+                d[OrderDataSchema.execution] = d[OrderDataSchema.execution].name
+                d[OrderDataSchema.status] = d[OrderDataSchema.status].name
             return cast(
                 DataFrame[OrderDataSchema],
                 pl.DataFrame(data).with_columns(
                     [
-                        pl.col("timestamp").cast(pl.Datetime),
-                        pl.col("expiration").cast(pl.Datetime),
+                        pl.col(OrderDataSchema.timestamp).cast(pl.Datetime),
+                        pl.col(OrderDataSchema.expiration).cast(pl.Datetime),
                     ]
                 ),
             )
