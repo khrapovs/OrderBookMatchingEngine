@@ -59,11 +59,11 @@ class OrderBook:
         """
         bid_prices = self._get_bid_prices()
         offer_prices = self._get_offer_prices()
+        empty_df = OrderBookSummarySchema.empty()
 
         if len(bid_prices) == 0 and len(offer_prices) == 0:
-            return OrderBookSummarySchema.empty()
+            return empty_df
 
-        empty_df = OrderBookSummarySchema.empty()
         dtypes = [
             pl.col(OrderBookSummarySchema.price).cast(pl.Float64),
             pl.col(OrderBookSummarySchema.size).cast(pl.Float64),
@@ -95,10 +95,7 @@ class OrderBook:
             else empty_df
         )
 
-        return cast(
-            DataFrame[OrderBookSummarySchema],
-            pl.concat([bids, offers], how="vertical"),
-        )
+        return cast(DataFrame[OrderBookSummarySchema], pl.concat([bids, offers], how="vertical"))
 
     @property
     def current_price(self) -> float:
