@@ -70,15 +70,7 @@ class Orders:
                 d[OrderDataSchema.side] = d[OrderDataSchema.side].name
                 d[OrderDataSchema.execution] = d[OrderDataSchema.execution].name
                 d[OrderDataSchema.status] = d[OrderDataSchema.status].name
-            return cast(
-                DataFrame[OrderDataSchema],
-                pl.DataFrame(data).with_columns(
-                    [
-                        pl.col(OrderDataSchema.timestamp).cast(pl.Datetime),
-                        pl.col(OrderDataSchema.expiration).cast(pl.Datetime),
-                    ]
-                ),
-            )
+            return cast(DataFrame[OrderDataSchema], pl.DataFrame(data))
 
     @property
     def is_empty(self) -> bool:
