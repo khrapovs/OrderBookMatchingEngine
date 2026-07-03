@@ -5,8 +5,8 @@ from dataclasses import asdict
 from datetime import datetime
 from typing import cast
 
-import pandas as pd
-from pandera.typing.pandas import DataFrame
+import polars as pl
+from pandera.typing.polars import LazyFrame
 
 from order_matching.schemas import TradeDataSchema
 from order_matching.trade import Trade
@@ -57,27 +57,23 @@ class ExecutedTrades:
         """
         return self._trades[timestamp]
 
-    def to_frame(self) -> DataFrame[TradeDataSchema]:
-        """Get pandas DataFrame of all stored trades.
+    def to_frame(self) -> LazyFrame[TradeDataSchema]:
+        """Get polars DataFrame of all stored trades.
 
         Returns
         -------
         DataFrame[TradeDataSchema]
-            pandas DataFrame of all stored trades
+            polars DataFrame of all stored trades
         """
         trades = self.trades
         if len(trades) == 0:
-            return cast(DataFrame[TradeDataSchema], pd.DataFrame())
+            return cast(LazyFrame[TradeDataSchema], TradeDataSchema.empty().lazy())
         else:
-            return cast(
-                DataFrame[TradeDataSchema],
-                pd.DataFrame.from_records([asdict(trade) for trade in trades]).assign(
-                    **{
-                        TradeDataSchema.side: lambda df: df[TradeDataSchema.side].astype(str),
-                        TradeDataSchema.execution: lambda df: df[TradeDataSchema.execution].astype(str),
-                    }
-                ),
-            )
+            data = [asdict(trade) for trade in trades]
+            for d in data:
+                d[TradeDataSchema.side] = d[TradeDataSchema.side].name
+                d[TradeDataSchema.execution] = d[TradeDataSchema.execution].name
+            return cast(LazyFrame[TradeDataSchema], pl.LazyFrame(data))
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:
         trades = ExecutedTrades()

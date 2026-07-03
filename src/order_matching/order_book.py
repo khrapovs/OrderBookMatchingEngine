@@ -2,8 +2,8 @@ from collections import defaultdict
 from datetime import datetime
 from typing import cast
 
-import pandas as pd
-from pandera.typing import DataFrame
+import polars as pl
+from pandera.typing.polars import LazyFrame
 
 from order_matching.order import Order
 from order_matching.orders import Orders
@@ -49,36 +49,53 @@ class OrderBook:
         if len(self.orders_by_expiration[incoming_order.expiration]) == 0:
             self.orders_by_expiration.pop(incoming_order.expiration)
 
-    def summary(self) -> DataFrame[OrderBookSummarySchema]:
-        """Summary of the order book as a pandas DataFrame.
+    def summary(self) -> LazyFrame[OrderBookSummarySchema]:
+        """Summary of the order book as a polars LazyFrame.
 
         Returns
         -------
-        DataFrame[OrderBookSummarySchema]
-            Summary of the order book as a pandas DataFrame
+        LazyFrame[OrderBookSummarySchema]
+            Summary of the order book as a polars LazyFrame
         """
-        bids = pd.DataFrame(
-            {
-                OrderBookSummarySchema.side: Side.BUY.name,
-                OrderBookSummarySchema.price: self._get_bid_prices(),
-                OrderBookSummarySchema.size: self._get_bid_sizes(),
-                OrderBookSummarySchema.count: self._get_bid_counts(),
-            }
+        bid_prices = self._get_bid_prices()
+        offer_prices = self._get_offer_prices()
+        empty_df = OrderBookSummarySchema.empty().lazy()
+
+        if len(bid_prices) == 0 and len(offer_prices) == 0:
+            return cast(LazyFrame[OrderBookSummarySchema], empty_df)
+
+        dtypes = [
+            pl.col(OrderBookSummarySchema.price).cast(pl.Float64),
+            pl.col(OrderBookSummarySchema.size).cast(pl.Float64),
+            pl.col(OrderBookSummarySchema.count).cast(pl.Int64),
+        ]
+        bids = (
+            pl.LazyFrame(
+                {
+                    OrderBookSummarySchema.side: [Side.BUY.name] * len(bid_prices),
+                    OrderBookSummarySchema.price: bid_prices,
+                    OrderBookSummarySchema.size: self._get_bid_sizes(),
+                    OrderBookSummarySchema.count: self._get_bid_counts(),
+                }
+            ).with_columns(dtypes)
+            if len(bid_prices) > 0
+            else empty_df
         )
-        offers = pd.DataFrame(
-            {
-                OrderBookSummarySchema.side: Side.SELL.name,
-                OrderBookSummarySchema.price: self._get_offer_prices(),
-                OrderBookSummarySchema.size: self._get_offer_sizes(),
-                OrderBookSummarySchema.count: self._get_offer_counts(),
-            }
+
+        offers = (
+            pl.LazyFrame(
+                {
+                    OrderBookSummarySchema.side: [Side.SELL.name] * len(offer_prices),
+                    OrderBookSummarySchema.price: offer_prices,
+                    OrderBookSummarySchema.size: self._get_offer_sizes(),
+                    OrderBookSummarySchema.count: self._get_offer_counts(),
+                }
+            ).with_columns(dtypes)
+            if len(offer_prices) > 0
+            else empty_df
         )
-        return cast(
-            DataFrame[OrderBookSummarySchema],
-            pd.concat([bids, offers], ignore_index=True).assign(
-                **{OrderBookSummarySchema.count: lambda df: df[OrderBookSummarySchema.count].astype(int)}
-            ),
-        )
+
+        return cast(LazyFrame[OrderBookSummarySchema], pl.concat([bids, offers], how="vertical"))
 
     @property
     def current_price(self) -> float:
@@ -186,23 +203,36 @@ class OrderBook:
             Market imbalance indicator
         """
         summary = self.summary()
-        if summary.empty:
+        if self._is_empty(summary):
             return 0
-        elif summary[summary[OrderBookSummarySchema.side] == Side.SELL.name].empty:
+        elif self._is_empty(summary.filter(pl.col(OrderBookSummarySchema.side) == Side.SELL.name)):
             return 1
-        elif summary[summary[OrderBookSummarySchema.side] == Side.BUY.name].empty:
+        elif self._is_empty(summary.filter(pl.col(OrderBookSummarySchema.side) == Side.BUY.name)):
             return -1
         else:
             return self._get_non_trivial_imbalance(price_range=price_range)
+
+    @staticmethod
+    def _is_empty(df: pl.LazyFrame) -> bool:
+        return df.select(pl.col(OrderBookSummarySchema.side).count()).collect().item() == 0
 
     def _get_non_trivial_imbalance(self, price_range: float) -> float:
         schema = OrderBookSummarySchema
         upper_bound = self.current_price + price_range
         lower_bound = self.current_price - price_range
-        summary_subset = self.summary().pipe(lambda df: df[df[schema.price].between(lower_bound, upper_bound)])
-        summary_subset = cast(pd.DataFrame, summary_subset)
-        buy_volume = summary_subset.loc[summary_subset[schema.side] == Side.BUY.name, schema.size].sum()
-        sell_volume = summary_subset.loc[summary_subset[schema.side] == Side.SELL.name, schema.size].sum()
+        summary_subset = self.summary().filter(pl.col(schema.price).is_between(lower_bound, upper_bound))
+        buy_volume = (
+            summary_subset.filter(pl.col(schema.side) == Side.BUY.name)
+            .select(pl.col(schema.size).sum())
+            .collect()
+            .item()
+        )
+        sell_volume = (
+            summary_subset.filter(pl.col(schema.side) == Side.SELL.name)
+            .select(pl.col(schema.size).sum())
+            .collect()
+            .item()
+        )
         if buy_volume + sell_volume > 0:
             return (buy_volume - sell_volume) / (buy_volume + sell_volume)
         else:

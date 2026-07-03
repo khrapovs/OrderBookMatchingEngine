@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from pandera.pandas import DataFrameModel, Field
-from pandera.typing import Series
+from pandera.polars import DataFrameModel, Field
+from pandera.typing.polars import Series
 
 from order_matching.execution import Execution
 from order_matching.side import Side

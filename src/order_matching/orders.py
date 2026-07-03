@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Iterator, Sequence, cast
 
-import pandas as pd
-from pandera.typing.pandas import DataFrame
+import polars as pl
+from pandera.typing.polars import LazyFrame
 
 from order_matching.order import Order
 from order_matching.schemas import OrderDataSchema
@@ -55,32 +55,22 @@ class Orders:
             if order_to_remove.order_id in self._order_ids:
                 self.orders.remove(self._get_order(order_id=order_to_remove.order_id))
 
-    def to_frame(self) -> DataFrame[OrderDataSchema]:
-        """Get pandas DataFrame with all orders in the storage.
+    def to_frame(self) -> LazyFrame[OrderDataSchema]:
+        """Get polars LazyFrame with all orders in the storage.
 
         Returns
         -------
-        DataFrame[OrderDataSchema]
+        LazyFrame[OrderDataSchema]
         """
         if len(self.orders) == 0:
-            return cast(DataFrame[OrderDataSchema], pd.DataFrame())
+            return cast(LazyFrame[OrderDataSchema], OrderDataSchema.empty().lazy())
         else:
-            return cast(
-                DataFrame[OrderDataSchema],
-                pd.DataFrame.from_records([asdict(order) for order in self.orders]).assign(
-                    **{
-                        OrderDataSchema.side: lambda df: df[OrderDataSchema.side].astype(str),
-                        OrderDataSchema.execution: lambda df: df[OrderDataSchema.execution].astype(str),
-                        OrderDataSchema.status: lambda df: df[OrderDataSchema.status].astype(str),
-                        OrderDataSchema.timestamp: lambda df: pd.to_datetime(
-                            df[OrderDataSchema.timestamp], errors="coerce"
-                        ),
-                        OrderDataSchema.expiration: lambda df: pd.to_datetime(
-                            df[OrderDataSchema.expiration], errors="coerce"
-                        ),
-                    }
-                ),
-            )
+            data = [asdict(order) for order in self.orders]
+            for d in data:
+                d[OrderDataSchema.side] = d[OrderDataSchema.side].name
+                d[OrderDataSchema.execution] = d[OrderDataSchema.execution].name
+                d[OrderDataSchema.status] = d[OrderDataSchema.status].name
+            return cast(LazyFrame[OrderDataSchema], pl.LazyFrame(data))
 
     @property
     def is_empty(self) -> bool:

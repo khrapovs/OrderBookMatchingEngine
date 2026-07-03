@@ -19,8 +19,9 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "faker>=33.0.0",
-    "pandas>=2.2.3",
-    "pandera>=0.21.0",
+    "numpy>=2.2.6",
+    "pandera[polars]>=0.21.0",
+    "polars>=1.42.1",
 ]
 
 [dependency-groups]
