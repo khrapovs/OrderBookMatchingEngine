@@ -52,7 +52,7 @@ class TestTrade:
         assert trade.execution == execution
         assert trade.trade_id == trade_id
         trade_dict = asdict(trade)
-        trade_dict["side"] = trade_dict["side"].name
-        trade_dict["execution"] = trade_dict["execution"].name
-        trades = pl.DataFrame([trade_dict])
+        trade_dict[TradeDataSchema.side] = trade_dict[TradeDataSchema.side].name
+        trade_dict[TradeDataSchema.execution] = trade_dict[TradeDataSchema.execution].name
+        trades = pl.LazyFrame([trade_dict])
         TradeDataSchema.validate(trades, lazy=True)

@@ -144,7 +144,7 @@ class TestOrderBook:
         summary = order_book.summary()
 
         OrderBookSummarySchema.validate(summary, lazy=True)
-        assert summary[OrderBookSummarySchema.price].is_sorted()
+        assert summary.collect()[OrderBookSummarySchema.price].is_sorted()
         assert order_book.current_price == 2.3
 
     def test_order_book_imbalance_one_buy_order(self) -> None:

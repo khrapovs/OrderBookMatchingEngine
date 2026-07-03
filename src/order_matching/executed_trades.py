@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import cast
 
 import polars as pl
-from pandera.typing.polars import DataFrame
+from pandera.typing.polars import LazyFrame
 
 from order_matching.schemas import TradeDataSchema
 from order_matching.trade import Trade
@@ -57,7 +57,7 @@ class ExecutedTrades:
         """
         return self._trades[timestamp]
 
-    def to_frame(self) -> DataFrame[TradeDataSchema]:
+    def to_frame(self) -> LazyFrame[TradeDataSchema]:
         """Get polars DataFrame of all stored trades.
 
         Returns
@@ -67,13 +67,13 @@ class ExecutedTrades:
         """
         trades = self.trades
         if len(trades) == 0:
-            return TradeDataSchema.empty()
+            return cast(LazyFrame[TradeDataSchema], TradeDataSchema.empty().lazy())
         else:
             data = [asdict(trade) for trade in trades]
             for d in data:
                 d[TradeDataSchema.side] = d[TradeDataSchema.side].name
                 d[TradeDataSchema.execution] = d[TradeDataSchema.execution].name
-            return cast(DataFrame[TradeDataSchema], pl.DataFrame(data))
+            return cast(LazyFrame[TradeDataSchema], pl.LazyFrame(data))
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:
         trades = ExecutedTrades()

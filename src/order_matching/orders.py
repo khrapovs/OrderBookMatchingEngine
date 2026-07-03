@@ -4,7 +4,7 @@ from dataclasses import asdict
 from typing import Iterator, Sequence, cast
 
 import polars as pl
-from pandera.typing.polars import DataFrame
+from pandera.typing.polars import LazyFrame
 
 from order_matching.order import Order
 from order_matching.schemas import OrderDataSchema
@@ -55,22 +55,22 @@ class Orders:
             if order_to_remove.order_id in self._order_ids:
                 self.orders.remove(self._get_order(order_id=order_to_remove.order_id))
 
-    def to_frame(self) -> DataFrame[OrderDataSchema]:
-        """Get polars DataFrame with all orders in the storage.
+    def to_frame(self) -> LazyFrame[OrderDataSchema]:
+        """Get polars LazyFrame with all orders in the storage.
 
         Returns
         -------
-        DataFrame[OrderDataSchema]
+        LazyFrame[OrderDataSchema]
         """
         if len(self.orders) == 0:
-            return OrderDataSchema.empty()
+            return cast(LazyFrame[OrderDataSchema], OrderDataSchema.empty().lazy())
         else:
             data = [asdict(order) for order in self.orders]
             for d in data:
                 d[OrderDataSchema.side] = d[OrderDataSchema.side].name
                 d[OrderDataSchema.execution] = d[OrderDataSchema.execution].name
                 d[OrderDataSchema.status] = d[OrderDataSchema.status].name
-            return cast(DataFrame[OrderDataSchema], pl.DataFrame(data))
+            return cast(LazyFrame[OrderDataSchema], pl.LazyFrame(data))
 
     @property
     def is_empty(self) -> bool:

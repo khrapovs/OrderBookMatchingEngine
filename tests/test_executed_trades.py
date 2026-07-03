@@ -53,7 +53,7 @@ class TestExecutedTrades:
     def test_to_frame(self) -> None:
         executed_trades = ExecutedTrades()
 
-        assert executed_trades.to_frame().equals(TradeDataSchema.empty())
+        assert executed_trades.to_frame().collect().equals(TradeDataSchema.empty())
 
         first_trade, second_trade = self._get_sample_trades()
         executed_trades.add(trades=[first_trade, second_trade])
