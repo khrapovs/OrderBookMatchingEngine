@@ -63,23 +63,7 @@ class Orders:
         DataFrame[OrderDataSchema]
         """
         if len(self.orders) == 0:
-            return cast(
-                DataFrame[OrderDataSchema],
-                pl.DataFrame(
-                    schema={
-                        OrderDataSchema.timestamp: pl.Datetime,
-                        OrderDataSchema.expiration: pl.Datetime,
-                        OrderDataSchema.order_id: pl.Utf8,
-                        OrderDataSchema.trader_id: pl.Utf8,
-                        OrderDataSchema.side: pl.Utf8,
-                        OrderDataSchema.execution: pl.Utf8,
-                        OrderDataSchema.status: pl.Utf8,
-                        OrderDataSchema.price: pl.Float64,
-                        OrderDataSchema.size: pl.Float64,
-                        OrderDataSchema.price_number_of_digits: pl.Int64,
-                    }
-                ),
-            )
+            return OrderDataSchema.empty()
         else:
             data = [asdict(order) for order in self.orders]
             for d in data:

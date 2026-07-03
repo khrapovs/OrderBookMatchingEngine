@@ -67,21 +67,7 @@ class ExecutedTrades:
         """
         trades = self.trades
         if len(trades) == 0:
-            return cast(
-                DataFrame[TradeDataSchema],
-                pl.DataFrame(
-                    schema={
-                        TradeDataSchema.timestamp: pl.Datetime,
-                        TradeDataSchema.incoming_order_id: pl.Utf8,
-                        TradeDataSchema.book_order_id: pl.Utf8,
-                        TradeDataSchema.trade_id: pl.Utf8,
-                        TradeDataSchema.side: pl.Utf8,
-                        TradeDataSchema.execution: pl.Utf8,
-                        TradeDataSchema.price: pl.Float64,
-                        TradeDataSchema.size: pl.Float64,
-                    }
-                ),
-            )
+            return TradeDataSchema.empty()
         else:
             data = [asdict(trade) for trade in trades]
             for d in data:

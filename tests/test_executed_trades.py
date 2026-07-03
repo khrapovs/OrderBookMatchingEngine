@@ -1,8 +1,6 @@
 from copy import deepcopy
 from datetime import datetime, timedelta
 
-import polars as pl
-
 from order_matching.executed_trades import ExecutedTrades
 from order_matching.execution import Execution
 from order_matching.schemas import TradeDataSchema
@@ -55,18 +53,7 @@ class TestExecutedTrades:
     def test_to_frame(self) -> None:
         executed_trades = ExecutedTrades()
 
-        expected_empty = pl.DataFrame(
-            schema={
-                "timestamp": pl.Datetime,
-                "incoming_order_id": pl.Utf8,
-                "book_order_id": pl.Utf8,
-                "trade_id": pl.Utf8,
-                "side": pl.Utf8,
-                "execution": pl.Utf8,
-                "price": pl.Float64,
-                "size": pl.Float64,
-            }
-        )
+        expected_empty = TradeDataSchema.empty()
         assert executed_trades.to_frame().equals(expected_empty)
 
         first_trade, second_trade = self._get_sample_trades()
