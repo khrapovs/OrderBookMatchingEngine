@@ -73,10 +73,7 @@ class ExecutedTrades:
             for d in data:
                 d[TradeDataSchema.side] = d[TradeDataSchema.side].name
                 d[TradeDataSchema.execution] = d[TradeDataSchema.execution].name
-            return cast(
-                DataFrame[TradeDataSchema],
-                pl.DataFrame(data).with_columns([pl.col(TradeDataSchema.timestamp).cast(pl.Datetime)]),
-            )
+            return cast(DataFrame[TradeDataSchema], pl.DataFrame(data))
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:
         trades = ExecutedTrades()
