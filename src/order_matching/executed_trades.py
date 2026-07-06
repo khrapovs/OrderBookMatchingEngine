@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import asdict
 from datetime import datetime
-from typing import cast
+from typing import TYPE_CHECKING
 
-import polars as pl
-from pandera.typing.polars import LazyFrame
+if TYPE_CHECKING:
+    from pandera.typing.polars import LazyFrame
 
-from order_matching.schemas import TradeDataSchema
+    from order_matching.schemas import TradeDataSchema
+
 from order_matching.trade import Trade
 
 
@@ -60,20 +60,18 @@ class ExecutedTrades:
     def to_frame(self) -> LazyFrame[TradeDataSchema]:
         """Get polars DataFrame of all stored trades.
 
+        .. deprecated:: 0.5.0
+            Use ``PolarsExporter().export_trades(trades)`` instead.
+            This method will be removed in version 1.0.0.
+
         Returns
         -------
-        DataFrame[TradeDataSchema]
-            polars DataFrame of all stored trades
+        LazyFrame[TradeDataSchema]
+            polars LazyFrame of all stored trades
         """
-        trades = self.trades
-        if len(trades) == 0:
-            return cast(LazyFrame[TradeDataSchema], TradeDataSchema.empty().lazy())
-        else:
-            data = [asdict(trade) for trade in trades]
-            for d in data:
-                d[TradeDataSchema.side] = d[TradeDataSchema.side].name
-                d[TradeDataSchema.execution] = d[TradeDataSchema.execution].name
-            return cast(LazyFrame[TradeDataSchema], pl.LazyFrame(data))
+        from order_matching.exporters.polars import PolarsExporter
+
+        return PolarsExporter().export_trades(self)
 
     def __add__(self, other: ExecutedTrades) -> ExecutedTrades:
         trades = ExecutedTrades()
