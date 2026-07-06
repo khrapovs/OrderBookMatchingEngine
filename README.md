@@ -66,14 +66,19 @@ pip install order-matching[polars]
 If you installed with `[polars]` extra, you can export data to polars LazyFrame:
 
 ```python
+>>> from order_matching.matching_engine import MatchingEngine
 >>> from order_matching.exporters.polars import PolarsExporter
+>>> from order_matching.orders import Orders
+>>> from order_matching.executed_trades import ExecutedTrades
 
+>>> matching_engine = MatchingEngine(seed=123)
 >>> exporter = PolarsExporter()
->>> orders_df = exporter.export_orders(matching_engine.order_book.buy_orders)
->>> trades_df = exporter.export_trades(executed_trades)
+>>> orders_df = exporter.export_orders(Orders())
+>>> trades_df = exporter.export_trades(ExecutedTrades())
 
 >>> # Legacy API (deprecated, will be removed in 1.0.0)
->>> orders_df = matching_engine.order_book.buy_orders.to_frame()
+>>> trades_df = ExecutedTrades().to_frame()
+
 ```
 
 ## Related Projects
