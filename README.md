@@ -13,12 +13,16 @@ This package is a simple order book matching engine implementation in Python. It
 - price-time priority
 - limit and market orders
 - order cancellation and expiration
-- conversion into polars LazyFrame of orders, executed trades, order book summary
+- conversion into polars LazyFrame of orders, executed trades, order book summary (optional polars dependency)
 
 ## Install
 
 ```shell
+# Core matching engine only
 pip install order-matching
+
+# With polars export support (recommended for data science workflows)
+pip install order-matching[polars]
 ```
 
 ## Documentation
@@ -55,6 +59,21 @@ pip install order-matching
        timestamp=datetime.datetime(2023, 1, 2, 0, 0))]
 
 
+```
+
+### Data Export (Polars)
+
+If you installed with `[polars]` extra, you can export data to polars LazyFrame:
+
+```python
+>>> from order_matching.exporters.polars import PolarsExporter
+
+>>> exporter = PolarsExporter()
+>>> orders_df = exporter.export_orders(matching_engine.order_book.buy_orders)
+>>> trades_df = exporter.export_trades(executed_trades)
+
+>>> # Legacy API (deprecated, will be removed in 1.0.0)
+>>> orders_df = matching_engine.order_book.buy_orders.to_frame()
 ```
 
 ## Related Projects
