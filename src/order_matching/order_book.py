@@ -236,7 +236,7 @@ class OrderBook:
         if buy_volume + sell_volume > 0:
             return (buy_volume - sell_volume) / (buy_volume + sell_volume)
         else:
-            return 0
+            return 0.0
 
     def _get_same_side_orders(self, incoming_order: Order) -> OrderBookOrdersType:
         match incoming_order.side:
