@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import asdict
-from typing import Iterator, Sequence, cast
+from typing import TYPE_CHECKING, Iterator, Sequence
 
-import polars as pl
-from pandera.typing.polars import LazyFrame
+if TYPE_CHECKING:
+    from pandera.typing.polars import LazyFrame
+
+    from order_matching.schemas import OrderDataSchema
 
 from order_matching.order import Order
-from order_matching.schemas import OrderDataSchema
 
 
 class Orders:
@@ -58,19 +58,17 @@ class Orders:
     def to_frame(self) -> LazyFrame[OrderDataSchema]:
         """Get polars LazyFrame with all orders in the storage.
 
+        .. deprecated:: 0.5.0
+            Use ``PolarsExporter().export_orders(orders)`` instead.
+            This method will be removed in version 1.0.0.
+
         Returns
         -------
         LazyFrame[OrderDataSchema]
         """
-        if len(self.orders) == 0:
-            return cast(LazyFrame[OrderDataSchema], OrderDataSchema.empty().lazy())
-        else:
-            data = [asdict(order) for order in self.orders]
-            for d in data:
-                d[OrderDataSchema.side] = d[OrderDataSchema.side].name
-                d[OrderDataSchema.execution] = d[OrderDataSchema.execution].name
-                d[OrderDataSchema.status] = d[OrderDataSchema.status].name
-            return cast(LazyFrame[OrderDataSchema], pl.LazyFrame(data))
+        from order_matching.exporters.polars import PolarsExporter
+
+        return PolarsExporter().export_orders(self)
 
     @property
     def is_empty(self) -> bool:

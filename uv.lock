@@ -884,6 +884,14 @@ dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+
+[package.optional-dependencies]
+all = [
+    { name = "pandera", extra = ["polars"] },
+    { name = "polars" },
+]
+polars = [
     { name = "pandera", extra = ["polars"] },
     { name = "polars" },
 ]
@@ -912,9 +920,11 @@ test = [
 requires-dist = [
     { name = "faker", specifier = ">=33.0.0" },
     { name = "numpy", specifier = ">=2.2.6" },
-    { name = "pandera", extras = ["polars"], specifier = ">=0.21.0" },
-    { name = "polars", specifier = ">=1.42.1" },
+    { name = "order-matching", extras = ["polars"], marker = "extra == 'all'" },
+    { name = "pandera", extras = ["polars"], marker = "extra == 'polars'", specifier = ">=0.21.0" },
+    { name = "polars", marker = "extra == 'polars'", specifier = ">=1.42.1" },
 ]
+provides-extras = ["polars", "all"]
 
 [package.metadata.requires-dev]
 dev = [
