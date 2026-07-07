@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from order_matching.exporters.polars import PolarsExporter
 from order_matching.orders import Orders
 from order_matching.schemas import OrderDataSchema, TradeDataSchema

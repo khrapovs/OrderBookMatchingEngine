@@ -67,16 +67,15 @@ If you installed with `[polars]` extra, you can export data to polars LazyFrame:
 
 ```python
 >>> from order_matching.matching_engine import MatchingEngine
->>> from order_matching.exporters.polars import PolarsExporter
 >>> from order_matching.orders import Orders
 >>> from order_matching.executed_trades import ExecutedTrades
+>>> from order_matching.exporters.polars import PolarsExporter
 
 >>> matching_engine = MatchingEngine(seed=123)
 >>> exporter = PolarsExporter()
 >>> orders_df = exporter.export_orders(Orders())
 >>> trades_df = exporter.export_trades(ExecutedTrades())
 
->>> # Legacy API (deprecated, will be removed in 1.0.0)
 >>> trades_df = ExecutedTrades().to_frame()
 
 ```
