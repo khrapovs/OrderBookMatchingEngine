@@ -1,6 +1,6 @@
 # Technology Stack
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Runtime Summary
 

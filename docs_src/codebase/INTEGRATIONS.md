@@ -1,6 +1,6 @@
 # External Integrations
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Integration Inventory
 

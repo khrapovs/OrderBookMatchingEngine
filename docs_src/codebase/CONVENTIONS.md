@@ -1,6 +1,6 @@
 # Coding Conventions
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Naming Rules
 

@@ -1,6 +1,6 @@
 # Architecture
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Architectural Style
 
@@ -25,6 +25,7 @@ User code -> MatchingEngine.match(orders, timestamp)
 ```
 
 Detailed flow (with file evidence):
+
 1. **Entry**: User instantiates `MatchingEngine(seed)` and calls `match(orders, timestamp)` (`matching_engine.py` line 51)
 2. **Queue preparation**: Incoming orders + expired orders from `OrderBook` added to internal queue (`matching_engine.py` lines 67-68)
 3. **Order processing loop**: While queue not empty, dequeue and match each order (`matching_engine.py` lines 70-72)

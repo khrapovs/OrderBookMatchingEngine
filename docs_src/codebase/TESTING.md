@@ -1,6 +1,6 @@
 # Testing Patterns
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Test Stack and Commands
 

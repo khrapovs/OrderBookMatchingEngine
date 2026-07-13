@@ -1,6 +1,6 @@
 # Codebase Structure
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Top-Level Map
 

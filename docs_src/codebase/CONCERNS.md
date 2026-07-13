@@ -1,6 +1,6 @@
 # Codebase Concerns
 
-## Core Sections (Required)
+## Core Sections
 
 ### 1) Top Risks (Prioritized)
 
