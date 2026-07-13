@@ -19,6 +19,13 @@ repo_url: https://github.com/khrapovs/OrderBookMatchingEngine
 
 nav:
   - Home: index.md
+  - Stack: codebase/STACK.md
+  - Structure: codebase/STRUCTURE.md
+  - Architecture: codebase/ARCHITECTURE.md
+  - Conventions: codebase/CONVENTIONS.md
+  - Integrations: codebase/INTEGRATIONS.md
+  - Testing: codebase/TESTING.md
+  - Concerns: codebase/CONCERNS.md
   - Code Reference: reference/
 
 watch:
