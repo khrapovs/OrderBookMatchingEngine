@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 def test_reset_without_seed_clears_state(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     # Place order
-    client.post("/orders", json={"orders": [sample_limit_order]})
+    client.post("/place", json={"orders": [sample_limit_order]})
 
     # Verify orders exist
     assert client.get("/orders").json()["bids"] != {}
@@ -26,5 +26,5 @@ def test_reset_with_seed(client: TestClient, sample_limit_order: dict[str, Any])
     assert "reset successfully" in reset_response.json()["message"]
 
     # Verify we can still place orders and run matching successfully
-    response = client.post("/orders", json={"orders": [sample_limit_order]})
+    response = client.post("/place", json={"orders": [sample_limit_order]})
     assert response.status_code == 200

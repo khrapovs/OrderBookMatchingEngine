@@ -9,7 +9,7 @@ from order_matching.orders import Orders
 router = APIRouter()
 
 
-@router.post("/orders")
+@router.post("/place")
 def place(payload: PlaceRequest, engine: MatchingEngineDep) -> PlaceResponse:
     if not payload.orders:
         raise HTTPException(

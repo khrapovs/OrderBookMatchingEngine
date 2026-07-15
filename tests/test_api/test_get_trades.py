@@ -14,7 +14,7 @@ def test_get_trades_accumulation_and_filtering(
     client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
 ) -> None:
     # Place buy at 100
-    client.post("/orders", json={"orders": [sample_limit_order]})
+    client.post("/place", json={"orders": [sample_limit_order]})
 
     # Place crossing sell at 95 at T+1 second
     sell_order1 = sample_limit_order.copy()
@@ -23,7 +23,7 @@ def test_get_trades_accumulation_and_filtering(
     sell_order1["price"] = 95.0
     sell_order1["timestamp"] = (sample_timestamp + timedelta(seconds=1)).isoformat()
 
-    client.post("/orders", json={"orders": [sell_order1]})
+    client.post("/place", json={"orders": [sell_order1]})
 
     # Match at T+1 to execute first trade
     match1_response = client.post("/match", json={"timestamp": sell_order1["timestamp"]})
@@ -34,7 +34,7 @@ def test_get_trades_accumulation_and_filtering(
     buy_order2["order_id"] = "buy2"
     buy_order2["price"] = 105.0
     buy_order2["timestamp"] = (sample_timestamp + timedelta(seconds=2)).isoformat()
-    client.post("/orders", json={"orders": [buy_order2]})
+    client.post("/place", json={"orders": [buy_order2]})
 
     # Place crossing sell at 100 at T+3 seconds
     sell_order2 = sample_limit_order.copy()
@@ -42,7 +42,7 @@ def test_get_trades_accumulation_and_filtering(
     sell_order2["side"] = "SELL"
     sell_order2["price"] = 100.0
     sell_order2["timestamp"] = (sample_timestamp + timedelta(seconds=3)).isoformat()
-    client.post("/orders", json={"orders": [sell_order2]})
+    client.post("/place", json={"orders": [sell_order2]})
 
     # Match at T+3 to execute second trade
     match2_response = client.post("/match", json={"timestamp": sell_order2["timestamp"]})

@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 def test_cancel_order_successfully(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     # Place order
-    client.post("/orders", json={"orders": [sample_limit_order]})
+    client.post("/place", json={"orders": [sample_limit_order]})
 
     # Verify it is in book
     book_response = client.get("/orders")
@@ -29,14 +29,14 @@ def test_cancel_non_existent_order(client: TestClient) -> None:
 
 def test_cancel_already_filled_order(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     # Place buy order
-    client.post("/orders", json={"orders": [sample_limit_order]})
+    client.post("/place", json={"orders": [sample_limit_order]})
 
     # Place crossing sell order to fill it completely
     sell_order = sample_limit_order.copy()
     sell_order["order_id"] = "order2"
     sell_order["side"] = "SELL"
     sell_order["price"] = 90.0
-    client.post("/orders", json={"orders": [sell_order]})
+    client.post("/place", json={"orders": [sell_order]})
 
     # Trigger match explicitly to fill the orders
     match_response = client.post("/match", json={"timestamp": sample_limit_order["timestamp"]})

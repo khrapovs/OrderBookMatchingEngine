@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 
 def test_place_single_limit_order_success(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
-    response = client.post("/orders", json={"orders": [sample_limit_order]})
+    response = client.post("/place", json={"orders": [sample_limit_order]})
     assert response.status_code == 200
     data = response.json()
     assert "Successfully placed" in data["message"]
@@ -23,7 +23,7 @@ def test_place_batch_orders_success(
 ) -> None:
     # Alter IDs to make them unique
     sample_market_order["order_id"] = "order_market"
-    response = client.post("/orders", json={"orders": [sample_limit_order, sample_market_order]})
+    response = client.post("/place", json={"orders": [sample_limit_order, sample_market_order]})
     assert response.status_code == 200
     data = response.json()
     assert "Successfully placed 2 orders" in data["message"]
@@ -36,7 +36,7 @@ def test_place_batch_orders_success(
 
 
 def test_place_market_order_success(client: TestClient, sample_market_order: dict[str, Any]) -> None:
-    response = client.post("/orders", json={"orders": [sample_market_order]})
+    response = client.post("/place", json={"orders": [sample_market_order]})
     assert response.status_code == 200
     data = response.json()
     assert len(data["orders"]) == 1
@@ -47,17 +47,17 @@ def test_place_market_order_success(client: TestClient, sample_market_order: dic
 
 def test_place_duplicate_order_id_rejection(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     # Place it once
-    response = client.post("/orders", json={"orders": [sample_limit_order]})
+    response = client.post("/place", json={"orders": [sample_limit_order]})
     assert response.status_code == 200
 
     # Place again with same ID
-    response = client.post("/orders", json={"orders": [sample_limit_order]})
+    response = client.post("/place", json={"orders": [sample_limit_order]})
     assert response.status_code == 400
     assert "Duplicate order ID" in response.json()["detail"]
 
 
 def test_place_duplicate_order_id_in_same_request(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
-    response = client.post("/orders", json={"orders": [sample_limit_order, sample_limit_order]})
+    response = client.post("/place", json={"orders": [sample_limit_order, sample_limit_order]})
     assert response.status_code == 400
     assert "Duplicate order ID" in response.json()["detail"]
 
@@ -65,28 +65,28 @@ def test_place_duplicate_order_id_in_same_request(client: TestClient, sample_lim
 def test_place_invalid_order_type_rejection(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     invalid_order = sample_limit_order.copy()
     invalid_order["order_type"] = "invalid_type"
-    response = client.post("/orders", json={"orders": [invalid_order]})
+    response = client.post("/place", json={"orders": [invalid_order]})
     assert response.status_code == 422
 
 
 def test_place_negative_size_rejection(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     invalid_order = sample_limit_order.copy()
     invalid_order["size"] = -1.0
-    response = client.post("/orders", json={"orders": [invalid_order]})
+    response = client.post("/place", json={"orders": [invalid_order]})
     assert response.status_code == 422
 
 
 def test_place_zero_size_rejection(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     invalid_order = sample_limit_order.copy()
     invalid_order["size"] = 0.0
-    response = client.post("/orders", json={"orders": [invalid_order]})
+    response = client.post("/place", json={"orders": [invalid_order]})
     assert response.status_code == 422
 
 
 def test_place_missing_required_fields_rejection(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     invalid_order = sample_limit_order.copy()
     del invalid_order["trader_id"]
-    response = client.post("/orders", json={"orders": [invalid_order]})
+    response = client.post("/place", json={"orders": [invalid_order]})
     assert response.status_code == 422
 
 
@@ -94,5 +94,5 @@ def test_place_market_order_with_price_rejection(client: TestClient, sample_mark
     # Market orders should forbid price field (extra="forbid")
     invalid_order = sample_market_order.copy()
     invalid_order["price"] = 100.0
-    response = client.post("/orders", json={"orders": [invalid_order]})
+    response = client.post("/place", json={"orders": [invalid_order]})
     assert response.status_code == 422

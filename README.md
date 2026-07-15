@@ -142,7 +142,7 @@ Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:80
 
 ### Endpoints
 
-- `POST /orders`: Place a batch of one or more orders without triggering matching.
+- `POST /place`: Place a batch of one or more orders without triggering matching.
 - `POST /match`: Trigger matching at a specific timestamp for all queued/placed orders.
 - `GET /orders`: Retrieve the current unmatched order book state (grouped by price).
 - `GET /trades`: Retrieve trade execution history (with optional `from_timestamp` query filter).
