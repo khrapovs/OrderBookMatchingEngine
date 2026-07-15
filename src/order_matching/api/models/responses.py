@@ -42,7 +42,7 @@ class TradeResponse(BaseModel):
     timestamp: datetime
 
 
-class PlaceOrdersResponse(BaseModel):
+class PlaceResponse(BaseModel):
     message: str
     orders: list[OrderResponse]
 

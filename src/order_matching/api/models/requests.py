@@ -33,7 +33,7 @@ class MarketOrderRequest(OrderBase):
 OrderRequest = Annotated[LimitOrderRequest | MarketOrderRequest, Field(discriminator="order_type")]
 
 
-class PlaceOrdersRequest(BaseModel):
+class PlaceRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     orders: list[OrderRequest]
 

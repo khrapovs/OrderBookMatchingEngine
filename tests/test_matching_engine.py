@@ -14,7 +14,7 @@ from order_matching.trade import Trade
 
 
 class TestMatchingEngine:
-    def test_place_orders(self) -> None:
+    def test_place(self) -> None:
         matching_engine = MatchingEngine()
         timestamp = datetime.now()
         buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="buy1", trader_id="x")
