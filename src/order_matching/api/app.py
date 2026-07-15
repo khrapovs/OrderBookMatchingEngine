@@ -34,4 +34,4 @@ def global_exception_handler(_request: Request, _exc: Exception) -> JSONResponse
 # 13.7 Validation exception handler for Pydantic 422 errors
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
-    return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"detail": exc.errors()})
+    return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, content={"detail": exc.errors()})
