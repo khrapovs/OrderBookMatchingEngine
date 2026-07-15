@@ -47,6 +47,7 @@ class MatchingEngine:
         self._queue = Orders()
         self.unprocessed_orders = OrderBook()
         self._timestamp: datetime | None = None
+        self.order_ids: set[str] = set()
 
     def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
         """Match incoming orders in price-time priority.
@@ -64,7 +65,11 @@ class MatchingEngine:
             Executed trades storage object
         """
         self._timestamp = timestamp
-        self._queue += orders if orders else Orders()
+        if orders:
+            for order in orders.orders:
+                if order.status != Status.CANCEL:
+                    self.order_ids.add(order.order_id)
+            self._queue += orders
         self._queue += self._get_expired_orders()
         trades = ExecutedTrades()
         while not self._queue.is_empty:
@@ -84,11 +89,13 @@ class MatchingEngine:
     def _match(self, order: Order) -> ExecutedTrades:
         if order.status == Status.CANCEL:
             self.unprocessed_orders.remove(incoming_order=order)
+            self.order_ids.discard(order.order_id)
             return ExecutedTrades()
         elif self.unprocessed_orders.matching_order_exists(incoming_order=order):
             return self._execute_trades(incoming_order=order)
         else:
             self.unprocessed_orders.append(incoming_order=order)
+            self.order_ids.add(order.order_id)
             return ExecutedTrades()
 
     def _execute_trades(self, incoming_order: Order) -> ExecutedTrades:
@@ -97,6 +104,9 @@ class MatchingEngine:
             trades += self._execute_trades_for_one_price(incoming_order=incoming_order, price=price)
         if incoming_order.size > 0:
             self.unprocessed_orders.append(incoming_order=incoming_order)
+            self.order_ids.add(incoming_order.order_id)
+        else:
+            self.order_ids.discard(incoming_order.order_id)
         return trades
 
     def _execute_trades_for_one_price(self, incoming_order: Order, price: float) -> ExecutedTrades:
@@ -113,6 +123,7 @@ class MatchingEngine:
             expiration_orders.remove(orders=[book_order])
             if len(expiration_orders) == 0:
                 self.unprocessed_orders.orders_by_expiration.pop(book_order.expiration)
+            self.order_ids.discard(book_order.order_id)
         if len(list(filter(lambda order: order.size > 0, opposite_side_orders[price]))) == 0:
             opposite_side_orders.pop(price)
         return ExecutedTrades(trades=trades)

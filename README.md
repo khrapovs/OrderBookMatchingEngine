@@ -114,3 +114,38 @@ Build and serve documentation website:
 ```shell
 uv run mkdocs serve
 ```
+
+## REST API
+
+For demo, education, and backtesting workflows, a RESTful API layer is provided.
+
+### Running the API Server
+
+Start the API server in development mode using the `fastapi` CLI:
+
+```shell
+uv run fastapi dev
+```
+
+Or run with `uvicorn`:
+
+```shell
+uv run uvicorn order_matching.api.app:app --reload
+```
+
+Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+### Endpoints
+
+- `POST /orders`: Place a batch of one or more orders.
+- `POST /match`: Trigger matching at a specific timestamp.
+- `GET /orders`: Retrieve the current unmatched order book state (grouped by price).
+- `GET /trades`: Retrieve trade execution history (with optional `from_timestamp` query filter).
+- `DELETE /orders/{order_id}`: Cancel an active order by ID.
+- `POST /reset`: Reset the engine state (with optional random `seed`).
+- `GET /summary`: Retrieve aggregated order book price levels (matching `OrderBook.summary()`).
+
+### API Limitations
+
+- **Single-User / Educational Use**: The server uses in-memory state and is not thread-safe.
+- **No Persistence**: Restarting the server clears all order book and trade history state.

@@ -2,67 +2,75 @@
 name = "order-matching"
 version = "0.5.0"
 description = "Order Book Matching Engine"
+readme = "README.md"
+requires-python = ">=3.11"
 authors = [
   { name = "Stanislav Khrapov", email = "khrapovs@gmail.com" },
   { name = "Akanksha Toshniwal", email = "akanksha.toshniwal@chintai.io" },
   { name = "Shannen Tioniwar", email = "shannen.tioniwar@chintai.io" },
 ]
-readme = "README.md"
 classifiers = [
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.10"
 dependencies = [
-    "faker>=33.0.0",
-    "numpy>=2.2.6",
-]
-
-[project.optional-dependencies]
-polars = [
-    "pandera[polars]>=0.21.0",
-    "polars>=1.42.1",
-]
-web = [
-    "fastapi>=0.139.0",
-    "pydantic>=2.13.4",
-    "uvicorn>=0.51.0",
-]
-all = [
-    "order-matching[polars,web]",
+  "faker>=33.0.0",
+  "numpy>=2.2.6",
 ]
 
 [project.urls]
-Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
 Documentation = "https://khrapovs.github.io/OrderBookMatchingEngine/"
+Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
+
+[project.optional-dependencies]
+all = [
+  "order-matching[polars,web]",
+]
+polars = [
+  "pandera[polars]>=0.21.0",
+  "polars>=1.42.1",
+]
+web = [
+  "fastapi[standard]>=0.139.0",
+  "pydantic>=2.13.4",
+  "uvicorn>=0.51.0",
+]
 
 [dependency-groups]
-test = [
-    "pytest>=8.3.3",
-    "pytest-benchmark[histogram]>=5.1.0",
-    "pytest-cov>=6.0.0",
-    "pytest-xdist>=3.6.1",
-]
 dev = [
-    "prek>=0.2.30",
-    "ty>=0.0.12",
+  "prek>=0.2.30",
+  "ty>=0.0.12",
 ]
 doc = [
-  "mkdocs-material",
-  "mkdocstrings[python]",
   "mkdocs-gen-files",
   "mkdocs-literate-nav",
   "mkdocs-macros-plugin",
+  "mkdocs-material",
+  "mkdocstrings[python]",
   "pymdown-extensions",
+]
+test = [
+  "httpx>=0.28.1",
+  "pytest>=8.3.3",
+  "pytest-benchmark[histogram]>=5.1.0",
+  "pytest-cov>=6.0.0",
+  "pytest-xdist>=3.6.1",
 ]
 
 [build-system]
 requires = ["uv_build>=0.11.26,<0.12"]
 build-backend = "uv_build"
+
+[tool.commitizen]
+version_scheme = "semver"
+version_provider = "uv"
+update_changelog_on_bump = true
+
+[tool.fastapi]
+entrypoint = "order_matching.api.app:app"
 
 [tool.pytest.ini_options]
 addopts = "--cov-config=.coveragerc --doctest-modules --doctest-glob='*.md' -n=auto --benchmark-disable"
@@ -92,8 +100,3 @@ convention = "numpy"
 
 [tool.ty.rules]
 no-matching-overload = "ignore"
-
-[tool.commitizen]
-version_scheme = "semver"
-version_provider = "uv"
-update_changelog_on_bump = true
