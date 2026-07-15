@@ -69,12 +69,8 @@ jobs:
           alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
           auto-push: false
           benchmark-data-dir-path: "docs/dev/bench"
-      - name: Push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          force: true
+      - name: Push benchmark result
+        run: git push 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git' gh-pages:gh-pages
 
   code-quality:
     name: Code quality checks
