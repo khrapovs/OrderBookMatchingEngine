@@ -60,6 +60,10 @@ class TradeHistoryResponse(BaseModel):
     trades: list[TradeResponse]
 
 
+class CancelOrderResponse(BaseModel):
+    message: str
+
+
 class ResetResponse(BaseModel):
     message: str
 
