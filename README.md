@@ -46,8 +46,13 @@ pip install order-matching[polars]
 >>> transaction_timestamp = timestamp + timedelta(days=1)
 >>> buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="a", trader_id="x")
 >>> sell_order = LimitOrder(side=Side.SELL, price=0.8, size=1.6, timestamp=timestamp, order_id="b", trader_id="y")
->>> executed_trades = matching_engine.match(orders=Orders([buy_order, sell_order]), timestamp=transaction_timestamp)
-
+>>>
+>>> # Place orders without matching:
+>>> matching_engine.place(orders=Orders([buy_order, sell_order]))
+>>>
+>>> # Trigger matching at a specific timestamp:
+>>> executed_trades = matching_engine.match(timestamp=transaction_timestamp)
+>>>
 >>> pp(executed_trades.trades)
 [Trade(side=SELL,
        price=1.2,
@@ -137,8 +142,8 @@ Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:80
 
 ### Endpoints
 
-- `POST /orders`: Place a batch of one or more orders.
-- `POST /match`: Trigger matching at a specific timestamp.
+- `POST /orders`: Place a batch of one or more orders without triggering matching.
+- `POST /match`: Trigger matching at a specific timestamp for all queued/placed orders.
 - `GET /orders`: Retrieve the current unmatched order book state (grouped by price).
 - `GET /trades`: Retrieve trade execution history (with optional `from_timestamp` query filter).
 - `DELETE /orders/{order_id}`: Cancel an active order by ID.
