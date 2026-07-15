@@ -69,15 +69,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: true
           alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
-          auto-push: true
+          auto-push: false
           benchmark-data-dir-path: "docs/dev/bench"
-#      - name: Fetch gh-pages branch
-#        run: |
-#          git status
-#          git log
-#          git fetch origin gh-pages:gh-pages || true
-#      - name: Push benchmark result
-#        run: git push 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git' gh-pages:gh-pages
 
   code-quality:
     name: Code quality checks
