@@ -33,6 +33,29 @@ class OrderBook:
         orders[incoming_order.price].add(orders=[incoming_order])
         self.orders_by_expiration[incoming_order.expiration].add(orders=[incoming_order])
 
+    def find_order_by_id(self, order_id: str) -> Order | None:
+        """Find an order by its ID across bids and offers.
+
+        Parameters
+        ----------
+        order_id
+            The order ID to search for
+
+        Returns
+        -------
+        Order | None
+            The matching order, or None if not found
+        """
+        for orders in self.bids.values():
+            for order in orders:
+                if order.order_id == order_id:
+                    return order
+        for orders in self.offers.values():
+            for order in orders:
+                if order.order_id == order_id:
+                    return order
+        return None
+
     def remove(self, incoming_order: Order) -> None:
         """Remove one order from the order book.
 

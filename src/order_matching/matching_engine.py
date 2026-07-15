@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import datetime
 
 from order_matching.executed_trades import ExecutedTrades
@@ -70,6 +71,25 @@ class MatchingEngine:
         while not self._queue.is_empty:
             trades += self._match(order=self._queue.dequeue())
         return trades
+
+    def cancel_order(self, order_id: str) -> None:
+        """Cancel an existing order by ID.
+
+        Parameters
+        ----------
+        order_id
+            The ID of the order to cancel
+
+        Raises
+        ------
+        ValueError
+            If no order with the given ID is found
+        """
+        order = self.unprocessed_orders.find_order_by_id(order_id)
+        if order is None:
+            raise ValueError(f"Order {order_id} not found")
+        cancel = replace(order, status=Status.CANCEL)
+        self.match(orders=Orders([cancel]), timestamp=order.timestamp)
 
     def _get_expired_orders(self) -> Orders:
         orders: list[Order] = list()
