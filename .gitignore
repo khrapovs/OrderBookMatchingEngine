@@ -12,3 +12,4 @@ docs_src/reference/
 *.egg-info
 .coverage
 dist/
+.DS_Store
