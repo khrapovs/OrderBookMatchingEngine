@@ -67,14 +67,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: true
           alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
-          auto-push: false
+          auto-push: true
           benchmark-data-dir-path: "docs/dev/bench"
-      - name: Configure git credentials
-        run: |
-          git config --global credential.helper store
-          echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
-      - name: Push benchmark result
-        run: git push '${{ github.server_url }}/${{ github.repository }}.git' gh-pages:gh-pages
+#      - name: Configure git credentials
+#        run: |
+#          git config --global credential.helper store
+#          echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+#      - name: Push benchmark result
+#        run: git push '${{ github.server_url }}/${{ github.repository }}.git' gh-pages:gh-pages
 
   code-quality:
     name: Code quality checks
