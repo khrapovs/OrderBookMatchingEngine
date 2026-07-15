@@ -26,6 +26,19 @@ from order_matching.status import Status
 router = APIRouter()
 
 
+def _order_id_exists(*, engine: MatchingEngine, order_id: str) -> bool:
+    """Check if an order_id exists in the engine's active orders."""
+    for _price, orders in engine.unprocessed_orders.bids.items():
+        for order in orders.orders:
+            if order.order_id == order_id:
+                return True
+    for _price, orders in engine.unprocessed_orders.offers.items():
+        for order in orders.orders:
+            if order.order_id == order_id:
+                return True
+    return False
+
+
 @router.post("/orders")
 def place_orders(request: Request, payload: PlaceOrdersRequest, engine: MatchingEngineDep) -> PlaceOrdersResponse:
     if not payload.orders:
@@ -38,7 +51,7 @@ def place_orders(request: Request, payload: PlaceOrdersRequest, engine: Matching
 
     # Check if any ID already exists in the engine's active orders
     for order in payload.orders:
-        if order.order_id in engine.order_ids:
+        if _order_id_exists(engine=engine, order_id=order.order_id):
             raise HTTPException(status_code=400, detail=f"Duplicate order ID: {order.order_id}")
 
     # Convert request orders to domain Orders
