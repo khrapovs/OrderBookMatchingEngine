@@ -75,6 +75,12 @@ OrderResponse             ←    Order
 TradeResponse             ←    Trade
 ```
 
+**Pydantic Best Practices:**
+- Do NOT use ellipsis (`...`) for required fields - simply omit default value
+- Use `Field(gt=0)` for validation constraints without ellipsis
+- Use `Annotated` for all dependency injection: `Annotated[T, Depends(...)]`
+- Prefer return types over `response_model` parameter
+
 **Alternatives Considered:**
 - Modify domain models to be Pydantic: Violates non-goal of no breaking changes
 - Use dataclasses for API: Loses Pydantic validation features
@@ -156,13 +162,13 @@ src/order_matching/
 ├─ api/
 │  ├─ __init__.py
 │  ├─ app.py              # FastAPI app creation
-│  ├─ routes.py           # Endpoint definitions
+│  ├─ routes.py           # Endpoint definitions (use def, not async def)
 │  ├─ models/
 │  │  ├─ __init__.py
 │  │  ├─ requests.py      # Pydantic request models
 │  │  ├─ responses.py     # Pydantic response models
 │  │  └─ converters.py    # Domain ↔ API conversion
-│  └─ dependencies.py     # FastAPI dependencies (get engine)
+│  └─ dependencies.py     # FastAPI dependencies (Annotated type aliases)
 ```
 
 **Rationale:**
@@ -170,7 +176,8 @@ src/order_matching/
 - Single `routes.py` sufficient for 7 endpoints
 - `models/` subpackage for request/response schemas
 - `converters.py` centralizes bidirectional mapping logic
-- `dependencies.py` for FastAPI dependency injection patterns
+- `dependencies.py` for FastAPI dependency injection with `Annotated` pattern
+- Use `def` (not `async def`) for all endpoints since MatchingEngine is synchronous
 
 ### Decision 7: Testing Strategy
 
@@ -199,6 +206,12 @@ tests/test_api/
 - TestClient provides synchronous HTTP testing without running server
 - Integration tests cover request → handler → domain → response
 - Mirrors existing test structure (one file per module)
+
+**FastAPI Best Practices for Implementation:**
+- Use return types (e.g., `-> PlaceOrdersResponse`) instead of `response_model` parameter
+- Use `Annotated[MatchingEngine, Depends(get_matching_engine)]` for dependency injection
+- Create reusable type alias: `MatchingEngineDep = Annotated[MatchingEngine, Depends(...)]`
+- Configure FastAPI CLI entrypoint in `pyproject.toml` under `[tool.fastapi]`
 
 ## Risks / Trade-offs
 

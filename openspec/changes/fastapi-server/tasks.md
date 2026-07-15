@@ -6,18 +6,21 @@
 - [ ] 1.2 Create `src/order_matching/api/models/` directory for Pydantic schemas
 - [ ] 1.3 Create `tests/test_api/` directory for API tests
 - [ ] 1.4 Create `__init__.py` files for all new packages
+- [ ] 1.5 Add FastAPI CLI entrypoint to pyproject.toml: `[tool.fastapi]` section with `entrypoint = "order_matching.api.app:app"`
 
 ## 2. Pydantic Request Models
 
+**NOTE:** Follow FastAPI best practices - do NOT use ellipsis (`...`) for required fields. Use `Field(gt=0)` for constraints.
+
 - [ ] 2.1 Create `src/order_matching/api/models/requests.py`
-- [ ] 2.2 Implement `OrderBase` with common fields (side, size, timestamp, order_id, trader_id, expiration)
+- [ ] 2.2 Implement `OrderBase` with common fields (side, size, timestamp, order_id, trader_id, expiration) - required fields have no default, no ellipsis
 - [ ] 2.3 Implement `LimitOrderRequest` extending `OrderBase` with price field
 - [ ] 2.4 Implement `MarketOrderRequest` extending `OrderBase` without price field
 - [ ] 2.5 Create discriminated union `OrderRequest` using Pydantic's Field(discriminator="order_type")
 - [ ] 2.6 Implement `PlaceOrdersRequest` with list of `OrderRequest`
 - [ ] 2.7 Implement `MatchRequest` with timestamp field
 - [ ] 2.8 Implement `ResetRequest` with optional seed field
-- [ ] 2.9 Add validation constraints (size > 0, price > 0 for limit orders)
+- [ ] 2.9 Add validation constraints using Field(gt=0) WITHOUT ellipsis - required fields simply have no default value
 
 ## 3. Pydantic Response Models
 
@@ -44,56 +47,65 @@
 
 ## 5. FastAPI Dependencies
 
+**NOTE:** Use `Annotated` pattern for dependency injection per FastAPI best practices.
+
 - [ ] 5.1 Create `src/order_matching/api/dependencies.py`
-- [ ] 5.2 Implement `get_matching_engine()` dependency returning global engine from app.state
-- [ ] 5.3 Add type hints for dependency injection
+- [ ] 5.2 Implement `get_matching_engine()` dependency function returning global engine from app.state
+- [ ] 5.3 Create type alias: `MatchingEngineDep = Annotated[MatchingEngine, Depends(get_matching_engine)]` for reusability
 
 ## 6. FastAPI Routes - Place Orders
 
+**NOTE:** Use `def` (not `async def`) for all endpoints - MatchingEngine operations are synchronous. Use return types (not response_model parameter).
+
 - [ ] 6.1 Create `src/order_matching/api/routes.py`
-- [ ] 6.2 Implement `POST /orders` endpoint accepting PlaceOrdersRequest
-- [ ] 6.3 Convert request orders to domain Orders using converters
-- [ ] 6.4 Call `matching_engine.match(orders=..., timestamp=...)` with orders and first order's timestamp
-- [ ] 6.5 Return PlaceOrdersResponse with success message
-- [ ] 6.6 Add error handling for duplicate order IDs (400 response)
-- [ ] 6.7 Add Pydantic validation error handling (422 response)
+- [ ] 6.2 Implement `POST /orders` endpoint accepting PlaceOrdersRequest with return type `-> PlaceOrdersResponse`
+- [ ] 6.3 Use `engine: MatchingEngineDep` parameter for dependency injection (Annotated pattern)
+- [ ] 6.4 Convert request orders to domain Orders using converters
+- [ ] 6.5 Call `matching_engine.match(orders=..., timestamp=...)` with orders and first order's timestamp
+- [ ] 6.6 Return PlaceOrdersResponse with success message
+- [ ] 6.7 Add error handling for duplicate order IDs (400 response)
+- [ ] 6.8 Add Pydantic validation error handling (422 response)
 
 ## 7. FastAPI Routes - Match Orders
 
-- [ ] 7.1 Implement `POST /match` endpoint accepting MatchRequest
-- [ ] 7.2 Call `matching_engine.match(orders=None, timestamp=request.timestamp)`
-- [ ] 7.3 Convert ExecutedTrades to TradeResponse list using converters
-- [ ] 7.4 Return MatchResponse with executed trades
-- [ ] 7.5 Handle empty trades case (return empty list)
+- [ ] 7.1 Implement `POST /match` endpoint accepting MatchRequest with return type `-> MatchResponse`
+- [ ] 7.2 Use `engine: MatchingEngineDep` parameter for dependency injection
+- [ ] 7.3 Call `matching_engine.match(orders=None, timestamp=request.timestamp)`
+- [ ] 7.4 Convert ExecutedTrades to TradeResponse list using converters
+- [ ] 7.5 Return MatchResponse with executed trades
+- [ ] 7.6 Handle empty trades case (return empty list)
 
 ## 8. FastAPI Routes - Get Order Book
 
-- [ ] 8.1 Implement `GET /orders` endpoint
-- [ ] 8.2 Access `matching_engine.unprocessed_orders.bids` and `offers`
-- [ ] 8.3 Convert OrderBook data structure to OrderBookResponse
-- [ ] 8.4 Return structured bids and offers with orders grouped by price
-- [ ] 8.5 Handle empty order book case
+- [ ] 8.1 Implement `GET /orders` endpoint with return type `-> OrderBookResponse`
+- [ ] 8.2 Use `engine: MatchingEngineDep` parameter for dependency injection
+- [ ] 8.3 Access `matching_engine.unprocessed_orders.bids` and `offers`
+- [ ] 8.4 Convert OrderBook data structure to OrderBookResponse
+- [ ] 8.5 Return structured bids and offers with orders grouped by price
+- [ ] 8.6 Handle empty order book case
 
 ## 9. FastAPI Routes - Get Trades
 
-- [ ] 9.1 Implement `GET /trades` endpoint with optional `from_timestamp` query parameter
-- [ ] 9.2 Access all executed trades from engine state (accumulate across match calls)
-- [ ] 9.3 Filter trades by timestamp if parameter provided
-- [ ] 9.4 Convert trades to TradeResponse list using converters
-- [ ] 9.5 Return TradeHistoryResponse
-- [ ] 9.6 Handle empty trades case
+- [ ] 9.1 Implement `GET /trades` endpoint with optional `from_timestamp` query parameter and return type `-> TradeHistoryResponse`
+- [ ] 9.2 Use `engine: MatchingEngineDep` parameter for dependency injection
+- [ ] 9.3 Access all executed trades from engine state (accumulate across match calls)
+- [ ] 9.4 Filter trades by timestamp if parameter provided
+- [ ] 9.5 Convert trades to TradeResponse list using converters
+- [ ] 9.6 Return TradeHistoryResponse
+- [ ] 9.7 Handle empty trades case
 
 ## 10. FastAPI Routes - Cancel Order
 
-- [ ] 10.1 Implement `DELETE /orders/{order_id}` endpoint
-- [ ] 10.2 Find order in `matching_engine.unprocessed_orders` by order_id
-- [ ] 10.3 Create Order with Status.CANCEL and call match() to remove it
-- [ ] 10.4 Return success response (200)
-- [ ] 10.5 Handle order not found case (404 response)
+- [ ] 10.1 Implement `DELETE /orders/{order_id}` endpoint with path parameter using Annotated
+- [ ] 10.2 Use `engine: MatchingEngineDep` parameter for dependency injection
+- [ ] 10.3 Find order in `matching_engine.unprocessed_orders` by order_id
+- [ ] 10.4 Create Order with Status.CANCEL and call match() to remove it
+- [ ] 10.5 Return success response (200)
+- [ ] 10.6 Handle order not found case (404 response)
 
 ## 11. FastAPI Routes - Reset Engine
 
-- [ ] 11.1 Implement `POST /reset` endpoint accepting ResetRequest
+- [ ] 11.1 Implement `POST /reset` endpoint accepting ResetRequest with return type `-> ResetResponse`
 - [ ] 11.2 Create new MatchingEngine instance with seed from request (or None)
 - [ ] 11.3 Replace `app.state.engine` with new instance
 - [ ] 11.4 Clear any accumulated trade history
@@ -101,11 +113,12 @@
 
 ## 12. FastAPI Routes - Get Summary
 
-- [ ] 12.1 Implement `GET /summary` endpoint
-- [ ] 12.2 Call `matching_engine.unprocessed_orders.summary()`
-- [ ] 12.3 Convert polars LazyFrame to JSON-serializable format
-- [ ] 12.4 Return summary response
-- [ ] 12.5 Handle empty order book case
+- [ ] 12.1 Implement `GET /summary` endpoint with return type for summary response
+- [ ] 12.2 Use `engine: MatchingEngineDep` parameter for dependency injection
+- [ ] 12.3 Call `matching_engine.unprocessed_orders.summary()`
+- [ ] 12.4 Convert polars LazyFrame to JSON-serializable format
+- [ ] 12.5 Return summary response
+- [ ] 12.6 Handle empty order book case
 
 ## 13. FastAPI Application
 
@@ -230,7 +243,10 @@
 
 - [ ] 27.1 Run all tests with `uv run pytest tests/test_api/`
 - [ ] 27.2 Run all existing tests to ensure no regressions
-- [ ] 27.3 Start server and manually test each endpoint
+- [ ] 27.3 Start server with `fastapi dev` and manually test each endpoint
 - [ ] 27.4 Test with curl/httpie for real HTTP behavior
 - [ ] 27.5 Verify error responses are user-friendly
-- [ ] 27.6 Run linter with `uv run prek run -v --show-diff-on-failure --all-files` and fix all prek failures
+- [ ] 27.6 Verify all endpoints use return types (not response_model parameter)
+- [ ] 27.7 Verify all endpoints use `def` (not `async def`)
+- [ ] 27.8 Verify dependency injection uses Annotated pattern
+- [ ] 27.9 Run linter with `uv run prek run -v --show-diff-on-failure --all-files` and fix all prek failures
