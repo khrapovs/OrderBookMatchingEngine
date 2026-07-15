@@ -1,11 +1,11 @@
 from datetime import datetime
-from enum import Enum
-from typing import Annotated, Literal, Union
+from enum import StrEnum
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class SideStr(str, Enum):
+class SideStr(StrEnum):
     BUY = "BUY"
     SELL = "SELL"
 
@@ -30,7 +30,7 @@ class MarketOrderRequest(OrderBase):
     order_type: Literal["market"] = "market"
 
 
-OrderRequest = Annotated[Union[LimitOrderRequest, MarketOrderRequest], Field(discriminator="order_type")]
+OrderRequest = Annotated[LimitOrderRequest | MarketOrderRequest, Field(discriminator="order_type")]
 
 
 class PlaceOrdersRequest(BaseModel):
