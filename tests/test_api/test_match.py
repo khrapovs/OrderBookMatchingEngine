@@ -48,6 +48,10 @@ def test_match_crossing_orders(client: TestClient, sample_limit_order: dict[str,
     response = client.post("/orders", json={"orders": [sell_order]})
     assert response.status_code == 200
 
+    # Trigger match explicitly
+    match_response = client.post("/match", json={"timestamp": sample_limit_order["timestamp"]})
+    assert match_response.status_code == 200
+
     # Check trades accumulated
     trades_response = client.get("/trades")
     trades = trades_response.json()["trades"]
@@ -71,6 +75,10 @@ def test_match_timestamp_used_in_trades(
     sell_order["side"] = "SELL"
     sell_order["price"] = 90.0
     client.post("/orders", json={"orders": [sell_order]})
+
+    # Trigger match explicitly
+    match_response = client.post("/match", json={"timestamp": sample_timestamp.isoformat()})
+    assert match_response.status_code == 200
 
     # Verify that the trade timestamp is the order/match timestamp
     trades_response = client.get("/trades")
@@ -111,6 +119,10 @@ def test_partial_fills(client: TestClient, sample_limit_order: dict[str, Any]) -
     sell_order["size"] = 4.0
 
     client.post("/orders", json={"orders": [sell_order]})
+
+    # Trigger match explicitly
+    match_response = client.post("/match", json={"timestamp": sample_limit_order["timestamp"]})
+    assert match_response.status_code == 200
 
     # Check that remaining size of buy order in book is 6.0
     book_response = client.get("/orders")

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, status
 
 from order_matching.api.dependencies import MatchingEngineDep
 from order_matching.api.models.converters import domain_order_to_response, request_to_domain_order
@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/orders")
-def place_orders(request: Request, payload: PlaceOrdersRequest, engine: MatchingEngineDep) -> PlaceOrdersResponse:
+def place_orders(payload: PlaceOrdersRequest, engine: MatchingEngineDep) -> PlaceOrdersResponse:
     if not payload.orders:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="At least one order must be provided"
@@ -30,12 +30,11 @@ def place_orders(request: Request, payload: PlaceOrdersRequest, engine: Matching
     domain_orders_list = [request_to_domain_order(o) for o in payload.orders]
     domain_orders = Orders(domain_orders_list)
 
-    # Call matching_engine.match() with orders and first order's timestamp
-    first_order_timestamp = payload.orders[0].timestamp
-    executed_trades = engine.match(orders=domain_orders, timestamp=first_order_timestamp)
-
-    # Accumulate executed trades in app state
-    request.app.state.trades.extend(executed_trades.trades)
+    # Call matching_engine.place() with orders
+    try:
+        engine.place(orders=domain_orders)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
 
     return PlaceOrdersResponse(
         message=f"Successfully placed {len(payload.orders)} orders",

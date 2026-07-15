@@ -35,6 +35,10 @@ def test_complete_workflow(client: TestClient, sample_limit_order: dict[str, Any
     crossing_sell["size"] = 4.0
     client.post("/orders", json={"orders": [crossing_sell]})
 
+    # Trigger match explicitly
+    match_response = client.post("/match", json={"timestamp": sample_limit_order["timestamp"]})
+    assert match_response.status_code == 200
+
     # 5. Check trades
     trades = client.get("/trades").json()["trades"]
     assert len(trades) == 1
@@ -69,6 +73,10 @@ def test_backtesting_scenario(
     sell_order["size"] = 100.0
     sell_order["timestamp"] = t1.isoformat()
     client.post("/orders", json={"orders": [sell_order]})
+
+    # Trigger match explicitly
+    match_response = client.post("/match", json={"timestamp": t1.isoformat()})
+    assert match_response.status_code == 200
 
     # Check trades and check that the trade timestamp matches t1
     trades = client.get("/trades").json()["trades"]

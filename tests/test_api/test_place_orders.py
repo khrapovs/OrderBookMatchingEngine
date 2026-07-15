@@ -29,6 +29,11 @@ def test_place_batch_orders_success(
     assert "Successfully placed 2 orders" in data["message"]
     assert len(data["orders"]) == 2
 
+    # Verify that no trades were executed upon placement
+    trades_response = client.get("/trades")
+    assert trades_response.status_code == 200
+    assert trades_response.json()["trades"] == []
+
 
 def test_place_market_order_success(client: TestClient, sample_market_order: dict[str, Any]) -> None:
     response = client.post("/orders", json={"orders": [sample_market_order]})

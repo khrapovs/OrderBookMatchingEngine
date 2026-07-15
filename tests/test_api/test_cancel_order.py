@@ -38,6 +38,10 @@ def test_cancel_already_filled_order(client: TestClient, sample_limit_order: dic
     sell_order["price"] = 90.0
     client.post("/orders", json={"orders": [sell_order]})
 
+    # Trigger match explicitly to fill the orders
+    match_response = client.post("/match", json={"timestamp": sample_limit_order["timestamp"]})
+    assert match_response.status_code == 200
+
     # Try to cancel the now-filled buy order
     response = client.delete(f"/orders/{sample_limit_order['order_id']}")
     assert response.status_code == 404

@@ -49,6 +49,31 @@ class MatchingEngine:
         self.unprocessed_orders = OrderBook()
         self._timestamp: datetime | None = None
 
+    def place(self, orders: Orders) -> None:
+        """Place orders without matching.
+
+        Parameters
+        ----------
+        orders
+            Orders to place
+
+        Raises
+        ------
+        ValueError
+            If duplicate order IDs are detected or if an order ID already exists in the book.
+        """
+        order_ids = [order.order_id for order in orders]
+        if len(order_ids) != len(set(order_ids)):
+            raise ValueError("Duplicate order ID in request")
+
+        for order in orders:
+            if self.unprocessed_orders.find_order_by_id(order.order_id) is not None:
+                raise ValueError(f"Duplicate order ID: {order.order_id}")
+
+        for order in orders:
+            self.unprocessed_orders.append(incoming_order=order)
+        self._queue += orders
+
     def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
         """Match incoming orders in price-time priority.
 
@@ -67,6 +92,14 @@ class MatchingEngine:
         self._timestamp = timestamp
         self._queue += orders if orders else Orders()
         self._queue += self._get_expired_orders()
+
+        # Remove all non-cancelled queued orders from the book before matching
+        # to simulate their sequential arrival.
+        for order in self._queue:
+            if order.status != Status.CANCEL:
+                if self.unprocessed_orders.find_order_by_id(order.order_id) is not None:
+                    self.unprocessed_orders.remove(order)
+
         trades = ExecutedTrades()
         while not self._queue.is_empty:
             trades += self._match(order=self._queue.dequeue())

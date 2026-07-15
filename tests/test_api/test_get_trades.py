@@ -25,6 +25,10 @@ def test_get_trades_accumulation_and_filtering(
 
     client.post("/orders", json={"orders": [sell_order1]})
 
+    # Match at T+1 to execute first trade
+    match1_response = client.post("/match", json={"timestamp": sell_order1["timestamp"]})
+    assert match1_response.status_code == 200
+
     # Place buy at 105 at T+2 seconds
     buy_order2 = sample_limit_order.copy()
     buy_order2["order_id"] = "buy2"
@@ -39,6 +43,10 @@ def test_get_trades_accumulation_and_filtering(
     sell_order2["price"] = 100.0
     sell_order2["timestamp"] = (sample_timestamp + timedelta(seconds=3)).isoformat()
     client.post("/orders", json={"orders": [sell_order2]})
+
+    # Match at T+3 to execute second trade
+    match2_response = client.post("/match", json={"timestamp": sell_order2["timestamp"]})
+    assert match2_response.status_code == 200
 
     # Verify 2 trades are accumulated
     response = client.get("/trades")
