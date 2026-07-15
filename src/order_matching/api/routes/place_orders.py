@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, status
 
 from order_matching.api.dependencies import MatchingEngineDep
 from order_matching.api.models.converters import domain_order_to_response, request_to_domain_order
@@ -12,17 +12,19 @@ router = APIRouter()
 @router.post("/orders")
 def place_orders(request: Request, payload: PlaceOrdersRequest, engine: MatchingEngineDep) -> PlaceOrdersResponse:
     if not payload.orders:
-        raise HTTPException(status_code=422, detail="At least one order must be provided")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="At least one order must be provided"
+        )
 
     # 15.2 Check for duplicate IDs in the request itself
     request_ids = [order.order_id for order in payload.orders]
     if len(request_ids) != len(set(request_ids)):
-        raise HTTPException(status_code=400, detail="Duplicate order ID in request")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Duplicate order ID in request")
 
     # Check if any ID already exists in the engine's active orders
     for order in payload.orders:
         if engine.unprocessed_orders.find_order_by_id(order.order_id) is not None:
-            raise HTTPException(status_code=400, detail=f"Duplicate order ID: {order.order_id}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Duplicate order ID: {order.order_id}")
 
     # Convert request orders to domain Orders
     domain_orders_list = [request_to_domain_order(o) for o in payload.orders]
