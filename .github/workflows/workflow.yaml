@@ -62,7 +62,7 @@ jobs:
         with:
           tool: pytest
           output-file-path: benchmark.json
-          external-data-json-path: ./cache/benchmark-data.json
+#          external-data-json-path: ./cache/benchmark-data.json
           fail-on-alert: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: true
