@@ -18,6 +18,7 @@ classifiers = [
 ]
 dependencies = [
   "faker>=33.0.0",
+  "loguru>=0.7.2",
   "numpy>=2.2.6",
 ]
 
