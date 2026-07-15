@@ -2,7 +2,7 @@
 
 # Run pytest benchmark. Results are saved in .benchmarks
 pytest tests/test_matching_engine.py::TestMatchingEngine::test_matching_with_benchmark \
-  --dist no \
+  -o addopts="" \
   --benchmark-enable \
   --benchmark-autosave \
   --benchmark-json=benchmark.json
