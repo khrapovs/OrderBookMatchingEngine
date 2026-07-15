@@ -54,7 +54,7 @@ doc = [
   "pymdown-extensions",
 ]
 test = [
-  "httpx>=0.28.1",
+  "httpx2>=2.7.0",
   "pytest>=8.3.3",
   "pytest-benchmark[histogram]>=5.1.0",
   "pytest-cov>=6.0.0",
