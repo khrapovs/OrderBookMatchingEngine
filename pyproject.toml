@@ -50,6 +50,9 @@ doc = [
   "mkdocs-macros-plugin",
   "pymdown-extensions",
 ]
+web = [
+    "fastapi>=0.139.0",
+]
 
 [project.urls]
 Source = "https://github.com/khrapovs/OrderBookMatchingEngine"
