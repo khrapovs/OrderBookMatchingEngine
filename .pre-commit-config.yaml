@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: library-skills-check
         name: library-skills check
-        entry: uvx library-skills --yes
+        entry: uvx library-skills --check
         language: system
         pass_filenames: false
         files: ^(pyproject\.toml|uv\.lock|package\.json|package-lock\.json)$
