@@ -1,6 +1,7 @@
 from copy import deepcopy
 from datetime import datetime, timedelta
 
+import pytest
 from pytest_benchmark.fixture import BenchmarkFixture
 
 from order_matching.matching_engine import MatchingEngine
@@ -13,6 +14,30 @@ from order_matching.trade import Trade
 
 
 class TestMatchingEngine:
+    def test_place_orders(self) -> None:
+        matching_engine = MatchingEngine()
+        timestamp = datetime.now()
+        buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="buy1", trader_id="x")
+        sell_order = LimitOrder(
+            side=Side.SELL, price=1.0, size=2.3, timestamp=timestamp, order_id="sell1", trader_id="y"
+        )
+
+        # Place them. They cross, but they should not match yet.
+        matching_engine.place(orders=Orders([buy_order, sell_order]))
+
+        # Verify they are in the book
+        assert matching_engine.unprocessed_orders.find_order_by_id("buy1") == buy_order
+        assert matching_engine.unprocessed_orders.find_order_by_id("sell1") == sell_order
+
+        # Verify duplicate order ID in same request raises ValueError
+        with pytest.raises(ValueError, match="Duplicate order ID in request"):
+            matching_engine.place(orders=Orders([buy_order, buy_order]))
+
+        # Verify duplicate order ID in book raises ValueError
+        dup_buy = LimitOrder(side=Side.BUY, price=1.5, size=1.0, timestamp=timestamp, order_id="buy1", trader_id="z")
+        with pytest.raises(ValueError, match="Duplicate order ID: buy1"):
+            matching_engine.place(orders=Orders([dup_buy]))
+
     def test_matching_with_no_orders(self) -> None:
         matching_engine = MatchingEngine()
         executed_trades = matching_engine.match(timestamp=datetime.now())
