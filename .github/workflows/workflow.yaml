@@ -71,6 +71,8 @@ jobs:
           alert-comment-cc-users: '@${GITHUB_ACTOR},@khrapovs'
           auto-push: false
           benchmark-data-dir-path: "docs/dev/bench"
+      - name: Fetch gh-pages branch
+        run: git fetch origin gh-pages:gh-pages || true
       - name: Push benchmark result
         run: git push 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git' gh-pages:gh-pages
 
