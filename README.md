@@ -63,7 +63,6 @@ pip install order-matching[polars]
        trade_id='c4da537c-1651-4dae-8486-7db30d67b366',
        timestamp=datetime.datetime(2023, 1, 2, 0, 0))]
 
-
 ```
 
 ### Data Export (Polars)
@@ -82,6 +81,41 @@ If you installed with `[polars]` extra, you can export data to polars LazyFrame:
 >>> trades_df = ExecutedTrades().to_frame()
 
 ```
+
+## REST API
+
+For demo, education, and backtesting workflows, a RESTful API layer is provided.
+
+### Running the API Server
+
+Start the API server in development mode using the `fastapi` CLI:
+
+```shell
+uv run fastapi dev
+```
+
+Or run with `uvicorn`:
+
+```shell
+uv run uvicorn order_matching.api.app:app --reload
+```
+
+Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+### Endpoints
+
+- `POST /place`: Place a batch of one or more orders without triggering matching.
+- `POST /match`: Trigger matching at a specific timestamp for all queued/placed orders.
+- `GET /orders`: Retrieve the current unmatched order book state (grouped by price).
+- `GET /trades`: Retrieve trade execution history (with optional `from_timestamp` query filter).
+- `DELETE /orders/{order_id}`: Cancel an active order by ID.
+- `POST /reset`: Reset the engine state (with optional random `seed`).
+- `GET /summary`: Retrieve aggregated order book price levels (matching `OrderBook.summary()`).
+
+### API Limitations
+
+- **Single-User / Educational Use**: The server uses in-memory state and is not thread-safe.
+- **No Persistence**: Restarting the server clears all order book and trade history state.
 
 ## Related Projects
 
@@ -119,38 +153,3 @@ Build and serve documentation website:
 ```shell
 uv run mkdocs serve
 ```
-
-## REST API
-
-For demo, education, and backtesting workflows, a RESTful API layer is provided.
-
-### Running the API Server
-
-Start the API server in development mode using the `fastapi` CLI:
-
-```shell
-uv run fastapi dev
-```
-
-Or run with `uvicorn`:
-
-```shell
-uv run uvicorn order_matching.api.app:app --reload
-```
-
-Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
-
-### Endpoints
-
-- `POST /place`: Place a batch of one or more orders without triggering matching.
-- `POST /match`: Trigger matching at a specific timestamp for all queued/placed orders.
-- `GET /orders`: Retrieve the current unmatched order book state (grouped by price).
-- `GET /trades`: Retrieve trade execution history (with optional `from_timestamp` query filter).
-- `DELETE /orders/{order_id}`: Cancel an active order by ID.
-- `POST /reset`: Reset the engine state (with optional random `seed`).
-- `GET /summary`: Retrieve aggregated order book price levels (matching `OrderBook.summary()`).
-
-### API Limitations
-
-- **Single-User / Educational Use**: The server uses in-memory state and is not thread-safe.
-- **No Persistence**: Restarting the server clears all order book and trade history state.
