@@ -1,6 +1,8 @@
 from dataclasses import replace
 from datetime import datetime
 
+from loguru import logger
+
 from order_matching.executed_trades import ExecutedTrades
 from order_matching.order import Order
 from order_matching.order_book import OrderBook
@@ -82,6 +84,8 @@ class MatchingEngine:
             self.unprocessed_orders.append(incoming_order=order)
         self._queue += orders
 
+        logger.debug(f"Placed orders: {[order.order_id for order in orders]}")
+
     def match(self, timestamp: datetime) -> ExecutedTrades:
         """Match queued and placed orders in price-time priority.
 
@@ -108,6 +112,7 @@ class MatchingEngine:
         trades = ExecutedTrades()
         while not self._queue.is_empty:
             trades += self._match(order=self._queue.dequeue())
+        logger.debug(f"Matched orders: {[trade.book_order_id for trade in trades.trades]}")
         return trades
 
     def cancel_order(self, order_id: str) -> None:
@@ -129,6 +134,7 @@ class MatchingEngine:
         cancel = replace(order, status=Status.CANCEL)
         self._queue += Orders([cancel])
         self.match(timestamp=order.timestamp)
+        logger.debug(f"Cancelled order: {order_id}")
 
     def _get_expired_orders(self) -> Orders:
         orders: list[Order] = list()

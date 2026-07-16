@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from loguru import logger
 
 from order_matching.api.models.requests import ResetRequest
 from order_matching.api.models.responses import ResetResponse
@@ -13,5 +14,5 @@ def reset_engine(request: Request, payload: ResetRequest) -> ResetResponse:
     new_engine = MatchingEngine(seed=payload.seed)
     request.app.state.engine = new_engine
     request.app.state.trades = []
-
+    logger.debug(f"Matching engine reset successfully with seed: {payload.seed}")
     return ResetResponse(message="Matching engine reset successfully")
