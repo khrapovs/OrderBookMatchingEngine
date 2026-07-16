@@ -741,7 +741,7 @@ class TestMatchingEngine:
 
         cancel_buy_order = deepcopy(buy_order)
         cancel_buy_order.status = Status.CANCEL
-        order_book._queue += deepcopy(Orders([cancel_buy_order]))
+        order_book.place(orders=deepcopy(Orders([cancel_buy_order])))
         order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
@@ -767,7 +767,7 @@ class TestMatchingEngine:
         assert cancel_buy_order.size != modified_buy_order.size
 
         cancel_buy_order.status = Status.CANCEL
-        order_book._queue += deepcopy(Orders([cancel_buy_order]))
+        order_book.place(orders=deepcopy(Orders([cancel_buy_order])))
         order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}

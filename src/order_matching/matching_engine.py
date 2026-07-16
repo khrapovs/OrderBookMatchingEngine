@@ -63,16 +63,22 @@ class MatchingEngine:
         ------
         ValueError
             If duplicate order IDs are detected or if an order ID already exists in the book.
+            Note: Cancel orders (Status.CANCEL) are exempt from duplicate ID validation.
         """
-        order_ids = [order.order_id for order in orders]
+        # Separate regular orders from cancel orders
+        regular_orders = [order for order in orders if order.status != Status.CANCEL]
+
+        # Validate regular orders for duplicate IDs
+        order_ids = [order.order_id for order in regular_orders]
         if len(order_ids) != len(set(order_ids)):
             raise ValueError("Duplicate order ID in request")
 
-        for order in orders:
+        for order in regular_orders:
             if self.unprocessed_orders.find_order_by_id(order.order_id) is not None:
                 raise ValueError(f"Duplicate order ID: {order.order_id}")
 
-        for order in orders:
+        # Add all orders to book and queue (regular and cancel)
+        for order in regular_orders:
             self.unprocessed_orders.append(incoming_order=order)
         self._queue += orders
 
