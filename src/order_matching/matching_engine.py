@@ -25,12 +25,14 @@ class MatchingEngine:
     >>> from order_matching.matching_engine import MatchingEngine
     >>> from order_matching.order import LimitOrder
     >>> from order_matching.side import Side
+    >>> from order_matching.orders import Orders
     >>> matching_engine = MatchingEngine(seed=123)
     >>> timestamp = datetime(2023, 1, 1)
     >>> transaction_timestamp = timestamp + timedelta(days=1)
     >>> buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="a", trader_id="x")
     >>> sell_order = LimitOrder(side=Side.SELL, price=0.8, size=1.6, timestamp=timestamp, order_id="b", trader_id="y")
-    >>> executed_trades = matching_engine.match(orders=Orders([buy_order, sell_order]), timestamp=transaction_timestamp)
+    >>> matching_engine.place(orders=Orders([buy_order, sell_order]))
+    >>> executed_trades = matching_engine.match(timestamp=transaction_timestamp)
     >>> pp(executed_trades.trades)
     [Trade(side=SELL,
            price=1.2,
@@ -74,15 +76,13 @@ class MatchingEngine:
             self.unprocessed_orders.append(incoming_order=order)
         self._queue += orders
 
-    def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
-        """Match incoming orders in price-time priority.
+    def match(self, timestamp: datetime) -> ExecutedTrades:
+        """Match queued and placed orders in price-time priority.
 
         Parameters
         ----------
         timestamp
             Timestamp of order matching
-        orders
-            Incoming orders. Will be matched with existing ones on the order book in
 
         Returns
         -------
@@ -90,7 +90,6 @@ class MatchingEngine:
             Executed trades storage object
         """
         self._timestamp = timestamp
-        self._queue += orders if orders else Orders()
         self._queue += self._get_expired_orders()
 
         # Remove all non-cancelled queued orders from the book before matching
@@ -122,7 +121,8 @@ class MatchingEngine:
         if order is None:
             raise ValueError(f"Order {order_id} not found")
         cancel = replace(order, status=Status.CANCEL)
-        self.match(orders=Orders([cancel]), timestamp=order.timestamp)
+        self._queue += Orders([cancel])
+        self.match(timestamp=order.timestamp)
 
     def _get_expired_orders(self) -> Orders:
         orders: list[Order] = list()

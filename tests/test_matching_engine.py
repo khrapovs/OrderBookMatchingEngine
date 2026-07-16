@@ -58,7 +58,8 @@ class TestMatchingEngine:
         buy_order_first = LimitOrder(
             side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x"
         )
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {buy_order_first.price: Orders([buy_order_first])}
         assert order_book.unprocessed_orders.offers == dict()
@@ -68,7 +69,8 @@ class TestMatchingEngine:
         sell_order_first = LimitOrder(
             side=Side.SELL, price=3.4, size=5.6, timestamp=timestamp, order_id="abc", trader_id="x"
         )
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {buy_order_first.price: Orders([buy_order_first])}
         assert order_book.unprocessed_orders.offers == {sell_order_first.price: Orders([sell_order_first])}
@@ -79,10 +81,12 @@ class TestMatchingEngine:
             side=Side.BUY, price=buy_order_first.price, size=6.7, timestamp=timestamp, order_id="qwe", trader_id="x"
         )
         sell_order_second = LimitOrder(
-            side=Side.SELL, price=5.9, size=9.3, timestamp=timestamp, order_id="abc", trader_id="x"
+            side=Side.SELL, price=5.9, size=9.3, timestamp=timestamp, order_id="def", trader_id="x"
         )
-        order_book.match(orders=deepcopy(Orders([buy_order_second])), timestamp=transaction_timestamp)
-        order_book.match(orders=deepcopy(Orders([sell_order_second])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order_second])))
+        order_book.match(timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order_second])))
+        order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {
             buy_order_first.price: Orders([buy_order_first, buy_order_second])
@@ -100,14 +104,16 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         sell_order = LimitOrder(side=Side.SELL, price=3, size=size, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {sell_order.price: Orders([sell_order])}
         assert executed_trades.trades == []
 
         buy_order = LimitOrder(side=Side.BUY, price=4, size=size, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {}
@@ -131,14 +137,16 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=4, size=size, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.offers == {}
         assert order_book.unprocessed_orders.bids == {buy_order.price: Orders([buy_order])}
         assert executed_trades.trades == []
 
         sell_order = LimitOrder(side=Side.SELL, price=3, size=size, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {}
         assert executed_trades.trades == [
@@ -160,14 +168,16 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         sell_order = LimitOrder(side=Side.SELL, price=3, size=2, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {sell_order.price: Orders([sell_order])}
         assert executed_trades.trades == []
 
         buy_order = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         sell_order_modified = deepcopy(sell_order)
         sell_order_modified.size -= buy_order.size
 
@@ -192,14 +202,16 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=4, size=2, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.offers == {}
         assert order_book.unprocessed_orders.bids == {buy_order.price: Orders([buy_order])}
         assert executed_trades.trades == []
 
         sell_order = LimitOrder(side=Side.SELL, price=3, size=1, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         buy_order_modified = deepcopy(buy_order)
         buy_order_modified.size -= sell_order.size
 
@@ -224,14 +236,16 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         sell_order = LimitOrder(side=Side.SELL, price=3, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {sell_order.price: Orders([sell_order])}
         assert executed_trades.trades == []
 
         buy_order = LimitOrder(side=Side.BUY, price=4, size=2, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         buy_order_modified = deepcopy(buy_order)
         buy_order_modified.size -= sell_order.size
 
@@ -263,7 +277,8 @@ class TestMatchingEngine:
         ]
         sell_order = LimitOrder(side=Side.SELL, price=5, size=10, timestamp=timestamp, order_id="d", trader_id="x")
         sell_orders = [sell_order]
-        executed_trades = order_book.match(orders=deepcopy(Orders(buy_orders)), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders(buy_orders)))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {
             buy_orders[0].price: Orders([buy_orders[0]]),
@@ -273,7 +288,8 @@ class TestMatchingEngine:
         assert order_book.unprocessed_orders.offers == {}
         assert executed_trades.trades == []
 
-        executed_trades = order_book.match(orders=deepcopy(Orders(sell_orders)), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders(sell_orders)))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         sell_order_modified = deepcopy(sell_order)
         sell_order_modified.size -= matching_order.size
 
@@ -307,7 +323,8 @@ class TestMatchingEngine:
         ]
         buy_order = LimitOrder(side=Side.BUY, price=6, size=10, timestamp=timestamp, order_id="d", trader_id="x")
         buy_orders = [buy_order]
-        executed_trades = order_book.match(orders=deepcopy(Orders(sell_orders)), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders(sell_orders)))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.offers == {
             sell_orders[0].price: Orders([sell_orders[0]]),
@@ -317,7 +334,8 @@ class TestMatchingEngine:
         assert order_book.unprocessed_orders.bids == {}
         assert executed_trades.trades == []
 
-        executed_trades = order_book.match(orders=deepcopy(Orders(buy_orders)), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders(buy_orders)))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         buy_order_modified = deepcopy(buy_order)
         buy_order_modified.size -= matching_order.size
 
@@ -344,14 +362,16 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.offers == {}
         assert order_book.unprocessed_orders.bids == {buy_order.price: Orders([buy_order])}
         assert executed_trades.trades == []
 
         sell_order = LimitOrder(side=Side.SELL, price=3, size=2, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         sell_order_modified = deepcopy(sell_order)
         sell_order_modified.size -= buy_order.size
 
@@ -378,7 +398,8 @@ class TestMatchingEngine:
         sell_order_first = LimitOrder(
             side=Side.SELL, price=3, size=1, timestamp=timestamp, order_id="abc", trader_id="x"
         )
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {sell_order_first.price: Orders([sell_order_first])}
@@ -387,9 +408,8 @@ class TestMatchingEngine:
         sell_order_second = LimitOrder(
             side=Side.SELL, price=3, size=0.5, timestamp=timestamp, order_id="qwe", trader_id="x"
         )
-        executed_trades = order_book.match(
-            orders=deepcopy(Orders([sell_order_second])), timestamp=transaction_timestamp
-        )
+        order_book.place(orders=deepcopy(Orders([sell_order_second])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
         assert order_book.unprocessed_orders.offers == {
@@ -398,7 +418,8 @@ class TestMatchingEngine:
         assert executed_trades.trades == []
 
         buy_order = LimitOrder(side=Side.BUY, price=4, size=2, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         buy_order_modified = deepcopy(buy_order)
         buy_order_modified.size -= sell_order_first.size + sell_order_second.size
 
@@ -434,7 +455,8 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {buy_order_first.price: Orders([buy_order_first])}
         assert order_book.unprocessed_orders.offers == {}
@@ -443,7 +465,8 @@ class TestMatchingEngine:
         buy_order_second = LimitOrder(
             side=Side.BUY, price=4, size=0.5, timestamp=timestamp, order_id="qwe", trader_id="x"
         )
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_second])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order_second])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {
             buy_order_first.price: Orders([buy_order_first, buy_order_second])
@@ -452,7 +475,8 @@ class TestMatchingEngine:
         assert executed_trades.trades == []
 
         sell_order = LimitOrder(side=Side.SELL, price=3, size=2, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         sell_order_modified = deepcopy(sell_order)
         sell_order_modified.size -= buy_order_first.size + buy_order_second.size
 
@@ -491,9 +515,8 @@ class TestMatchingEngine:
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="a", trader_id="x")
         buy_order_second = LimitOrder(side=Side.BUY, price=4, size=1, timestamp=timestamp, order_id="b", trader_id="x")
-        executed_trades = order_book.match(
-            orders=deepcopy(Orders([buy_order_first, buy_order_second])), timestamp=transaction_timestamp
-        )
+        order_book.place(orders=deepcopy(Orders([buy_order_first, buy_order_second])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {
             buy_order_first.price: Orders([buy_order_first, buy_order_second])
@@ -502,7 +525,8 @@ class TestMatchingEngine:
         assert executed_trades.trades == []
 
         sell_order = LimitOrder(side=Side.SELL, price=3.5, size=1.5, timestamp=timestamp, order_id="qwe", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         sell_order_modified = deepcopy(sell_order)
         sell_order_modified.size -= buy_order_first.size
         buy_order_second_modified = deepcopy(buy_order_second)
@@ -547,9 +571,8 @@ class TestMatchingEngine:
         sell_order = LimitOrder(
             side=Side.SELL, price=4, size=0.5, timestamp=timestamp + time_delta, order_id="xyz", trader_id="x"
         )
-        executed_trades = order_book.match(
-            orders=deepcopy(Orders([sell_order, buy_order_first, buy_order_second])), timestamp=transaction_timestamp
-        )
+        order_book.place(orders=deepcopy(Orders([sell_order, buy_order_first, buy_order_second])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         buy_order_second_modified = deepcopy(buy_order_second)
         buy_order_second_modified.size -= sell_order.size
 
@@ -581,7 +604,8 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order_first = MarketOrder(side=Side.BUY, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {buy_order_first.price: Orders([buy_order_first])}
         assert order_book.unprocessed_orders.offers == dict()
@@ -589,7 +613,8 @@ class TestMatchingEngine:
         assert executed_trades.trades == []
 
         sell_order_first = MarketOrder(side=Side.SELL, size=5.6, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         modified_sell_order_first = deepcopy(sell_order_first)
         modified_sell_order_first.size -= buy_order_first.size
 
@@ -618,12 +643,14 @@ class TestMatchingEngine:
             LimitOrder(side=Side.BUY, price=5.6, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x"),
             LimitOrder(side=Side.BUY, price=6.5, size=3.2, timestamp=timestamp, order_id="qwe", trader_id="x"),
         ]
-        executed_trades = order_book.match(orders=deepcopy(Orders(buy_orders)), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders(buy_orders)))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert executed_trades.trades == []
 
         sell_order_first = MarketOrder(side=Side.SELL, size=10.0, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([sell_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([sell_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         modified_sell_order_first = deepcopy(sell_order_first)
         modified_sell_order_first.size -= buy_orders[0].size + buy_orders[1].size
 
@@ -663,12 +690,14 @@ class TestMatchingEngine:
             LimitOrder(side=Side.SELL, price=5.6, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x"),
             LimitOrder(side=Side.SELL, price=6.5, size=3.2, timestamp=timestamp, order_id="qwe", trader_id="x"),
         ]
-        executed_trades = order_book.match(orders=deepcopy(Orders(sell_orders)), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders(sell_orders)))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
 
         assert executed_trades.trades == []
 
         buy_order_first = MarketOrder(side=Side.BUY, size=10.0, timestamp=timestamp, order_id="abc", trader_id="x")
-        executed_trades = order_book.match(orders=deepcopy(Orders([buy_order_first])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order_first])))
+        executed_trades = order_book.match(timestamp=transaction_timestamp)
         modified_buy_order_first = deepcopy(buy_order_first)
         modified_buy_order_first.size -= sell_orders[0].size + sell_orders[1].size
 
@@ -705,13 +734,15 @@ class TestMatchingEngine:
         timestamp = datetime.now()
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="xyz", trader_id="x")
-        order_book.match(orders=deepcopy(Orders([buy_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order])))
+        order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {buy_order.price: Orders([buy_order])}
 
         cancel_buy_order = deepcopy(buy_order)
         cancel_buy_order.status = Status.CANCEL
-        order_book.match(orders=deepcopy(Orders([cancel_buy_order])), timestamp=transaction_timestamp)
+        order_book._queue += deepcopy(Orders([cancel_buy_order]))
+        order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
 
@@ -722,7 +753,8 @@ class TestMatchingEngine:
         transaction_timestamp = timestamp + timedelta(days=1)
         buy_order = LimitOrder(side=Side.BUY, price=1.2, size=3.0, timestamp=timestamp, order_id="xyz", trader_id="x")
         sell_order = MarketOrder(side=Side.SELL, size=2.0, timestamp=timestamp, order_id="abc", trader_id="y")
-        order_book.match(orders=deepcopy(Orders([buy_order, sell_order])), timestamp=transaction_timestamp)
+        order_book.place(orders=deepcopy(Orders([buy_order, sell_order])))
+        order_book.match(timestamp=transaction_timestamp)
         modified_buy_order = deepcopy(buy_order)
         modified_buy_order.size -= sell_order.size
 
@@ -735,7 +767,8 @@ class TestMatchingEngine:
         assert cancel_buy_order.size != modified_buy_order.size
 
         cancel_buy_order.status = Status.CANCEL
-        order_book.match(orders=deepcopy(Orders([cancel_buy_order])), timestamp=transaction_timestamp)
+        order_book._queue += deepcopy(Orders([cancel_buy_order]))
+        order_book.match(timestamp=transaction_timestamp)
 
         assert order_book.unprocessed_orders.bids == {}
 
@@ -754,7 +787,8 @@ class TestMatchingEngine:
             order_id="xyz",
             trader_id="x",
         )
-        matching_engine.match(orders=Orders([order]), timestamp=timestamp)
+        matching_engine.place(orders=Orders([order]))
+        matching_engine.match(timestamp=timestamp)
 
         assert matching_engine.unprocessed_orders.bids == {order.price: Orders([order])}
         assert matching_engine.unprocessed_orders.offers == dict()
@@ -776,8 +810,10 @@ class TestMatchingEngine:
         sell = LimitOrder(
             side=Side.SELL, price=100.0, size=10, timestamp=t0 + timedelta(seconds=1), order_id="B", trader_id="y"
         )
-        matching_engine.match(timestamp=t0, orders=Orders([buy]))
-        matching_engine.match(timestamp=t0 + timedelta(seconds=1), orders=Orders([sell]))  # "A" is fully filled
+        matching_engine.place(orders=Orders([buy]))
+        matching_engine.match(timestamp=t0)
+        matching_engine.place(orders=Orders([sell]))
+        matching_engine.match(timestamp=t0 + timedelta(seconds=1))  # "A" is fully filled
 
         order_book = matching_engine.unprocessed_orders
 
@@ -794,7 +830,8 @@ class TestMatchingEngine:
         order = LimitOrder(
             side=Side.BUY, price=100.0, size=10, timestamp=timestamp, order_id="X", trader_id="x", expiration=expiration
         )
-        matching_engine.match(timestamp=timestamp, orders=Orders(orders=[order]))
+        matching_engine.place(orders=Orders(orders=[order]))
+        matching_engine.match(timestamp=timestamp)
         order = LimitOrder(
             side=Side.SELL,
             price=100.0,
@@ -803,23 +840,27 @@ class TestMatchingEngine:
             order_id="B",
             trader_id="y",
         )
-        matching_engine.match(timestamp=timestamp + timedelta(seconds=1), orders=Orders(orders=[order]))
+        matching_engine.place(orders=Orders(orders=[order]))
+        matching_engine.match(timestamp=timestamp + timedelta(seconds=1))
 
         # 2) a brand-new LIVE order re-uses id "X" at the same price (default far expiration)
         order = LimitOrder(
             side=Side.BUY, price=100.0, size=5, timestamp=timestamp + timedelta(seconds=2), order_id="X", trader_id="z"
         )
-        matching_engine.match(timestamp=timestamp + timedelta(seconds=2), orders=Orders(orders=[order]))
+        matching_engine.place(orders=Orders(orders=[order]))
+        matching_engine.match(timestamp=timestamp + timedelta(seconds=2))
 
         # 3) advance time past expiration with any order -> expiry sweep fires
         order = LimitOrder(
             side=Side.SELL, price=999.0, size=1, timestamp=timestamp + timedelta(hours=2), order_id="D", trader_id="w"
         )
-        matching_engine.match(timestamp=timestamp + timedelta(hours=2), orders=Orders(orders=[order]))
+        matching_engine.place(orders=Orders(orders=[order]))
+        matching_engine.match(timestamp=timestamp + timedelta(hours=2))
 
         # the live re-used-id "X" was evicted; expected ['X']
         assert [o.order_id for v in matching_engine.unprocessed_orders.bids.values() for o in v] == ["X"]
 
     def test_matching_with_benchmark(self, random_orders: Orders, benchmark: BenchmarkFixture) -> None:
         order_book = MatchingEngine()
-        benchmark(order_book.match, orders=random_orders, timestamp=random_orders.orders[-1].timestamp)
+        order_book.place(orders=random_orders)
+        benchmark(order_book.match, timestamp=random_orders.orders[-1].timestamp)
