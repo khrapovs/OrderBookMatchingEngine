@@ -11,11 +11,6 @@ router = APIRouter()
 
 @router.post("/place")
 def place(payload: PlaceRequest, engine: MatchingEngineDep) -> PlaceResponse:
-    if not payload.orders:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="At least one order must be provided"
-        )
-
     # Convert request orders to domain Orders
     domain_orders_list = [request_to_domain_order(o) for o in payload.orders]
     domain_orders = Orders(orders=domain_orders_list)

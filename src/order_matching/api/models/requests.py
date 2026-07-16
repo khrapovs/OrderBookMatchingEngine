@@ -35,7 +35,7 @@ OrderRequest = Annotated[LimitOrderRequest | MarketOrderRequest, Field(discrimin
 
 class PlaceRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    orders: list[OrderRequest]
+    orders: Annotated[list[OrderRequest], Field(min_length=1)]
 
 
 class MatchRequest(BaseModel):
