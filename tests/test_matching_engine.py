@@ -861,6 +861,9 @@ class TestMatchingEngine:
         assert [o.order_id for v in matching_engine.unprocessed_orders.bids.values() for o in v] == ["X"]
 
     def test_matching_with_benchmark(self, random_orders: Orders, benchmark: BenchmarkFixture) -> None:
-        order_book = MatchingEngine()
-        order_book.place(orders=random_orders)
-        benchmark(order_book.match, timestamp=random_orders.orders[-1].timestamp)
+        def place_and_match(orders: Orders) -> None:
+            engine = MatchingEngine()
+            engine.place(orders=orders)
+            engine.match(timestamp=orders.orders[-1].timestamp)
+
+        benchmark(function_to_benchmark=place_and_match, orders=random_orders)
