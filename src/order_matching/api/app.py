@@ -3,10 +3,15 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from order_matching import __version__
 from order_matching.api.routes import router
 from order_matching.matching_engine import MatchingEngine
 
-app = FastAPI(title="Order Book Matching Engine API", description="REST API wrapping the Order Book Matching Engine")
+app = FastAPI(
+    title="Order Book Matching Engine API",
+    description="REST API wrapping the Order Book Matching Engine",
+    version=__version__,
+)
 
 # Initialize global state
 app.state.engine = MatchingEngine()
@@ -21,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include API routes
 app.include_router(router)
 
 
