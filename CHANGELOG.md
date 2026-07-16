@@ -1,3 +1,9 @@
+## 0.6.0 (2026-07-16)
+
+### Feat
+
+- Implement FastAPI server (#41)
+
 ## 0.5.0 (2026-07-07)
 
 ### Feat
