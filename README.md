@@ -46,13 +46,10 @@ pip install order-matching[polars]
 >>> transaction_timestamp = timestamp + timedelta(days=1)
 >>> buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="a", trader_id="x")
 >>> sell_order = LimitOrder(side=Side.SELL, price=0.8, size=1.6, timestamp=timestamp, order_id="b", trader_id="y")
->>>
 >>> # Place orders without matching:
 >>> matching_engine.place(orders=Orders([buy_order, sell_order]))
->>>
 >>> # Trigger matching at a specific timestamp:
 >>> executed_trades = matching_engine.match(timestamp=transaction_timestamp)
->>>
 >>> pp(executed_trades.trades)
 [Trade(side=SELL,
        price=1.2,
