@@ -1,0 +1,41 @@
+{
+  "skills": {
+    "codebase-design": {
+      "computedHash": "6d9d51d8caa01633fd00cf87089c5618c982321f942ac69f62565dc001c6b22f",
+      "skillPath": "skills/engineering/codebase-design/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    },
+    "grill-me": {
+      "computedHash": "f361db4e15e6bfd562a9282b1dccda513910a50061f9e838ce017be9c69dde3f",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    },
+    "grill-with-docs": {
+      "computedHash": "9c460cbd94fd3c63cdef967dbdb6e66ca687103cdc380cd37834e4d10b738f78",
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    },
+    "grilling": {
+      "computedHash": "368d3dd7251247c69f3656d93dc83c8f1577792eacac2111f1e7981db2ece49b",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    },
+    "improve-codebase-architecture": {
+      "computedHash": "66e8a50c83c3c724fcfe0769701b665c56cec220cc4f49cc1aee8bdfc07de94a",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    },
+    "tdd": {
+      "computedHash": "81eca2a5b53a63f481c0849be7a663a8cd43d5cf53f32b644ec0a2f50cf91aa2",
+      "skillPath": "skills/engineering/tdd/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    }
+  },
+  "version": 1
+}

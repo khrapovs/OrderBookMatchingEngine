@@ -26,3 +26,12 @@ repos:
     rev: v0.0.55
     hooks:
       - id: ty
+
+  - repo: local
+    hooks:
+      - id: library-skills-check
+        name: library-skills check
+        entry: uvx library-skills --check
+        language: system
+        pass_filenames: false
+        files: ^(pyproject\.toml|uv\.lock|package\.json|package-lock\.json)$

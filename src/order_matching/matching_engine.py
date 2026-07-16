@@ -1,4 +1,7 @@
+from dataclasses import replace
 from datetime import datetime
+
+from loguru import logger
 
 from order_matching.executed_trades import ExecutedTrades
 from order_matching.order import Order
@@ -24,12 +27,14 @@ class MatchingEngine:
     >>> from order_matching.matching_engine import MatchingEngine
     >>> from order_matching.order import LimitOrder
     >>> from order_matching.side import Side
+    >>> from order_matching.orders import Orders
     >>> matching_engine = MatchingEngine(seed=123)
     >>> timestamp = datetime(2023, 1, 1)
     >>> transaction_timestamp = timestamp + timedelta(days=1)
     >>> buy_order = LimitOrder(side=Side.BUY, price=1.2, size=2.3, timestamp=timestamp, order_id="a", trader_id="x")
     >>> sell_order = LimitOrder(side=Side.SELL, price=0.8, size=1.6, timestamp=timestamp, order_id="b", trader_id="y")
-    >>> executed_trades = matching_engine.match(orders=Orders([buy_order, sell_order]), timestamp=transaction_timestamp)
+    >>> matching_engine.place(orders=Orders([buy_order, sell_order]))
+    >>> executed_trades = matching_engine.match(timestamp=transaction_timestamp)
     >>> pp(executed_trades.trades)
     [Trade(side=SELL,
            price=1.2,
@@ -48,15 +53,46 @@ class MatchingEngine:
         self.unprocessed_orders = OrderBook()
         self._timestamp: datetime | None = None
 
-    def match(self, timestamp: datetime, orders: Orders | None = None) -> ExecutedTrades:
-        """Match incoming orders in price-time priority.
+    def place(self, orders: Orders) -> None:
+        """Place orders without matching.
+
+        Parameters
+        ----------
+        orders
+            Orders to place
+
+        Raises
+        ------
+        ValueError
+            If duplicate order IDs are detected or if an order ID already exists in the book.
+            Note: Cancel orders (Status.CANCEL) are exempt from duplicate ID validation.
+        """
+        # Separate regular orders from cancel orders
+        regular_orders = [order for order in orders if order.status != Status.CANCEL]
+
+        # Validate regular orders for duplicate IDs
+        order_ids = [order.order_id for order in regular_orders]
+        if len(order_ids) != len(set(order_ids)):
+            raise ValueError("Duplicate order ID in request")
+
+        for order in regular_orders:
+            if self.unprocessed_orders.find_order_by_id(order.order_id) is not None:
+                raise ValueError(f"Duplicate order ID: {order.order_id}")
+
+        # Add all orders to book and queue (regular and cancel)
+        for order in regular_orders:
+            self.unprocessed_orders.append(incoming_order=order)
+        self._queue += orders
+
+        logger.debug(f"Placed orders: {[order.order_id for order in orders]}")
+
+    def match(self, timestamp: datetime) -> ExecutedTrades:
+        """Match queued and placed orders in price-time priority.
 
         Parameters
         ----------
         timestamp
             Timestamp of order matching
-        orders
-            Incoming orders. Will be matched with existing ones on the order book in
 
         Returns
         -------
@@ -64,12 +100,41 @@ class MatchingEngine:
             Executed trades storage object
         """
         self._timestamp = timestamp
-        self._queue += orders if orders else Orders()
         self._queue += self._get_expired_orders()
+
+        # Remove all non-cancelled queued orders from the book before matching
+        # to simulate their sequential arrival.
+        for order in self._queue:
+            if order.status != Status.CANCEL:
+                if self.unprocessed_orders.find_order_by_id(order.order_id) is not None:
+                    self.unprocessed_orders.remove(order)
+
         trades = ExecutedTrades()
         while not self._queue.is_empty:
             trades += self._match(order=self._queue.dequeue())
+        logger.debug(f"Matched orders: {[trade.book_order_id for trade in trades.trades]}")
         return trades
+
+    def cancel_order(self, order_id: str) -> None:
+        """Cancel an existing order by ID.
+
+        Parameters
+        ----------
+        order_id
+            The ID of the order to cancel
+
+        Raises
+        ------
+        ValueError
+            If no order with the given ID is found
+        """
+        order = self.unprocessed_orders.find_order_by_id(order_id)
+        if order is None:
+            raise ValueError(f"Order {order_id} not found")
+        cancel = replace(order, status=Status.CANCEL)
+        self._queue += Orders([cancel])
+        self.match(timestamp=order.timestamp)
+        logger.debug(f"Cancelled order: {order_id}")
 
     def _get_expired_orders(self) -> Orders:
         orders: list[Order] = list()
