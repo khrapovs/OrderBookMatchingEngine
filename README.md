@@ -8,12 +8,12 @@
 
 ## Overview
 
-This package is a simple order book matching engine implementation in Python. Its main features are:
+This repository provides a high-performance order book matching engine implemented in Python, complete with a RESTful API layer and a real-time interactive simulation dashboard. Its main features are:
 
-- price-time priority
-- limit and market orders
-- order cancellation and expiration
-- conversion into polars LazyFrame of orders, executed trades, order book summary (optional polars dependency)
+- **Core Engine**: Price-time priority matching supporting limit/market orders, order cancellation, and expiration.
+- **REST API**: FastAPI server for remote order placement, manual or automated matching runs, and engine controls.
+- **Web UI**: Modern glassmorphic SPA dashboard featuring a live-updating order book feed, trades list, and an interactive SVG depth chart.
+- **Data Export**: Direct conversion of order books, trades, and summary states into Polars LazyFrames (optional dependency).
 
 ## Install
 
