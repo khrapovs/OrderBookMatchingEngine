@@ -1,20 +1,16 @@
 const API_BASE = window.location.origin;
 
 /**
- * Place a new limit or market order.
- * @param {Object} orderPayload - The order details
- * @returns {Promise<Object>} API response
+ * Helper to perform HTTP fetch requests and extract JSON/errors uniformly.
  */
-export async function placeOrder(orderPayload) {
-  const res = await fetch(`${API_BASE}/place`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ orders: [orderPayload] })
-  });
+async function request(path, options = {}, defaultErrorMsg = 'Request failed') {
+  const url = `${API_BASE}${path}`;
+  const res = await fetch(url, options);
   const data = await res.json();
+
   if (!res.ok) {
-    let errMsg = 'Failed to place order';
-    if (data.detail) {
+    let errMsg = defaultErrorMsg;
+    if (data && data.detail) {
       if (Array.isArray(data.detail)) {
         errMsg = data.detail.map(err => `${err.loc.join('.')}: ${err.msg}`).join(' | ');
       } else {
@@ -23,7 +19,21 @@ export async function placeOrder(orderPayload) {
     }
     throw new Error(errMsg);
   }
+
   return data;
+}
+
+/**
+ * Place a new limit or market order.
+ * @param {Object} orderPayload - The order details
+ * @returns {Promise<Object>} API response
+ */
+export async function placeOrder(orderPayload) {
+  return request('/place', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orders: [orderPayload] })
+  }, 'Failed to place order');
 }
 
 /**
@@ -32,14 +42,9 @@ export async function placeOrder(orderPayload) {
  * @returns {Promise<Object>} API response
  */
 export async function cancelOrder(orderId) {
-  const res = await fetch(`${API_BASE}/orders/${orderId}`, {
+  return request(`/orders/${orderId}`, {
     method: 'DELETE'
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.detail || 'Failed to cancel order');
-  }
-  return data;
+  }, 'Failed to cancel order');
 }
 
 /**
@@ -48,16 +53,11 @@ export async function cancelOrder(orderId) {
  * @returns {Promise<Object>} API response
  */
 export async function matchOrders(timestampStr) {
-  const res = await fetch(`${API_BASE}/match`, {
+  return request('/match', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ timestamp: timestampStr })
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.detail || 'Failed to execute matching');
-  }
-  return data;
+  }, 'Failed to execute matching');
 }
 
 /**
@@ -67,16 +67,11 @@ export async function matchOrders(timestampStr) {
  * @returns {Promise<Object>} API response
  */
 export async function resetEngine(seed, prepopulate) {
-  const res = await fetch(`${API_BASE}/reset`, {
+  return request('/reset', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ seed: seed, prepopulate: prepopulate })
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.detail || 'Failed to reset market state');
-  }
-  return data;
+  }, 'Failed to reset market state');
 }
 
 /**
@@ -84,19 +79,15 @@ export async function resetEngine(seed, prepopulate) {
  * @returns {Promise<Object>} Object containing orders, trades, and summary data
  */
 export async function fetchMarketState() {
-  const [ordersRes, tradesRes, summaryRes] = await Promise.all([
-    fetch(`${API_BASE}/orders`),
-    fetch(`${API_BASE}/trades`),
-    fetch(`${API_BASE}/summary`)
+  const [orderBookData, tradesData, summaryData] = await Promise.all([
+    request('/orders', {}, 'Failed to fetch orders'),
+    request('/trades', {}, 'Failed to fetch trades'),
+    request('/summary', {}, 'Failed to fetch summary')
   ]);
 
-  if (!ordersRes.ok || !tradesRes.ok || !summaryRes.ok) {
-    throw new Error('Failed to fetch market state from server');
-  }
-
-  const orderBookData = await ordersRes.json();
-  const tradeData = (await tradesRes.json()).trades;
-  const summaryData = await summaryRes.json();
-
-  return { orderBookData, tradeData, summaryData };
+  return {
+    orderBookData,
+    tradeData: tradesData.trades,
+    summaryData
+  };
 }
