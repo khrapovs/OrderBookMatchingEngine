@@ -96,10 +96,11 @@ class ResetRequest(BaseModel):
         extra="forbid",
         json_schema_extra={
             "examples": [
-                {"seed": 42},
-                {"seed": 123},
+                {"seed": 42, "prepopulate": False},
+                {"seed": 123, "prepopulate": True},
                 {},  # No seed - random state
             ]
         },
     )
     seed: int | None = None
+    prepopulate: bool = False
