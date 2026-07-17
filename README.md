@@ -23,6 +23,12 @@ pip install order-matching
 
 # With polars export support (recommended for data science workflows)
 pip install order-matching[polars]
+
+# With REST API and Web UI simulation support
+pip install order-matching[web]
+
+# Install all optional dependencies (polars + web)
+pip install order-matching[all]
 ```
 
 ## Documentation
