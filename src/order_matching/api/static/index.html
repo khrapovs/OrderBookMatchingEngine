@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Book Matching Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <div class="glow-bg"></div>
 
@@ -117,7 +121,7 @@
               </div>
               <input type="datetime-local" id="match-timestamp" disabled>
             </div>
-            <button id="btn-match" class="btn btn-accent btn-block">Trigger Matching Run</button>
+            <button id="btn-match" class="btn btn-accent btn-block">Match</button>
           </div>
         </div>
       </section>
@@ -179,7 +183,9 @@
                   </tr>
                 </thead>
                 <tbody id="bids-summary-body">
-                  <tr><td colspan="3" class="empty-row">No active bids</td></tr>
+                  <tr>
+                    <td colspan="3" class="empty-row">No active bids</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -196,7 +202,9 @@
                   </tr>
                 </thead>
                 <tbody id="asks-summary-body">
-                  <tr><td colspan="3" class="empty-row">No active asks</td></tr>
+                  <tr>
+                    <td colspan="3" class="empty-row">No active asks</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -222,7 +230,9 @@
               </tr>
             </thead>
             <tbody id="outstanding-orders-body">
-              <tr><td colspan="6" class="empty-row">No outstanding orders</td></tr>
+              <tr>
+                <td colspan="6" class="empty-row">No outstanding orders</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -244,7 +254,9 @@
               </tr>
             </thead>
             <tbody id="recent-trades-body">
-              <tr><td colspan="5" class="empty-row">No trades executed yet</td></tr>
+              <tr>
+                <td colspan="5" class="empty-row">No trades executed yet</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -267,7 +279,8 @@
         </div>
         <div class="form-field checkbox-field">
           <label class="checkbox-label">
-            <input type="checkbox" id="reset-prepopulate" checked> Prepopulate order book with sample market-making orders
+            <input type="checkbox" id="reset-prepopulate" checked> Prepopulate order book with sample market-making
+            orders
           </label>
         </div>
       </div>
@@ -280,4 +293,5 @@
 
   <script type="module" src="app.js"></script>
 </body>
+
 </html>
