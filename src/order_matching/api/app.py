@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from loguru import logger
 
 from order_matching import __version__
 from order_matching.api.routes import router
@@ -39,7 +40,8 @@ app.mount("/ui", StaticFiles(directory=static_dir, html=True), name="ui")
 
 # 13.6 Global exception handler for unexpected 500 errors
 @app.exception_handler(Exception)
-def global_exception_handler(_request: Request, _exc: Exception) -> JSONResponse:
+def global_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
+    logger.exception(exc)
     return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal server error"})
 
 

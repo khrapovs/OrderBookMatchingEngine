@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from order_matching.api.models.requests import OrderRequest
 from order_matching.api.models.responses import ExecutionStr, OrderResponse, SideStr, StatusStr, TradeResponse
@@ -46,7 +46,7 @@ def status_to_str(stat: Status) -> str:
 
 def to_naive(dt: datetime) -> datetime:
     if dt.tzinfo is not None:
-        return dt.replace(tzinfo=None)
+        return dt.astimezone(timezone.utc).replace(tzinfo=None)
     return dt
 
 

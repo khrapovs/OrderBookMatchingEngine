@@ -162,8 +162,8 @@ function generateAndSetOrderId() {
 
 // POLLING & AUTOMATIC MATCHING MANAGEMENT
 function startPolling() {
-  if (refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(tick, 1000);
+  if (refreshTimer) clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(tick, 1000);
 }
 
 async function tick() {
@@ -174,7 +174,8 @@ async function tick() {
       console.warn('Silent auto-matching run skipped or failed:', err);
     }
   }
-  refreshDashboard();
+  await refreshDashboard();
+  refreshTimer = setTimeout(tick, 1000);
 }
 
 // API OPERATIONS
