@@ -8,12 +8,12 @@
 
 ## Overview
 
-This package is a simple order book matching engine implementation in Python. Its main features are:
+This repository provides a high-performance order book matching engine implemented in Python, complete with a RESTful API layer and a real-time interactive simulation dashboard. Its main features are:
 
-- price-time priority
-- limit and market orders
-- order cancellation and expiration
-- conversion into polars LazyFrame of orders, executed trades, order book summary (optional polars dependency)
+- **Core Engine**: Price-time priority matching supporting limit/market orders, order cancellation, and expiration.
+- **REST API**: FastAPI server for remote order placement, manual or automated matching runs, and engine controls.
+- **Web UI**: Modern glassmorphic SPA dashboard featuring a live-updating order book feed, trades list, and an interactive SVG depth chart.
+- **Data Export**: Direct conversion of order books, trades, and summary states into Polars LazyFrames (optional dependency).
 
 ## Install
 
@@ -23,6 +23,12 @@ pip install order-matching
 
 # With polars export support (recommended for data science workflows)
 pip install order-matching[polars]
+
+# With REST API and Web UI simulation support
+pip install order-matching[web]
+
+# Install all optional dependencies (polars + web)
+pip install order-matching[all]
 ```
 
 ## Documentation
@@ -79,13 +85,13 @@ If you installed with `[polars]` extra, you can export data to polars LazyFrame:
 
 ```
 
-## REST API
+## REST API & Frontend
 
-For demo, education, and backtesting workflows, a RESTful API layer is provided.
+For demo, education, and backtesting workflows, a RESTful API layer and simple UI frontend are provided.
 
-### Running the API Server
+### Running frontend and API server
 
-Start the API server in development mode using the `fastapi` CLI:
+Start the API server and frontend using the `fastapi` CLI:
 
 ```shell
 uv run fastapi dev
@@ -97,9 +103,20 @@ Or run with `uvicorn`:
 uv run uvicorn order_matching.api.app:app --reload
 ```
 
-Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+### Interactive Dashboard UI
 
-### Endpoints
+The API server mounts a modern, glassmorphic dark-theme Single Page Application (SPA) dashboard available at the root URL: [http://127.0.0.1:8000](http://127.0.0.1:8000) (redirects to `/ui`).
+
+Features include:
+- **Order Placement & Cancellation**: Easily place new limit or market orders (with pre-populated fields) and cancel outstanding orders in real-time.
+- **Automated Matching Engine Timer**: Automated matching runs run every second by default, and can be paused or resumed dynamically using the clickable **Engine Status** button in the header.
+- **Depth Chart Visualization**: An interactive, responsive SVG cumulative depth chart with vertical cursor tracking and detailed hover tooltips.
+- **Real-Time Feeds**: Auto-refreshing logs of outstanding orders, recent trade ticks, current bid-ask spread, and top bid/ask levels.
+- **Market Reset**: Modal controls to wipe the engine state, with support for random seed specification and mock-order market prepopulation.
+
+### API Endpoints
+
+Explore interactive API docs at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 - `POST /place`: Place a batch of one or more orders without triggering matching.
 - `POST /match`: Trigger matching at a specific timestamp for all queued/placed orders.

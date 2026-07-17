@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Book Matching Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="glow-bg"></div>
+
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">⇄</div>
+        <div>
+          <h1>Order Book Matching Engine</h1>
+          <p class="subtitle">High-Performance Matching Simulator</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button id="btn-toggle-engine" class="status-indicator" title="Toggle Auto-Matching (Pause/Resume)">
+          <span id="engine-status-dot" class="status-dot pulsing"></span>
+          <span id="engine-status-text" class="status-text">Engine Online</span>
+        </button>
+        <button id="btn-reset" class="btn btn-secondary btn-reset" title="Reset Matching Engine">
+          <span class="btn-icon">↺</span> Reset Market
+        </button>
+      </div>
+    </header>
+
+    <!-- Notification system for errors and success messages -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <main class="dashboard-grid">
+      <!-- COLUMN 1: CONTROLS -->
+      <section class="panel panel-controls">
+        <div class="panel-header">
+          <h2>Place New Order</h2>
+        </div>
+        <div class="panel-body">
+          <form id="order-form" class="form-group">
+            <div class="toggle-group order-side-toggle">
+              <input type="radio" id="side-buy" name="side" value="BUY" checked>
+              <label for="side-buy" class="label-buy">BUY</label>
+
+              <input type="radio" id="side-sell" name="side" value="SELL">
+              <label for="side-sell" class="label-sell">SELL</label>
+            </div>
+
+            <div class="toggle-group order-type-toggle">
+              <input type="radio" id="type-limit" name="order_type" value="limit" checked>
+              <label for="type-limit">Limit</label>
+
+              <input type="radio" id="type-market" name="order_type" value="market">
+              <label for="type-market">Market</label>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="order-price">Price</label>
+                <div class="input-with-unit">
+                  <input type="number" id="order-price" step="0.1" min="0.1" value="100.0" required>
+                  <span class="unit">USD</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="order-size">Quantity</label>
+                <input type="number" id="order-size" step="0.1" min="0.1" value="10.0" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="trader-id">Trader ID</label>
+                <input type="text" id="trader-id" value="trader_1" required>
+              </div>
+              <div class="form-field">
+                <label for="order-id">Order ID</label>
+                <div class="input-with-action">
+                  <input type="text" id="order-id" required>
+                  <button type="button" id="btn-gen-id" class="btn-small-icon" title="Generate New ID">🎲</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="label-row">
+                <label for="order-timestamp">Timestamp</label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="auto-timestamp" checked> Auto
+                </label>
+              </div>
+              <input type="datetime-local" id="order-timestamp" disabled>
+            </div>
+
+            <button type="submit" id="btn-place-order" class="btn btn-primary btn-block">Place Order</button>
+          </form>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <div class="panel-header">
+          <h2>Matching Controller</h2>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <div class="form-field">
+              <div class="label-row">
+                <label for="match-timestamp">Match Timestamp</label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="match-auto-timestamp" checked> Auto (Now)
+                </label>
+              </div>
+              <input type="datetime-local" id="match-timestamp" disabled>
+            </div>
+            <button id="btn-match" class="btn btn-accent btn-block">Match</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLUMN 2: DEPTH CHART & ORDER BOOK SUMMARY -->
+      <section class="panel panel-visualization">
+        <div class="panel-header">
+          <h2>Market Depth (Price & Volume Histogram)</h2>
+        </div>
+        <div class="panel-body chart-container">
+          <div class="depth-chart-wrapper">
+            <svg id="depth-chart" width="100%" height="240" viewBox="0 0 600 240" preserveAspectRatio="none">
+              <!-- Grid Lines -->
+              <g class="grid-lines"></g>
+              <!-- Areas and Lines -->
+              <path class="depth-path depth-bids-area" d="" />
+              <path class="depth-path depth-asks-area" d="" />
+              <path class="depth-line depth-bids-line" d="" />
+              <path class="depth-line depth-asks-line" d="" />
+              <!-- Hover elements -->
+              <g class="chart-tooltip" style="display: none;">
+                <line class="tooltip-line" x1="0" y1="0" x2="0" y2="240"></line>
+                <circle class="tooltip-circle" r="5"></circle>
+                <rect class="tooltip-bg" rx="4" ry="4" width="120" height="50"></rect>
+                <text class="tooltip-text-price" x="0" y="0"></text>
+                <text class="tooltip-text-size" x="0" y="0"></text>
+              </g>
+              <!-- Center Axis Line -->
+              <line class="center-axis" x1="300" y1="0" x2="300" y2="240" style="display: none;"></line>
+            </svg>
+            <div id="chart-overlay-empty" class="chart-empty-message">No orders in the book to visualize</div>
+          </div>
+          <div class="depth-labels">
+            <span class="label-bids-title">Bids (BUY)</span>
+            <span class="label-spread" id="spread-value">Spread: --</span>
+            <span class="label-asks-title">Asks (SELL)</span>
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <div class="panel-header flex-header">
+          <h2>Aggregated Order Book</h2>
+          <div class="book-tabs">
+            <span class="tab-active">Summary View</span>
+          </div>
+        </div>
+        <div class="panel-body scrollable-body book-tables-wrapper">
+          <div class="book-split-tables">
+            <!-- BIDS TABLE -->
+            <div class="book-table-container">
+              <h3>Bids (BUY)</h3>
+              <table class="book-table table-bids">
+                <thead>
+                  <tr>
+                    <th>Price (USD)</th>
+                    <th>Volume</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody id="bids-summary-body">
+                  <tr>
+                    <td colspan="3" class="empty-row">No active bids</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ASKS TABLE -->
+            <div class="book-table-container">
+              <h3>Asks (SELL)</h3>
+              <table class="book-table table-asks">
+                <thead>
+                  <tr>
+                    <th>Price (USD)</th>
+                    <th>Volume</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody id="asks-summary-body">
+                  <tr>
+                    <td colspan="3" class="empty-row">No active asks</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLUMN 3: LISTS (OUTSTANDING ORDERS & RECENT TRADES) -->
+      <section class="panel panel-lists">
+        <div class="panel-header">
+          <h2>Outstanding Orders</h2>
+        </div>
+        <div class="panel-body scrollable-body list-container-orders">
+          <table class="data-table orders-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Side</th>
+                <th>Price</th>
+                <th>Size</th>
+                <th>Trader</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="outstanding-orders-body">
+              <tr>
+                <td colspan="6" class="empty-row">No outstanding orders</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <div class="panel-header">
+          <h2>Recent Trades</h2>
+        </div>
+        <div class="panel-body scrollable-body list-container-trades">
+          <table class="data-table trades-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Side</th>
+                <th>Price</th>
+                <th>Size</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="recent-trades-body">
+              <tr>
+                <td colspan="5" class="empty-row">No trades executed yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal dialog for resetting seed -->
+  <div id="reset-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Reset Matching Engine</h3>
+        <span class="modal-close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="form-field">
+          <label for="reset-seed">Random Seed (Optional)</label>
+          <input type="number" id="reset-seed" placeholder="Enter integer seed, or leave blank">
+          <p class="field-help">Providing a seed yields deterministic random behavior inside the matching engine.</p>
+        </div>
+        <div class="form-field checkbox-field">
+          <label class="checkbox-label">
+            <input type="checkbox" id="reset-prepopulate" checked> Prepopulate order book with sample market-making
+            orders
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-modal-cancel" class="btn btn-secondary">Cancel</button>
+        <button id="btn-modal-confirm" class="btn btn-accent">Confirm Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>

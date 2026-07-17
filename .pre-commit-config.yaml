@@ -13,7 +13,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.15.22
     hooks:
       - id: ruff
         args: [ --config, pyproject.toml, --fix, --exit-non-zero-on-fix ]
@@ -23,9 +23,24 @@ repos:
         types_or: [ python ]
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.55
+    rev: v0.0.60
     hooks:
       - id: ty
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v10.7.0
+    hooks:
+      - id: eslint
+        description: 'Lint javascript files.'
+        files: \.js$
+        args: [--max-warnings=0, --fix]
+        additional_dependencies:
+          [
+            'eslint@9.30.1',
+            '@eslint/js@9.30.1',
+            'eslint-plugin-import@2.32.0',
+            'globals@16.3.0',
+          ]
 
   - repo: local
     hooks:

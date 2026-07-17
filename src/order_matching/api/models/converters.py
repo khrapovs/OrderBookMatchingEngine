@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from order_matching.api.models.requests import OrderRequest
 from order_matching.api.models.responses import ExecutionStr, OrderResponse, SideStr, StatusStr, TradeResponse
@@ -44,16 +44,25 @@ def status_to_str(stat: Status) -> str:
     return stat.name
 
 
+def to_naive(dt: datetime) -> datetime:
+    if dt.tzinfo is not None:
+        return dt.astimezone(timezone.utc).replace(tzinfo=None)
+    return dt
+
+
 def request_to_domain_order(request: OrderRequest) -> Order:
     side = side_from_str(request.side.value)
     expiration = request.expiration if request.expiration is not None else datetime.max
+
+    timestamp = to_naive(request.timestamp)
+    expiration = to_naive(expiration)
 
     if request.order_type == "limit":
         return LimitOrder(
             side=side,
             price=request.price,
             size=request.size,
-            timestamp=request.timestamp,
+            timestamp=timestamp,
             order_id=request.order_id,
             trader_id=request.trader_id,
             expiration=expiration,
@@ -62,7 +71,7 @@ def request_to_domain_order(request: OrderRequest) -> Order:
         return MarketOrder(
             side=side,
             size=request.size,
-            timestamp=request.timestamp,
+            timestamp=timestamp,
             order_id=request.order_id,
             trader_id=request.trader_id,
             expiration=expiration,
