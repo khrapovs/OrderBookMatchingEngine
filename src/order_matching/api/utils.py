@@ -9,7 +9,7 @@ from order_matching.side import Side
 def prepopulate_engine(engine: MatchingEngine) -> MatchingEngine:
     """Prepopulate the matching engine with some initial non-crossing orders."""
     now = datetime.now()
-    trader_id = "trader_market_maker"
+    trader_id = "market_maker"
     orders = [
         # Bids (BUY)
         LimitOrder(side=Side.BUY, price=99.50, size=15.0, timestamp=now, order_id="init_buy_1", trader_id=trader_id),
