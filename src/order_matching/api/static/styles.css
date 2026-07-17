@@ -135,6 +135,25 @@ body {
   border: 1px solid var(--border-light);
 }
 
+button.status-indicator {
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-sans);
+}
+
+button.status-indicator:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+button.status-indicator.paused #engine-status-dot {
+  background-color: var(--color-sell);
+  animation: none;
+  box-shadow: none;
+}
+
+
 .status-dot {
   width: 8px;
   height: 8px;

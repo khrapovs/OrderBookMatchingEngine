@@ -15,8 +15,12 @@ import { renderDepthChart } from './chart.js';
 
 // STATE
 let refreshTimer = null;
+let isMatchingActive = true;
 
 // DOM ELEMENTS
+const btnToggleEngine = document.getElementById('btn-toggle-engine');
+const engineStatusDot = document.getElementById('engine-status-dot');
+const engineStatusText = document.getElementById('engine-status-text');
 const orderForm = document.getElementById('order-form');
 const btnGenId = document.getElementById('btn-gen-id');
 const orderIdInput = document.getElementById('order-id');
@@ -92,6 +96,9 @@ function setupEventListeners() {
   // Match runner
   btnMatch.addEventListener('click', handleMatchTrigger);
 
+  // Toggle engine online/paused
+  btnToggleEngine.addEventListener('click', toggleAutoMatching);
+
   // Reset modal logic
   btnReset.addEventListener('click', () => {
     resetModal.style.display = 'flex';
@@ -116,6 +123,21 @@ function setupEventListeners() {
   });
 }
 
+function toggleAutoMatching() {
+  isMatchingActive = !isMatchingActive;
+  if (isMatchingActive) {
+    btnToggleEngine.classList.remove('paused');
+    engineStatusDot.className = 'status-dot pulsing';
+    engineStatusText.innerText = 'Engine Online';
+    showToast('Auto-matching resumed', 'success');
+  } else {
+    btnToggleEngine.classList.add('paused');
+    engineStatusDot.className = 'status-dot';
+    engineStatusText.innerText = 'Engine Paused';
+    showToast('Auto-matching paused', 'success');
+  }
+}
+
 // TIMESTAMPS
 function updateTimestampInputs() {
   const now = new Date();
@@ -138,10 +160,21 @@ function generateAndSetOrderId() {
   orderIdInput.value = `ord_${randomNum}`;
 }
 
-// POLLING STATE MANAGEMENT
+// POLLING & AUTOMATIC MATCHING MANAGEMENT
 function startPolling() {
   if (refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(refreshDashboard, 1000);
+  refreshTimer = setInterval(tick, 1000);
+}
+
+async function tick() {
+  if (isMatchingActive) {
+    try {
+      await matchOrders(new Date().toISOString());
+    } catch (err) {
+      console.warn('Silent auto-matching run skipped or failed:', err);
+    }
+  }
+  refreshDashboard();
 }
 
 // API OPERATIONS
