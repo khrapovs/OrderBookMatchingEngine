@@ -11,6 +11,7 @@
 This repository provides a high-performance order book matching engine implemented in Python, complete with a RESTful API layer and a real-time interactive simulation dashboard. Its main features are:
 
 - **Core Engine**: Price-time priority matching supporting limit/market orders, order cancellation, and expiration.
+- **Market Simulation**: A discrete-time state-passing simulation framework featuring registered trading agents (such as Poisson-arrival `NoiseTrader` entities), an event-driven `NewsFeed`, and a read-only `MarketView` proxy wrapper.
 - **REST API**: FastAPI server for remote order placement, manual or automated matching runs, and engine controls.
 - **Web UI**: Modern glassmorphic SPA dashboard featuring a live-updating order book feed, trades list, and an interactive SVG depth chart.
 - **Data Export**: Direct conversion of order books, trades, and summary states into Polars LazyFrames (optional dependency).
