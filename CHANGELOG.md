@@ -1,3 +1,9 @@
+## 0.9.0 (2026-07-18)
+
+### Feat
+
+- Add market simulation to frontend (#44)
+
 ## 0.8.0 (2026-07-18)
 
 ### Feat
