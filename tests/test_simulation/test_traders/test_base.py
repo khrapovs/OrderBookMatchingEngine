@@ -7,7 +7,6 @@ from order_matching.orders import Orders
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsFeed
 from order_matching.simulation.traders.base import BaseTrader
-from order_matching.trade import Trade
 
 
 class CustomMockTrader(BaseTrader):
@@ -24,8 +23,7 @@ def test_base_trader_place_raises_not_implemented() -> None:
     trader = BaseTrader(trader_id="base_1")
     engine = MatchingEngine()
     news = NewsFeed()
-    executed_trades: list[Trade] = []
-    view = MarketView(matching_engine=engine, news_feed=news, executed_trades=executed_trades)
+    view = MarketView(matching_engine=engine, news_feed=news)
 
     with pytest.raises(NotImplementedError):
         trader.place(market_view=view, timestamp=datetime(2023, 1, 1))

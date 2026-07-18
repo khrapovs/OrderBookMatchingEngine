@@ -14,8 +14,7 @@ from order_matching.trade import Trade
 def test_market_view_empty_state() -> None:
     engine = MatchingEngine(seed=42)
     news_feed = NewsFeed()
-    executed_trades: list[Trade] = []
-    view = MarketView(matching_engine=engine, news_feed=news_feed, executed_trades=executed_trades)
+    view = MarketView(matching_engine=engine, news_feed=news_feed)
 
     assert view.max_bid is None
     assert view.min_offer is None
@@ -54,7 +53,8 @@ def test_market_view_with_orders_and_trades() -> None:
         )
     ]
 
-    view = MarketView(matching_engine=engine, news_feed=news_feed, executed_trades=executed_trades)
+    view = MarketView(matching_engine=engine, news_feed=news_feed)
+    view.update(trades=executed_trades)
 
     assert view.max_bid == 100.0
     assert view.min_offer == 102.0

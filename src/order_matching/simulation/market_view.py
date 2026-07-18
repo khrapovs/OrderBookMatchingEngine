@@ -18,10 +18,25 @@ class MarketView:
         A reference to the simulation's historical list of executed trades.
     """
 
-    def __init__(self, *, matching_engine: MatchingEngine, news_feed: NewsFeed, executed_trades: list[Trade]) -> None:
+    def __init__(self, *, matching_engine: MatchingEngine, news_feed: NewsFeed) -> None:
         self._engine = matching_engine
         self._news_feed = news_feed
-        self._executed_trades = executed_trades
+        self._executed_trades: list[Trade] = []
+
+    @property
+    def executed_trades(self) -> list[Trade]:
+        """Historical list of executed trades in the simulation."""
+        return self._executed_trades
+
+    def update(self, *, trades: list[Trade]) -> None:
+        """Update the market view with newly executed trades.
+
+        Parameters
+        ----------
+        trades : list[Trade]
+            The list of trades executed during the latest step.
+        """
+        self._executed_trades.extend(trades)
 
     @property
     def max_bid(self) -> float | None:

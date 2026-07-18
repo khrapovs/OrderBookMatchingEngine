@@ -33,10 +33,7 @@ class Market:
         self._traders = traders
         self._news_feed = news_feed
         self._engine = matching_engine or MatchingEngine(seed=seed)
-        self._executed_trades: list[Trade] = []
-        self._market_view = MarketView(
-            matching_engine=self._engine, news_feed=self._news_feed, executed_trades=self._executed_trades
-        )
+        self._market_view = MarketView(matching_engine=self._engine, news_feed=self._news_feed)
 
     @property
     def traders(self) -> list[BaseTrader]:
@@ -46,7 +43,7 @@ class Market:
     @property
     def executed_trades(self) -> list[Trade]:
         """Historical list of executed trades in the simulation."""
-        return self._executed_trades
+        return self._market_view.executed_trades
 
     @property
     def market_view(self) -> MarketView:
@@ -75,5 +72,5 @@ class Market:
                 self._engine.place(orders=orders)
 
         trades = self._engine.match(timestamp=timestamp).trades
-        self._executed_trades.extend(trades)
+        self._market_view.update(trades=trades)
         return trades
