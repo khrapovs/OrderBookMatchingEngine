@@ -1,105 +1,43 @@
-# Spec: Market Simulation
+# Market Simulation MVP (Tick-Loop & MarketView Proxy)
 
-## Objective
-Implement a tick-based market simulation framework containing fixed set of traders (specifically noise traders) that interact with the matching engine, observe the market state via a read-only proxy, and submit orders, laying down a highly scalable and extensible architecture for future reactive trader types.
+## Problem Statement
+How might we design a modular, tick-based market simulation architecture where diverse trader classes (starting with polling-based noise traders) can observe market summary statistics and place orders on discrete ticks, ensuring the architecture remains clean, testable, and highly extensible for future news-reactive and interactive frontend use cases?
 
-### User Stories & Use Cases
-- **Simulation Runner**: As a developer, I can initialize a market simulation with a list of traders, run it tick-by-tick or in a loop, and examine the resulting order book and executed trade logs.
-* **Base Trader**: As a base trader class, I can observe aggregate market statistics (spread, mid-price, last trade price, total depth) and news history, but I cannot modify the matching engine state directly.
-* **Noise Trader**: As a noise trader, I place random buy or sell limit orders around the current market mid-price at random intervals determined by a Poisson process (exponentially distributed arrival times).
-* **Market Engine**: As a market engine, I collect submitted orders from all traders on each tick, place them into the order book, trigger the matching engine, and record executions.
+## Recommended Direction
+We will implement a synchronous, tick-based simulation (`Market`) where time is advanced in discrete intervals (e.g. 1 second or 1 tick). The market maintains:
+1. An underlying `MatchingEngine` instance.
+2. A `NewsFeed` that holds current and historic news events.
+3. A `MarketView` proxy class, which provides read-only access to market statistics (spread, mid-price, last trade price, total depth) and news history, protecting the simulation from direct trader manipulation.
 
-## Tech Stack
-* **Language**: Python >= 3.11
-* **Matching Engine**: Existing `order-matching` package core (`MatchingEngine`, `OrderBook`, `Orders`, `LimitOrder`)
-* **Libraries**: `numpy` for random distributions (Poisson/exponential intervals, normal prices).
+On every simulation step:
+1. The `Market` advances virtual time by `dt`.
+2. The `Market` updates any active news events for that tick.
+3. The `Market` iterates through all registered `BaseTrader` customers, invoking `trader.place(market_view, current_time)`.
+4. A trader returns an `Orders` object containing one or more orders to be placed, or `None` if they choose to remain idle.
+5. Inactive traders check `current_time >= self.next_trade_time` to decide whether to act, keeping the check extremely lightweight.
+6. The `Market` collects all orders, places them into the `MatchingEngine`, executes matching, and logs the executed trades.
 
-## Commands
-* **Run Tests**: `uv run pytest tests/test_simulation.py`
-* **Run Pre-Commit Checks**: `uv run prek run -v --show-diff-on-failure --all-files`
+## Key Assumptions to Validate
+- [x] **Polling adequacy**: That polling `MarketView` summary stats once per tick is sufficient for noise traders and future news-based traders.
+- [x] **Performance of idle loops**: That iterating through idle traders on every tick is performant enough for simple simulations (up to hundreds of traders).
+- [x] **Deterministic behavior**: That the simulation remains fully reproducible given a random seed passed to both the engine and the traders.
 
-## Project Structure
-The simulation module will be structured under a new subpackage `src/order_matching/simulation/`:
-```text
-src/order_matching/simulation/
-├── __init__.py
-├── base_trader.py       # BaseTrader class interface
-├── noise_trader.py      # NoiseTrader implementation
-├── market_view.py       # MarketView read-only proxy
-├── news_feed.py         # NewsFeed and NewsEvent models
-└── market.py            # Market runner managing the loop
-tests/test_simulation/
-├── __init__.py
-├── test_base_trader.py  # tests for base trader
-├── test_noise_trader.py # tests for noise trader
-├── test_market_view.py  # tests for market view
-├── test_news_feed.py    # tests for news feed
-└── test_market.py       # tests for market
-```
+## MVP Scope
 
-## Code Style
-Code must use explicit type hints, follow PEP 8, and document classes/methods using NumPy docstring style (consistent with the rest of the repository).
+### In Scope
+- **Trader Initialization**: The trader list is fixed at initialization of the `Market` class.
+- **Poisson Process Arrival**: Noise trader intervals (time between orders) are modeled as exponential random variables (Poisson process) using a configured fixed average arrival rate.
+- **Random State Generation**: All random number generation uses the `get_random_generator` function in `src/order_matching/random.py`.
+- `BaseTrader` interface with `place(market_view, timestamp) -> Orders | None`.
+- `MarketView` read-only proxy exposing:
+  - `mid_price`, `spread`, `last_trade_price`, `bids_depth`, `asks_depth` (summary stats from `MatchingEngine`).
+  - `get_news(timestamp)` (polling from news generator).
+- `NoiseTrader` extending `BaseTrader` that places random buy/sell limit orders around the mid-price at random intervals.
+- `NewsFeed` supporting simple structured news events (e.g., impact, timestamp, headline).
+- `Market` runner class that manages the main tick loop, customer list, order ingestion, matching invocation, and logging.
+- **Test File Layout**: Unit and integration tests organized in the `tests/test_simulation/` directory with one test file per implementation file.
 
-```python
-from datetime import datetime
-from order_matching.orders import Orders
-from order_matching.simulation.market_view import MarketView
-
-class BaseTrader:
-    """Base class for all simulated traders.
-
-    Parameters
-    ----------
-    trader_id : str
-        Unique identifier for the trader.
-    """
-
-    def __init__(self, trader_id: str) -> None:
-        self.trader_id = trader_id
-
-    def place(self, market_view: MarketView, timestamp: datetime) -> Orders | None:
-        """Evaluate market state and news to return orders to be placed.
-
-        Parameters
-        ----------
-        market_view : MarketView
-            Read-only interface to poll market stats and news feed.
-        timestamp : datetime
-            Current simulation timestamp.
-
-        Returns
-        -------
-        Orders | None
-            Orders to place in the book, or None if idle.
-        """
-        raise NotImplementedError
-```
-
-## Testing Strategy
-* **Framework**: `pytest`
-* **Test Location**: `tests/test_simulation/`
-* **Coverage Requirements**: 100% code coverage for the `simulation` package.
-* **Test Cases**:
-  1. **MarketView Read-Only Protection**: Verify that the matching engine cannot be directly modified or accessed in write mode via `MarketView`.
-  2. **Noise Trader Scheduling**: Test that the noise trader correctly computes the next action time using an exponential distribution and remains idle until that time.
-  3. **Determinism**: Verify that running the simulation with a fixed random seed produces identical sequences of orders and trades.
-  4. **Loop Execution**: Run a full simulation loop for a set number of ticks and verify orders are submitted and matched.
-
-## Boundaries
-* **Always**:
-  * Pass a shared/seeded `random.Random` or `numpy.random.Generator` instance to ensure deterministic simulation behavior (uses `get_random_generator` utility function).
-  * Use the existing matching engine core components (e.g. `Orders`, `LimitOrder`, `Side`, `MatchingEngine`) without modifying them.
-* **Ask first**:
-  * Modifying existing matching engine APIs or core classes in `src/order_matching/matching_engine.py`.
-* **Never**:
-  * Expose write methods or private matching engine attributes directly through the `MarketView` proxy.
-
-## Success Criteria
-- [ ] `Market` correctly advances time tick-by-tick and aggregates trade logs.
-- [ ] `NoiseTrader` places orders around mid-price using exponential arrival intervals.
-- [ ] `MarketView` provides read-only stats (`mid_price`, `spread`, `last_trade_price`, aggregate bids/asks depth) and news feed query interface.
-- [ ] Complete unit and integration test suite runs and passes.
-- [ ] Pre-commit validation `prek` passes with no format or linting errors.
-
-## Open Questions
-- None. (All design decisions clarified in previous steps).
+### Out of Scope / Not Doing (and Why)
+- **Asynchronous/Multi-threaded Runner**: Avoids race conditions and locking overhead. Keeps the MVP simple and deterministic.
+- **WebSocket/FastAPI endpoints for live streaming**: We will first design the core simulation engine. Exposing it to FastAPI can be done easily in a follow-up step.
+- **Complex news-parsing NLP models**: Traders will poll simple structured news objects with numeric impact indicators (e.g., +10% demand shift) rather than parsing raw text.
