@@ -33,7 +33,7 @@ class Market:
         self._traders = traders
         self._news_feed = news_feed
         self._engine = matching_engine or MatchingEngine(seed=seed)
-        self._market_view = MarketView(matching_engine=self._engine, news_feed=self._news_feed)
+        self._view = MarketView(matching_engine=self._engine, news_feed=self._news_feed)
 
     @property
     def traders(self) -> list[BaseTrader]:
@@ -43,12 +43,12 @@ class Market:
     @property
     def executed_trades(self) -> list[Trade]:
         """Historical list of executed trades in the simulation."""
-        return self._market_view.executed_trades
+        return self._view.executed_trades
 
     @property
-    def market_view(self) -> MarketView:
+    def view(self) -> MarketView:
         """The read-only market view proxy."""
-        return self._market_view
+        return self._view
 
     def step(self, timestamp: datetime) -> list[Trade]:
         """Advance the simulation by one discrete tick.
@@ -67,10 +67,10 @@ class Market:
             The list of trades executed during this tick.
         """
         for trader in self._traders:
-            orders = trader.place(market_view=self._market_view, timestamp=timestamp)
+            orders = trader.place(market_view=self._view, timestamp=timestamp)
             if orders is not None and not orders.is_empty:
                 self._engine.place(orders=orders)
 
         trades = self._engine.match(timestamp=timestamp).trades
-        self._market_view.update(trades=trades)
+        self._view.update(trades=trades)
         return trades

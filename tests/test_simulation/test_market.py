@@ -49,7 +49,7 @@ def test_market_orchestration_basic() -> None:
 
     # On step 1, both traders should place orders since next_trade_time is None.
     # Check that they were placed in matching engine.
-    assert len(market.market_view.bids_depth) > 0 or len(market.market_view.asks_depth) > 0
+    assert len(market.view.bids_depth) > 0 or len(market.view.asks_depth) > 0
     assert len(market.executed_trades) == len(trades)
 
 
@@ -98,13 +98,13 @@ def test_market_view_updates_during_simulation() -> None:
     market = Market(traders=[Buyer("buyer"), Seller("seller")], news_feed=NewsFeed())
 
     # Assert initial proxy state is empty
-    assert market.market_view.last_trade_price is None
-    assert len(market.market_view.bids_depth) == 0
-    assert len(market.market_view.asks_depth) == 0
+    assert market.view.last_trade_price is None
+    assert len(market.view.bids_depth) == 0
+    assert len(market.view.asks_depth) == 0
 
     # Step the simulation, triggering a trade crossing
     t0 = datetime(2023, 1, 1, 10, 0)
     market.step(t0)
 
     # Prove that MarketView automatically reflects the changes
-    assert market.market_view.last_trade_price == 100.0
+    assert market.view.last_trade_price == 100.0
