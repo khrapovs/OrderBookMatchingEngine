@@ -1,3 +1,9 @@
+## 0.8.0 (2026-07-18)
+
+### Feat
+
+- Implement market simulation (#43)
+
 ## 0.7.0 (2026-07-17)
 
 ### Feat
