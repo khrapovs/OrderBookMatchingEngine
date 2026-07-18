@@ -36,11 +36,6 @@ class Market:
         self._view = MarketView(matching_engine=self._engine, news_feed=self._news_feed)
 
     @property
-    def traders(self) -> list[BaseTrader]:
-        """The list of registered traders in the simulation."""
-        return self._traders
-
-    @property
     def view(self) -> MarketView:
         """The read-only market view proxy."""
         return self._view

@@ -41,7 +41,6 @@ def test_market_orchestration_basic() -> None:
 
     market = Market(traders=[trader_1, trader_2], news_feed=feed, seed=42)
 
-    assert len(market.traders) == 2
     assert len(market.view.executed_trades) == 0
 
     t1 = datetime(2023, 1, 1, 12, 0, 0)
