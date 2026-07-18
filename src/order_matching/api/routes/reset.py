@@ -3,19 +3,18 @@ from loguru import logger
 
 from order_matching.api.models.requests import ResetRequest
 from order_matching.api.models.responses import ResetResponse
-from order_matching.api.utils import prepopulate_engine
-from order_matching.matching_engine import MatchingEngine
+from order_matching.api.utils import create_market
 
 router = APIRouter()
 
 
 @router.post("/reset")
 def reset_engine(*, request: Request, payload: ResetRequest) -> ResetResponse:
-    # Reinitialize engine in app state
-    engine = MatchingEngine(seed=payload.seed)
-    if payload.prepopulate:
-        engine = prepopulate_engine(engine)
-    request.app.state.engine = engine
+    # Reinitialize market and engine in app state
+    traders_enabled = getattr(request.app.state, "traders_enabled", True)
+    market = create_market(seed=payload.seed, traders=None if traders_enabled else [])
+    request.app.state.market = market
+    request.app.state.engine = market.engine
     request.app.state.trades = []
-    logger.debug(f"Matching engine reset successfully with seed: {payload.seed}, prepopulate: {payload.prepopulate}")
-    return ResetResponse(message="Matching engine reset successfully")
+    logger.debug(f"Market simulation reset successfully with seed: {payload.seed}")
+    return ResetResponse(message="Market simulation reset successfully")

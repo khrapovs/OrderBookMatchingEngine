@@ -1,5 +1,9 @@
 from datetime import datetime
 
+from order_matching.api.utils import create_market
+from order_matching.enums import Side
+from order_matching.matching_engine import MatchingEngine
+from order_matching.order import LimitOrder
 from order_matching.orders import Orders
 from order_matching.simulation.market import Market
 from order_matching.simulation.market_view import MarketView
@@ -11,10 +15,6 @@ from order_matching.simulation.traders.noise import NoiseTrader
 # Create two custom traders that place crossing orders at a specific tick
 class Buyer(BaseTrader):
     def place(self, *, market_view: MarketView, timestamp: datetime) -> Orders | None:  # noqa: ARG002
-        from order_matching.enums import Side
-        from order_matching.order import LimitOrder
-        from order_matching.orders import Orders
-
         o = LimitOrder(
             side=Side.BUY, price=100.0, size=5.0, timestamp=timestamp, order_id="buy_1", trader_id=self.trader_id
         )
@@ -23,10 +23,6 @@ class Buyer(BaseTrader):
 
 class Seller(BaseTrader):
     def place(self, *, market_view: MarketView, timestamp: datetime) -> Orders | None:  # noqa: ARG002
-        from order_matching.enums import Side
-        from order_matching.order import LimitOrder
-        from order_matching.orders import Orders
-
         o = LimitOrder(
             side=Side.SELL, price=100.0, size=5.0, timestamp=timestamp, order_id="sell_1", trader_id=self.trader_id
         )
@@ -107,3 +103,25 @@ def test_market_view_updates_during_simulation() -> None:
 
     # Prove that MarketView automatically reflects the changes
     assert market.view.last_trade_price == 100.0
+
+
+def test_market_engine_property() -> None:
+    market = Market(traders=[], news_feed=NewsFeed())
+    engine = market.engine
+    assert isinstance(engine, MatchingEngine)
+
+    # Placing an order on engine should reflect in market view
+    now = datetime(2023, 1, 1, 10, 0)
+    order = LimitOrder(side=Side.BUY, price=95.0, size=1.0, timestamp=now, order_id="test_prop", trader_id="tester")
+    engine.place(Orders([order]))
+    assert 95.0 in [p for p, _ in market.view.bids_depth]
+
+
+def test_create_market() -> None:
+    market = create_market()
+    assert isinstance(market, Market)
+    assert market.engine is not None
+
+    # Test custom empty traders list
+    market_empty = create_market(traders=[])
+    assert isinstance(market_empty, Market)

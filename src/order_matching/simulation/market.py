@@ -40,6 +40,11 @@ class Market:
         """The read-only market view proxy."""
         return self._view
 
+    @property
+    def engine(self) -> MatchingEngine:
+        """The underlying matching engine."""
+        return self._engine
+
     def step(self, timestamp: datetime) -> list[Trade]:
         """Advance the simulation by one discrete tick.
 

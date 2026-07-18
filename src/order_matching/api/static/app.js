@@ -39,7 +39,6 @@ const modalClose = document.querySelector('.modal-close');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 const btnModalConfirm = document.getElementById('btn-modal-confirm');
 const resetSeedInput = document.getElementById('reset-seed');
-const resetPrepopulateCheckbox = document.getElementById('reset-prepopulate');
 
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
@@ -117,8 +116,7 @@ function setupEventListeners() {
 
   btnModalConfirm.addEventListener('click', () => {
     const seed = resetSeedInput.value ? parseInt(resetSeedInput.value) : null;
-    const prepopulate = resetPrepopulateCheckbox.checked;
-    handleReset(seed, prepopulate);
+    handleReset(seed, false);
     closeModal();
   });
 }
