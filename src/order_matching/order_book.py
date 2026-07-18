@@ -5,10 +5,10 @@ from typing import cast
 import polars as pl
 from pandera.typing.polars import LazyFrame
 
+from order_matching.enums import Side
 from order_matching.order import Order
 from order_matching.orders import Orders
 from order_matching.schemas import OrderBookSummarySchema
-from order_matching.side import Side
 
 OrderBookOrdersType = dict[float, Orders]
 
@@ -295,11 +295,11 @@ class OrderBook:
         return sorted(orders.keys())
 
     @staticmethod
-    def _get_order_sizes(orders: OrderBookOrdersType, prices: list[float]) -> list[float]:
+    def _get_order_sizes(*, orders: OrderBookOrdersType, prices: list[float]) -> list[float]:
         return [sum(order.size for order in orders[price]) for price in prices]
 
     @staticmethod
-    def _get_order_counts(orders: OrderBookOrdersType, prices: list[float]) -> list[int]:
+    def _get_order_counts(*, orders: OrderBookOrdersType, prices: list[float]) -> list[int]:
         return [len(orders[price]) for price in prices]
 
     @property

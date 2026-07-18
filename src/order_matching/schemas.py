@@ -3,9 +3,7 @@ from datetime import datetime
 from pandera.polars import DataFrameModel, Field
 from pandera.typing.polars import Series
 
-from order_matching.execution import Execution
-from order_matching.side import Side
-from order_matching.status import Status
+from order_matching.enums import Execution, Side, Status
 
 
 class BaseOrderSchema(DataFrameModel):

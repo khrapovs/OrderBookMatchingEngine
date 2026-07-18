@@ -4,12 +4,11 @@ from datetime import datetime, timedelta
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture
 
+from order_matching.enums import Side, Status
 from order_matching.matching_engine import MatchingEngine
 from order_matching.order import LimitOrder, MarketOrder
 from order_matching.orders import Orders
 from order_matching.random import get_faker
-from order_matching.side import Side
-from order_matching.status import Status
 from order_matching.trade import Trade
 
 
@@ -860,7 +859,7 @@ class TestMatchingEngine:
         # the live re-used-id "X" was evicted; expected ['X']
         assert [o.order_id for v in matching_engine.unprocessed_orders.bids.values() for o in v] == ["X"]
 
-    def test_matching_with_benchmark(self, random_orders: Orders, benchmark: BenchmarkFixture) -> None:
+    def test_matching_with_benchmark(self, *, random_orders: Orders, benchmark: BenchmarkFixture) -> None:
         def place_and_match(orders: Orders) -> None:
             engine = MatchingEngine()
             engine.place(orders=orders)

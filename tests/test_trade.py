@@ -4,9 +4,8 @@ from datetime import datetime
 import polars as pl
 import pytest
 
-from order_matching.execution import Execution
+from order_matching.enums import Execution, Side
 from order_matching.schemas import TradeDataSchema
-from order_matching.side import Side
 from order_matching.trade import Trade
 
 
@@ -24,6 +23,7 @@ class TestTrade:
     @pytest.mark.parametrize("execution", [Execution.LIMIT, Execution.MARKET])
     def test_trade_required_defaults(
         self,
+        *,
         side: Side,
         price: float,
         size: float,

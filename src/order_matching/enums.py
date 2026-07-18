@@ -18,3 +18,24 @@ class CustomEnum(Enum):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Execution(CustomEnum):
+    """Order execution."""
+
+    MARKET = 0
+    LIMIT = 1
+
+
+class Side(CustomEnum):
+    """Order side. Buy or sell."""
+
+    BUY = 0
+    SELL = 1
+
+
+class Status(CustomEnum):
+    """Order status."""
+
+    OPEN = 0
+    CANCEL = 1

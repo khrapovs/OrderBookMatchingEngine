@@ -4,7 +4,7 @@ from typing import Any
 from fastapi.testclient import TestClient
 
 
-def test_match_empty_order_book(client: TestClient, sample_timestamp: datetime) -> None:
+def test_match_empty_order_book(client: TestClient, *, sample_timestamp: datetime) -> None:
     response = client.post("/match", json={"timestamp": sample_timestamp.isoformat()})
     assert response.status_code == 200
     data = response.json()
@@ -12,7 +12,7 @@ def test_match_empty_order_book(client: TestClient, sample_timestamp: datetime) 
 
 
 def test_match_non_crossing_orders(
-    client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
+    client: TestClient, *, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
 ) -> None:
     # Place a buy order at 100
     client.post("/place", json={"orders": [sample_limit_order]})
@@ -35,7 +35,7 @@ def test_match_non_crossing_orders(
     assert len(book_response.json()["offers"]) == 1
 
 
-def test_match_crossing_orders(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_match_crossing_orders(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place a buy order at 100
     client.post("/place", json={"orders": [sample_limit_order]})
 
@@ -64,7 +64,7 @@ def test_match_crossing_orders(client: TestClient, sample_limit_order: dict[str,
 
 
 def test_match_timestamp_used_in_trades(
-    client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
+    client: TestClient, *, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
 ) -> None:
     # Place buy order
     client.post("/place", json={"orders": [sample_limit_order]})
@@ -88,7 +88,7 @@ def test_match_timestamp_used_in_trades(
 
 
 def test_match_expired_orders(
-    client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
+    client: TestClient, *, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
 ) -> None:
     # Place buy order with expiration
     expiration = sample_timestamp + timedelta(seconds=10)
@@ -107,7 +107,7 @@ def test_match_expired_orders(
     assert book_response.json()["offers"] == {}
 
 
-def test_partial_fills(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_partial_fills(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place buy order of size 10.0
     client.post("/place", json={"orders": [sample_limit_order]})
 

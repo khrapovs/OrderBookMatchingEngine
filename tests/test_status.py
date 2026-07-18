@@ -1,4 +1,4 @@
-from order_matching.status import Status
+from order_matching.enums import Status
 
 
 def test_status() -> None:

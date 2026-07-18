@@ -1,4 +1,4 @@
-from order_matching.side import Side
+from order_matching.enums import Side
 
 
 def test_side() -> None:

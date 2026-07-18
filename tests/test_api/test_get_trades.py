@@ -11,7 +11,7 @@ def test_get_empty_trade_history(client: TestClient) -> None:
 
 
 def test_get_trades_accumulation_and_filtering(
-    client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
+    client: TestClient, *, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
 ) -> None:
     # Place buy at 100
     client.post("/place", json={"orders": [sample_limit_order]})

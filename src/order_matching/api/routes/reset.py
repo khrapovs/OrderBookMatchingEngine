@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/reset")
-def reset_engine(request: Request, payload: ResetRequest) -> ResetResponse:
+def reset_engine(*, request: Request, payload: ResetRequest) -> ResetResponse:
     # Reinitialize engine in app state
     engine = MatchingEngine(seed=payload.seed)
     if payload.prepopulate:

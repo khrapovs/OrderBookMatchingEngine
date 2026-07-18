@@ -4,7 +4,7 @@ from typing import Any
 from fastapi.testclient import TestClient
 
 
-def test_complete_workflow(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_complete_workflow(*, client: TestClient, sample_limit_order: dict[str, Any]) -> None:
     # 1. Reset engine
     client.post("/reset", json={})
 
@@ -51,7 +51,7 @@ def test_complete_workflow(client: TestClient, sample_limit_order: dict[str, Any
 
 
 def test_backtesting_scenario(
-    client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
+    *, client: TestClient, sample_timestamp: datetime, sample_limit_order: dict[str, Any]
 ) -> None:
     # Simulate historical backtesting with exact timestamps
     t0 = sample_timestamp

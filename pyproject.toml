@@ -95,6 +95,11 @@ ignore = [
   "D213",
   "D417",
 ]
+preview = true
+extend-select = ["PLR0917"]
+
+[tool.ruff.lint.pylint]
+max-positional-args = 1
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

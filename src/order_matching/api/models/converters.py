@@ -2,12 +2,10 @@ from datetime import datetime, timezone
 
 from order_matching.api.models.requests import OrderRequest
 from order_matching.api.models.responses import ExecutionStr, OrderResponse, SideStr, StatusStr, TradeResponse
+from order_matching.enums import Execution, Side, Status
 from order_matching.executed_trades import ExecutedTrades
-from order_matching.execution import Execution
 from order_matching.order import LimitOrder, MarketOrder, Order
 from order_matching.orders import Orders
-from order_matching.side import Side
-from order_matching.status import Status
 from order_matching.trade import Trade
 
 

@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
+from order_matching.enums import Side
 from order_matching.order import LimitOrder
 from order_matching.order_book import OrderBook
 from order_matching.orders import Orders
 from order_matching.schemas import OrderBookSummarySchema
-from order_matching.side import Side
 
 
 class TestOrderBook:

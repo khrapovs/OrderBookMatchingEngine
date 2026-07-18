@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.delete("/orders/{order_id}")
-def cancel_order(order_id: str, engine: MatchingEngineDep) -> CancelOrderResponse:
+def cancel_order(*, order_id: str, engine: MatchingEngineDep) -> CancelOrderResponse:
     try:
         engine.cancel_order(order_id)
     except ValueError as exc:

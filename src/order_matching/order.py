@@ -1,9 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from order_matching.execution import Execution
-from order_matching.side import Side
-from order_matching.status import Status
+from order_matching.enums import Execution, Side, Status
 
 
 @dataclass(kw_only=True)
