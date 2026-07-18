@@ -109,11 +109,12 @@ uv run uvicorn order_matching.api.app:app --reload
 The API server mounts a modern, glassmorphic dark-theme Single Page Application (SPA) dashboard available at the root URL: [http://127.0.0.1:8000](http://127.0.0.1:8000) (redirects to `/ui`).
 
 Features include:
-- **Order Placement & Cancellation**: Easily place new limit or market orders (with pre-populated fields) and cancel outstanding orders in real-time.
-- **Automated Matching Engine Timer**: Automated matching runs run every second by default, and can be paused or resumed dynamically using the clickable **Engine Status** button in the header.
+- **Live Market Simulation**: The dashboard runs an active market simulation with a pool of preconfigured automated traders placing orders organically at random intervals. Manual orders placed via the UI match and execute directly against these automated traders.
+- **Engine Control & Pause/Resume**: The automated matching runs and the simulation steps run every second by default. They can be paused or resumed dynamically using the clickable **Engine Status** button in the header, freezing the simulated market state.
+- **Order Placement & Cancellation**: Easily place new limit or market orders manually and cancel outstanding orders in real-time.
 - **Depth Chart Visualization**: An interactive, responsive SVG cumulative depth chart with vertical cursor tracking and detailed hover tooltips.
 - **Real-Time Feeds**: Auto-refreshing logs of outstanding orders, recent trade ticks, current bid-ask spread, and top bid/ask levels.
-- **Market Reset**: Modal controls to wipe the engine state, with support for random seed specification and mock-order market prepopulation.
+- **Market Reset**: Modal controls to clear the entire market state and restart the simulation from scratch, with support for random seed specification.
 
 ### API Endpoints
 
