@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta
 
 from order_matching.enums import Side
@@ -71,7 +72,7 @@ class NoiseTrader(BaseTrader):
         mid = market_view.mid_price
         ref_price = mid if mid is not None else self._base_price
 
-        price = self._rng.lognormal(mean=ref_price, sigma=self._price_std_dev)
+        price = round(self._rng.lognormal(mean=math.log(ref_price), sigma=self._price_std_dev), 2)
         size = max(0.01, round(self._rng.uniform(*self._size_params), 2))
         order_id = f"{self.trader_id}_{self._faker.uuid4()}"
 
