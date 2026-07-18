@@ -23,7 +23,7 @@ def test_base_trader_place_raises_not_implemented() -> None:
     trader = BaseTrader(trader_id="base_1")
     engine = MatchingEngine()
     news = NewsFeed()
-    view = MarketView(matching_engine=engine, news_feed=news)
+    view = MarketView(order_book=engine.unprocessed_orders, news_feed=news)
 
     with pytest.raises(NotImplementedError):
         trader.place(market_view=view, timestamp=datetime(2023, 1, 1))

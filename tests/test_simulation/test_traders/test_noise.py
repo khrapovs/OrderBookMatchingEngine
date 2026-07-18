@@ -20,7 +20,7 @@ def test_noise_trader_initialization() -> None:
     # Verify state initialization by testing place behavior
     engine = MatchingEngine()
     news = NewsFeed()
-    view = MarketView(matching_engine=engine, news_feed=news)
+    view = MarketView(order_book=engine.unprocessed_orders, news_feed=news)
     orders = trader.place(market_view=view, timestamp=datetime(2023, 1, 1, 10, 0))
     assert orders is not None
     assert len(orders) == 1
@@ -37,7 +37,7 @@ def test_noise_trader_place_logic() -> None:
     )
     engine = MatchingEngine()
     news = NewsFeed()
-    view = MarketView(matching_engine=engine, news_feed=news)
+    view = MarketView(order_book=engine.unprocessed_orders, news_feed=news)
 
     # First call must trigger trade
     t0 = datetime(2023, 1, 1, 10, 0)
@@ -69,7 +69,7 @@ def test_noise_trader_determinism() -> None:
 
     engine = MatchingEngine()
     news = NewsFeed()
-    view = MarketView(matching_engine=engine, news_feed=news)
+    view = MarketView(order_book=engine.unprocessed_orders, news_feed=news)
 
     t0 = datetime(2023, 1, 1, 10, 0)
     orders_1 = trader_1.place(market_view=view, timestamp=t0)

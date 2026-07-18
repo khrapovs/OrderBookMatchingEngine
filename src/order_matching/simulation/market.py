@@ -33,7 +33,7 @@ class Market:
         self._traders = traders
         self._news_feed = news_feed
         self._engine = matching_engine or MatchingEngine(seed=seed)
-        self._view = MarketView(matching_engine=self._engine, news_feed=self._news_feed)
+        self._view = MarketView(order_book=self._engine.unprocessed_orders, news_feed=self._news_feed)
 
     @property
     def view(self) -> MarketView:
