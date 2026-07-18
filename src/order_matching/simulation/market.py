@@ -30,13 +30,28 @@ class Market:
         matching_engine: MatchingEngine | None = None,
         seed: int | None = None,
     ) -> None:
-        self.traders = traders
-        self.news_feed = news_feed
-        self.engine = matching_engine or MatchingEngine(seed=seed)
-        self.executed_trades: list[Trade] = []
-        self.market_view = MarketView(
-            matching_engine=self.engine, news_feed=self.news_feed, executed_trades=self.executed_trades
+        self._traders = traders
+        self._news_feed = news_feed
+        self._engine = matching_engine or MatchingEngine(seed=seed)
+        self._executed_trades: list[Trade] = []
+        self._market_view = MarketView(
+            matching_engine=self._engine, news_feed=self._news_feed, executed_trades=self._executed_trades
         )
+
+    @property
+    def traders(self) -> list[BaseTrader]:
+        """The list of registered traders in the simulation."""
+        return self._traders
+
+    @property
+    def executed_trades(self) -> list[Trade]:
+        """Historical list of executed trades in the simulation."""
+        return self._executed_trades
+
+    @property
+    def market_view(self) -> MarketView:
+        """The read-only market view proxy."""
+        return self._market_view
 
     def step(self, timestamp: datetime) -> list[Trade]:
         """Advance the simulation by one discrete tick.
@@ -54,11 +69,11 @@ class Market:
         list[Trade]
             The list of trades executed during this tick.
         """
-        for trader in self.traders:
-            orders = trader.place(market_view=self.market_view, timestamp=timestamp)
+        for trader in self._traders:
+            orders = trader.place(market_view=self._market_view, timestamp=timestamp)
             if orders is not None and not orders.is_empty:
-                self.engine.place(orders=orders)
+                self._engine.place(orders=orders)
 
-        trades = self.engine.match(timestamp=timestamp).trades
-        self.executed_trades.extend(trades)
+        trades = self._engine.match(timestamp=timestamp).trades
+        self._executed_trades.extend(trades)
         return trades

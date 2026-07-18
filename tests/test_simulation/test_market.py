@@ -49,7 +49,7 @@ def test_market_orchestration_basic() -> None:
 
     # On step 1, both traders should place orders since next_trade_time is None.
     # Check that they were placed in matching engine.
-    assert not market.engine.unprocessed_orders.bids == {} or not market.engine.unprocessed_orders.offers == {}
+    assert len(market.market_view.bids_depth) > 0 or len(market.market_view.asks_depth) > 0
     assert len(market.executed_trades) == len(trades)
 
 

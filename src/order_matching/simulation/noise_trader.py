@@ -38,13 +38,13 @@ class NoiseTrader(BaseTrader):
         seed: int | None = None,
     ) -> None:
         super().__init__(trader_id=trader_id)
-        self.average_arrival_interval = average_arrival_interval
-        self.price_std_dev = price_std_dev
-        self.size_params = size_params
-        self.base_price = base_price
+        self._average_arrival_interval = average_arrival_interval
+        self._price_std_dev = price_std_dev
+        self._size_params = size_params
+        self._base_price = base_price
         self._rng = get_random_generator(seed=seed)
         self._faker = get_faker(seed=seed)
-        self.next_trade_time: datetime | None = None
+        self._next_trade_time: datetime | None = None
 
     def place(self, *, market_view: MarketView, timestamp: datetime) -> Orders | None:
         """Submit a random order if the scheduled action time is reached.
@@ -61,18 +61,18 @@ class NoiseTrader(BaseTrader):
         Orders | None
             A new batch containing a single limit order, or None if idle.
         """
-        if self.next_trade_time is None:
-            self.next_trade_time = timestamp
+        if self._next_trade_time is None:
+            self._next_trade_time = timestamp
 
-        if timestamp < self.next_trade_time:
+        if timestamp < self._next_trade_time:
             return None
 
         side = Side.BUY if self._rng.random() < 0.5 else Side.SELL
         mid = market_view.mid_price
-        ref_price = mid if mid is not None else self.base_price
+        ref_price = mid if mid is not None else self._base_price
 
-        price = self._rng.lognormal(mean=ref_price, sigma=self.price_std_dev)
-        size = max(0.01, round(self._rng.uniform(*self.size_params), 2))
+        price = self._rng.lognormal(mean=ref_price, sigma=self._price_std_dev)
+        size = max(0.01, round(self._rng.uniform(*self._size_params), 2))
         order_id = f"{self.trader_id}_{self._faker.uuid4()}"
 
         order = LimitOrder(
@@ -80,7 +80,7 @@ class NoiseTrader(BaseTrader):
         )
 
         # Schedule next trade time
-        delay_seconds = self._rng.exponential(self.average_arrival_interval)
-        self.next_trade_time = timestamp + timedelta(seconds=delay_seconds)
+        delay_seconds = self._rng.exponential(self._average_arrival_interval)
+        self._next_trade_time = timestamp + timedelta(seconds=delay_seconds)
 
         return Orders([order])

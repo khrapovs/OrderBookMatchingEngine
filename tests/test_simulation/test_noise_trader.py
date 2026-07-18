@@ -4,7 +4,6 @@ from order_matching.matching_engine import MatchingEngine
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsFeed
 from order_matching.simulation.noise_trader import NoiseTrader
-from order_matching.trade import Trade
 
 
 def test_noise_trader_initialization() -> None:
@@ -17,11 +16,14 @@ def test_noise_trader_initialization() -> None:
         seed=123,
     )
     assert trader.trader_id == "noise_1"
-    assert trader.average_arrival_interval == 1.0
-    assert trader.price_std_dev == 2.0
-    assert trader.size_params == (1.0, 10.0)
-    assert trader.base_price == 50.0
-    assert trader.next_trade_time is None
+
+    # Verify state initialization by testing place behavior
+    engine = MatchingEngine()
+    news = NewsFeed()
+    view = MarketView(matching_engine=engine, news_feed=news, executed_trades=[])
+    orders = trader.place(market_view=view, timestamp=datetime(2023, 1, 1, 10, 0))
+    assert orders is not None
+    assert len(orders) == 1
 
 
 def test_noise_trader_place_logic() -> None:
@@ -35,8 +37,7 @@ def test_noise_trader_place_logic() -> None:
     )
     engine = MatchingEngine()
     news = NewsFeed()
-    executed_trades: list[Trade] = []
-    view = MarketView(matching_engine=engine, news_feed=news, executed_trades=executed_trades)
+    view = MarketView(matching_engine=engine, news_feed=news, executed_trades=[])
 
     # First call must trigger trade
     t0 = datetime(2023, 1, 1, 10, 0)
@@ -48,12 +49,14 @@ def test_noise_trader_place_logic() -> None:
     assert order.trader_id == "noise_1"
     assert 2.0 <= order.size <= 4.0
     assert order.price > 0.0
-    assert trader.next_trade_time is not None
-    assert trader.next_trade_time > t0
 
-    # Next call before time must return None
-    t1 = datetime(2023, 1, 1, 10, 0, 1)
+    # Next call shortly after (e.g. 1 millisecond) must return None (idle state)
+    t1 = datetime(2023, 1, 1, 10, 0, 0, 1000)
     assert trader.place(market_view=view, timestamp=t1) is None
+
+    # Verify it acts again if we jump far ahead in time (e.g. 100 seconds later)
+    t2 = datetime(2023, 1, 1, 10, 1, 40)
+    assert trader.place(market_view=view, timestamp=t2) is not None
 
 
 def test_noise_trader_determinism() -> None:
@@ -79,4 +82,15 @@ def test_noise_trader_determinism() -> None:
     assert o1.side == o2.side
     assert o1.price == o2.price
     assert o1.size == o2.size
-    assert trader_1.next_trade_time == trader_2.next_trade_time
+
+    # Verify both remain idle at the exact same intermediate timestamp
+    t_mid = datetime(2023, 1, 1, 10, 0, 0, 1000)
+    assert trader_1.place(market_view=view, timestamp=t_mid) is None
+    assert trader_2.place(market_view=view, timestamp=t_mid) is None
+
+    # Verify both place orders at a later identical timestamp
+    t_far = datetime(2023, 1, 1, 10, 1, 0)
+    o1_later = trader_1.place(market_view=view, timestamp=t_far)
+    o2_later = trader_2.place(market_view=view, timestamp=t_far)
+    assert o1_later is not None and o2_later is not None
+    assert list(o1_later)[0].price == list(o2_later)[0].price
