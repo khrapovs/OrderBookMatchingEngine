@@ -13,6 +13,8 @@
             pass # should be public
     ```
 
+- Unit tests are not allowed to access private attribute/methods of classes.
+
 - Use uv to run python commands, e.g.
 
     ```shell
