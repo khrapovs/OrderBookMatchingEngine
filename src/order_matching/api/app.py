@@ -9,8 +9,7 @@ from loguru import logger
 
 from order_matching import __version__
 from order_matching.api.routes import router
-from order_matching.api.utils import prepopulate_engine
-from order_matching.matching_engine import MatchingEngine
+from order_matching.api.utils import create_market
 
 app = FastAPI(
     title="Order Book Matching Engine API",
@@ -19,7 +18,8 @@ app = FastAPI(
 )
 
 # Initialize global state and prepopulate it
-app.state.engine = prepopulate_engine(MatchingEngine())
+app.state.market = create_market()
+app.state.engine = app.state.market.engine
 app.state.trades = []
 
 # Permissive CORS middleware for demo use

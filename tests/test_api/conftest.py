@@ -1,18 +1,37 @@
 from collections.abc import Iterator
 from datetime import datetime
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 
 from order_matching.api.app import app
 from order_matching.matching_engine import MatchingEngine
+from order_matching.simulation.market import Market
+from order_matching.simulation.news_feed import NewsFeed
+
+
+@pytest.fixture(autouse=True)
+def mock_create_market() -> Iterator[None]:
+    with (
+        patch("order_matching.api.routes.reset.create_market") as mock_reset_create,
+        patch("order_matching.api.app.create_market") as mock_app_create,
+    ):
+
+        def side_effect(seed: int | None = None) -> Market:
+            return Market(traders=[], news_feed=NewsFeed(), seed=seed)
+
+        mock_reset_create.side_effect = side_effect
+        mock_app_create.side_effect = side_effect
+        yield
 
 
 @pytest.fixture
 def client() -> Iterator[TestClient]:
     # Reset application state for each test to guarantee isolation
-    app.state.engine = MatchingEngine()
+    app.state.market = Market(traders=[], news_feed=NewsFeed())
+    app.state.engine = app.state.market.engine
     app.state.trades = []
     with TestClient(app) as c:
         yield c
@@ -20,7 +39,8 @@ def client() -> Iterator[TestClient]:
 
 @pytest.fixture
 def reset_engine(_client: TestClient) -> MatchingEngine:
-    app.state.engine = MatchingEngine()
+    app.state.market = Market(traders=[], news_feed=NewsFeed())
+    app.state.engine = app.state.market.engine
     app.state.trades = []
     return app.state.engine
 

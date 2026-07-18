@@ -107,3 +107,28 @@ def test_market_view_updates_during_simulation() -> None:
 
     # Prove that MarketView automatically reflects the changes
     assert market.view.last_trade_price == 100.0
+
+
+def test_market_engine_property() -> None:
+    from order_matching.enums import Side
+    from order_matching.matching_engine import MatchingEngine
+    from order_matching.order import LimitOrder
+    from order_matching.orders import Orders
+
+    market = Market(traders=[], news_feed=NewsFeed())
+    engine = market.engine
+    assert isinstance(engine, MatchingEngine)
+
+    # Placing an order on engine should reflect in market view
+    now = datetime(2023, 1, 1, 10, 0)
+    order = LimitOrder(side=Side.BUY, price=95.0, size=1.0, timestamp=now, order_id="test_prop", trader_id="tester")
+    engine.place(Orders([order]))
+    assert 95.0 in [p for p, _ in market.view.bids_depth]
+
+
+def test_create_market() -> None:
+    from order_matching.api.utils import create_market
+
+    market = create_market()
+    assert isinstance(market, Market)
+    assert market.engine is not None
