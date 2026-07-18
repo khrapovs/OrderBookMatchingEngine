@@ -11,9 +11,9 @@ from order_matching.simulation.traders.noise import NoiseTrader
 # Create two custom traders that place crossing orders at a specific tick
 class Buyer(BaseTrader):
     def place(self, *, market_view: MarketView, timestamp: datetime) -> Orders | None:  # noqa: ARG002
+        from order_matching.enums import Side
         from order_matching.order import LimitOrder
         from order_matching.orders import Orders
-        from order_matching.side import Side
 
         o = LimitOrder(
             side=Side.BUY, price=100.0, size=5.0, timestamp=timestamp, order_id="buy_1", trader_id=self.trader_id
@@ -23,9 +23,9 @@ class Buyer(BaseTrader):
 
 class Seller(BaseTrader):
     def place(self, *, market_view: MarketView, timestamp: datetime) -> Orders | None:  # noqa: ARG002
+        from order_matching.enums import Side
         from order_matching.order import LimitOrder
         from order_matching.orders import Orders
-        from order_matching.side import Side
 
         o = LimitOrder(
             side=Side.SELL, price=100.0, size=5.0, timestamp=timestamp, order_id="sell_1", trader_id=self.trader_id

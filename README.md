@@ -44,7 +44,7 @@ pip install order-matching[all]
 
 >>> from order_matching.matching_engine import MatchingEngine
 >>> from order_matching.order import LimitOrder
->>> from order_matching.side import Side
+>>> from order_matching.enums import Side
 >>> from order_matching.orders import Orders
 
 >>> matching_engine = MatchingEngine(seed=123)

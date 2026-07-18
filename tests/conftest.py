@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 import numpy as np
 import pytest
 
+from order_matching.enums import Side
 from order_matching.order import LimitOrder
 from order_matching.orders import Orders
 from order_matching.random import get_faker, get_random_generator
-from order_matching.side import Side
 
 
 @pytest.fixture

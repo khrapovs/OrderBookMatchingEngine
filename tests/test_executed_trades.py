@@ -1,10 +1,9 @@
 from copy import deepcopy
 from datetime import datetime, timedelta
 
+from order_matching.enums import Execution, Side
 from order_matching.executed_trades import ExecutedTrades
-from order_matching.execution import Execution
 from order_matching.schemas import TradeDataSchema
-from order_matching.side import Side
 from order_matching.trade import Trade
 
 

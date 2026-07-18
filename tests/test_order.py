@@ -3,10 +3,8 @@ from datetime import datetime
 import polars as pl
 import pytest
 
-from order_matching.execution import Execution
+from order_matching.enums import Execution, Side, Status
 from order_matching.order import LimitOrder, MarketOrder, Order
-from order_matching.side import Side
-from order_matching.status import Status
 
 
 class TestOrder:

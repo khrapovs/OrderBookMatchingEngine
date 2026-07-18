@@ -2,10 +2,10 @@ from datetime import datetime
 
 import pytest
 
+from order_matching.enums import Side
 from order_matching.matching_engine import MatchingEngine
 from order_matching.order import LimitOrder
 from order_matching.orders import Orders
-from order_matching.side import Side
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsEvent, NewsFeed
 from order_matching.trade import Trade

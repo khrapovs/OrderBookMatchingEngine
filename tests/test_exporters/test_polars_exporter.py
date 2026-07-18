@@ -15,8 +15,8 @@ class TestPolarsExporter:
         """Test exporting Orders with data validates against schema."""
         from datetime import datetime
 
+        from order_matching.enums import Side
         from order_matching.order import LimitOrder
-        from order_matching.side import Side
 
         exporter = PolarsExporter()
         timestamp = datetime(2023, 1, 1)
@@ -40,9 +40,8 @@ class TestPolarsExporter:
         """Test exporting ExecutedTrades with data validates against schema."""
         from datetime import datetime
 
+        from order_matching.enums import Execution, Side
         from order_matching.executed_trades import ExecutedTrades
-        from order_matching.execution import Execution
-        from order_matching.side import Side
         from order_matching.trade import Trade
 
         exporter = PolarsExporter()

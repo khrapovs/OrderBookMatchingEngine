@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 
 import pytest
 
+from order_matching.enums import Side
 from order_matching.order import LimitOrder, Order
 from order_matching.orders import Orders
 from order_matching.schemas import OrderDataSchema
-from order_matching.side import Side
 
 
 class TestOrders:

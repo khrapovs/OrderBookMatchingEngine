@@ -1,9 +1,9 @@
 from datetime import datetime
 
+from order_matching.enums import Side
 from order_matching.matching_engine import MatchingEngine
 from order_matching.order import LimitOrder
 from order_matching.orders import Orders
-from order_matching.side import Side
 
 
 def prepopulate_engine(engine: MatchingEngine) -> MatchingEngine:

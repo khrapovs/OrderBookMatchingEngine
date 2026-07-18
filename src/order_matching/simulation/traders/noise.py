@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
+from order_matching.enums import Side
 from order_matching.order import LimitOrder
 from order_matching.orders import Orders
 from order_matching.random import get_faker, get_random_generator
-from order_matching.side import Side
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.traders.base import BaseTrader
 

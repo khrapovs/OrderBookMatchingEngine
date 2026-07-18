@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from order_matching.execution import Execution
-from order_matching.side import Side
+from order_matching.enums import Execution, Side
 
 
 @dataclass(kw_only=True)

@@ -1,4 +1,4 @@
-from order_matching.execution import Execution
+from order_matching.enums import Execution
 
 
 def test_execution() -> None:

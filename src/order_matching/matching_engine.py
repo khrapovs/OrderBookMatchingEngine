@@ -3,12 +3,12 @@ from datetime import datetime
 
 from loguru import logger
 
+from order_matching.enums import Status
 from order_matching.executed_trades import ExecutedTrades
 from order_matching.order import Order
 from order_matching.order_book import OrderBook
 from order_matching.orders import Orders
 from order_matching.random import get_faker
-from order_matching.status import Status
 from order_matching.trade import Trade
 
 
@@ -26,7 +26,7 @@ class MatchingEngine:
     >>> from pprint import pp
     >>> from order_matching.matching_engine import MatchingEngine
     >>> from order_matching.order import LimitOrder
-    >>> from order_matching.side import Side
+    >>> from order_matching.enums import Side
     >>> from order_matching.orders import Orders
     >>> matching_engine = MatchingEngine(seed=123)
     >>> timestamp = datetime(2023, 1, 1)
