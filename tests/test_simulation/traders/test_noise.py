@@ -3,7 +3,7 @@ from datetime import datetime
 from order_matching.matching_engine import MatchingEngine
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsFeed
-from order_matching.simulation.noise_trader import NoiseTrader
+from order_matching.simulation.traders.noise import NoiseTrader
 
 
 def test_noise_trader_initialization() -> None:

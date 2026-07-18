@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from order_matching.orders import Orders
-from order_matching.simulation.base_trader import BaseTrader
 from order_matching.simulation.market import Market
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsFeed
-from order_matching.simulation.noise_trader import NoiseTrader
+from order_matching.simulation.traders.base import BaseTrader
+from order_matching.simulation.traders.noise import NoiseTrader
 
 
 # Create two custom traders that place crossing orders at a specific tick

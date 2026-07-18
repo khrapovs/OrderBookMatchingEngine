@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from order_matching.matching_engine import MatchingEngine
-from order_matching.simulation.base_trader import BaseTrader
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsFeed
+from order_matching.simulation.traders.base import BaseTrader
 from order_matching.trade import Trade
 
 
