@@ -9,7 +9,7 @@ def test_summary_empty_book(client: TestClient) -> None:
     assert response.json() == []
 
 
-def test_summary_with_orders(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_summary_with_orders(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place buy at 100 size 10
     client.post("/place", json={"orders": [sample_limit_order]})
 

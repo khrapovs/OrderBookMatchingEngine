@@ -33,6 +33,7 @@ class TestOrder:
     @pytest.mark.parametrize("price_number_of_digits", [1, 3])
     def test_order_required_defaults(
         self,
+        *,
         side: Side,
         price: float,
         size: float,
@@ -81,6 +82,7 @@ class TestLimitOrder:
     @pytest.mark.parametrize("price_number_of_digits", [1, 3])
     def test_order_required_defaults(
         self,
+        *,
         side: Side,
         price: float,
         size: float,
@@ -119,7 +121,7 @@ class TestMarketOrder:
     @pytest.mark.parametrize("order_id", ["a", "b"])
     @pytest.mark.parametrize("trader_id", ["x", "y"])
     def test_order_required_defaults(
-        self, side: Side, size: float, timestamp: datetime, order_id: str, trader_id: str
+        self, *, side: Side, size: float, timestamp: datetime, order_id: str, trader_id: str
     ) -> None:
         order = MarketOrder(side=side, size=size, timestamp=timestamp, order_id=order_id, trader_id=trader_id)
         assert order.side == side

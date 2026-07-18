@@ -164,7 +164,7 @@ class MatchingEngine:
             self.unprocessed_orders.append(incoming_order=incoming_order)
         return trades
 
-    def _execute_trades_for_one_price(self, incoming_order: Order, price: float) -> ExecutedTrades:
+    def _execute_trades_for_one_price(self, *, incoming_order: Order, price: float) -> ExecutedTrades:
         opposite_side_orders = self.unprocessed_orders.get_opposite_side_orders(incoming_order=incoming_order)
         trades, zero_size_orders = list(), list()
         for book_order in opposite_side_orders[price]:
@@ -182,7 +182,7 @@ class MatchingEngine:
             opposite_side_orders.pop(price)
         return ExecutedTrades(trades=trades)
 
-    def _execute_trade(self, incoming_order: Order, book_order: Order) -> Trade:
+    def _execute_trade(self, *, incoming_order: Order, book_order: Order) -> Trade:
         assert self._timestamp is not None
         trade = Trade(
             side=incoming_order.side,

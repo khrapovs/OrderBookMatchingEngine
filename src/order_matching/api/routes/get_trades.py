@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/trades")
-def get_trades(request: Request, from_timestamp: datetime | None = None) -> TradeHistoryResponse:
+def get_trades(*, request: Request, from_timestamp: datetime | None = None) -> TradeHistoryResponse:
     trades = request.app.state.trades
     if from_timestamp is not None:
         trades = [t for t in trades if t.timestamp >= to_naive(from_timestamp)]

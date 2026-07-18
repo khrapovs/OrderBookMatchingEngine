@@ -24,6 +24,7 @@ class TestTrade:
     @pytest.mark.parametrize("execution", [Execution.LIMIT, Execution.MARKET])
     def test_trade_required_defaults(
         self,
+        *,
         side: Side,
         price: float,
         size: float,

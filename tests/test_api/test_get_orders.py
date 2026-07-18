@@ -10,7 +10,7 @@ def test_get_empty_order_book(client: TestClient) -> None:
     assert response.json()["offers"] == {}
 
 
-def test_get_order_book_bids_only(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_get_order_book_bids_only(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     client.post("/place", json={"orders": [sample_limit_order]})
     response = client.get("/orders")
     assert response.status_code == 200
@@ -18,7 +18,7 @@ def test_get_order_book_bids_only(client: TestClient, sample_limit_order: dict[s
     assert response.json()["offers"] == {}
 
 
-def test_get_order_book_offers_only(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_get_order_book_offers_only(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     order = sample_limit_order.copy()
     order["side"] = "SELL"
     order["price"] = 200.0
@@ -30,7 +30,7 @@ def test_get_order_book_offers_only(client: TestClient, sample_limit_order: dict
     assert len(response.json()["offers"]) == 1
 
 
-def test_get_order_book_mixed_and_grouped(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_get_order_book_mixed_and_grouped(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place buy at 100
     client.post("/place", json={"orders": [sample_limit_order]})
 

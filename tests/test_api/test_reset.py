@@ -3,7 +3,7 @@ from typing import Any
 from fastapi.testclient import TestClient
 
 
-def test_reset_without_seed_clears_state(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_reset_without_seed_clears_state(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place order
     client.post("/place", json={"orders": [sample_limit_order]})
 
@@ -20,7 +20,7 @@ def test_reset_without_seed_clears_state(client: TestClient, sample_limit_order:
     assert client.get("/trades").json()["trades"] == []
 
 
-def test_reset_with_seed(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_reset_with_seed(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     reset_response = client.post("/reset", json={"seed": 42})
     assert reset_response.status_code == 200
     assert "reset successfully" in reset_response.json()["message"]

@@ -860,7 +860,7 @@ class TestMatchingEngine:
         # the live re-used-id "X" was evicted; expected ['X']
         assert [o.order_id for v in matching_engine.unprocessed_orders.bids.values() for o in v] == ["X"]
 
-    def test_matching_with_benchmark(self, random_orders: Orders, benchmark: BenchmarkFixture) -> None:
+    def test_matching_with_benchmark(self, *, random_orders: Orders, benchmark: BenchmarkFixture) -> None:
         def place_and_match(orders: Orders) -> None:
             engine = MatchingEngine()
             engine.place(orders=orders)

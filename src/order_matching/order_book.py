@@ -295,11 +295,11 @@ class OrderBook:
         return sorted(orders.keys())
 
     @staticmethod
-    def _get_order_sizes(orders: OrderBookOrdersType, prices: list[float]) -> list[float]:
+    def _get_order_sizes(*, orders: OrderBookOrdersType, prices: list[float]) -> list[float]:
         return [sum(order.size for order in orders[price]) for price in prices]
 
     @staticmethod
-    def _get_order_counts(orders: OrderBookOrdersType, prices: list[float]) -> list[int]:
+    def _get_order_counts(*, orders: OrderBookOrdersType, prices: list[float]) -> list[int]:
         return [len(orders[price]) for price in prices]
 
     @property

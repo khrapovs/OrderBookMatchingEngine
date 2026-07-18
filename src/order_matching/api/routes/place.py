@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/place")
-def place(payload: PlaceRequest, engine: MatchingEngineDep) -> PlaceResponse:
+def place(*, payload: PlaceRequest, engine: MatchingEngineDep) -> PlaceResponse:
     # Convert request orders to domain Orders
     domain_orders_list = [request_to_domain_order(o) for o in payload.orders]
     domain_orders = Orders(orders=domain_orders_list)

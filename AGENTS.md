@@ -4,7 +4,7 @@
     uv run pytest
     ```
 
-- Run prek on all files before each commit:
+- Run prek on all files before each commit (stage all the files but do not commit):
 
     ```shell
     uv run prek run -v --show-diff-on-failure --all-files

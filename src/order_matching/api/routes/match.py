@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/match")
-def match_orders(request: Request, payload: MatchRequest, engine: MatchingEngineDep) -> MatchResponse:
+def match_orders(*, request: Request, payload: MatchRequest, engine: MatchingEngineDep) -> MatchResponse:
     executed_trades = engine.match(timestamp=to_naive(payload.timestamp))
 
     # Accumulate trades in app state

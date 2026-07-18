@@ -3,7 +3,7 @@ from typing import Any
 from fastapi.testclient import TestClient
 
 
-def test_cancel_order_successfully(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_cancel_order_successfully(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place order
     client.post("/place", json={"orders": [sample_limit_order]})
 
@@ -27,7 +27,7 @@ def test_cancel_non_existent_order(client: TestClient) -> None:
     assert "not found" in response.json()["detail"]
 
 
-def test_cancel_already_filled_order(client: TestClient, sample_limit_order: dict[str, Any]) -> None:
+def test_cancel_already_filled_order(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place buy order
     client.post("/place", json={"orders": [sample_limit_order]})
 
