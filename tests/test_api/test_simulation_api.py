@@ -8,16 +8,10 @@ from order_matching.api.app import app
 from order_matching.api.utils import create_market
 
 
-@pytest.fixture(autouse=True)
-def mock_create_market() -> Iterator[None]:
-    # We override the mock_create_market fixture from conftest.py so that
-    # the real create_market is used for all tests in this file.
-    yield
-
-
 @pytest.fixture
 def sim_client() -> Iterator[TestClient]:
     # Set up client with a real market for simulation testing
+    app.state.traders_enabled = True
     app.state.market = create_market(seed=42)
     app.state.engine = app.state.market.engine
     app.state.trades = []

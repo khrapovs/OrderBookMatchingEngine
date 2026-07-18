@@ -11,7 +11,8 @@ router = APIRouter()
 @router.post("/reset")
 def reset_engine(*, request: Request, payload: ResetRequest) -> ResetResponse:
     # Reinitialize market and engine in app state
-    market = create_market(seed=payload.seed)
+    traders_enabled = getattr(request.app.state, "traders_enabled", True)
+    market = create_market(seed=payload.seed, traders=None if traders_enabled else [])
     request.app.state.market = market
     request.app.state.engine = market.engine
     request.app.state.trades = []
