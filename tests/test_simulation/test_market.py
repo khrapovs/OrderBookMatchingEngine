@@ -92,3 +92,19 @@ def test_market_determinism() -> None:
     # Different seeds should produce different outputs (highly likely)
     if len(prices_1) > 0 and len(prices_3) > 0:
         assert prices_1 != prices_3
+
+
+def test_market_view_updates_during_simulation() -> None:
+    market = Market(traders=[Buyer("buyer"), Seller("seller")], news_feed=NewsFeed())
+
+    # Assert initial proxy state is empty
+    assert market.market_view.last_trade_price is None
+    assert len(market.market_view.bids_depth) == 0
+    assert len(market.market_view.asks_depth) == 0
+
+    # Step the simulation, triggering a trade crossing
+    t0 = datetime(2023, 1, 1, 10, 0)
+    market.step(t0)
+
+    # Prove that MarketView automatically reflects the changes
+    assert market.market_view.last_trade_price == 100.0
