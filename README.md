@@ -12,8 +12,8 @@ This repository provides a high-performance order book matching engine implement
 
 - **Core Engine**: Price-time priority matching supporting limit/market orders, order cancellation, and expiration.
 - **Market Simulation**: A discrete-time state-passing simulation framework featuring registered trading agents (such as Poisson-arrival `NoiseTrader` entities), an event-driven `NewsFeed`, and a read-only `MarketView` proxy wrapper.
-- **REST API**: FastAPI server for remote order placement, manual or automated matching runs, and engine controls.
-- **Web UI**: Modern glassmorphic SPA dashboard featuring a live-updating order book feed, trades list, and an interactive SVG depth chart.
+- **REST API**: FastAPI server for remote order placement, manual or automated matching/simulation runs, and engine controls.
+- **Web UI**: Modern glassmorphic SPA dashboard featuring an integrated live-updating market simulation, manual order entry/cancellation, trades list, and an interactive SVG depth chart.
 - **Data Export**: Direct conversion of order books, trades, and summary states into Polars LazyFrames (optional dependency).
 
 ## Install
