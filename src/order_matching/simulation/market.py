@@ -41,11 +41,6 @@ class Market:
         return self._traders
 
     @property
-    def executed_trades(self) -> list[Trade]:
-        """Historical list of executed trades in the simulation."""
-        return self._view.executed_trades
-
-    @property
     def view(self) -> MarketView:
         """The read-only market view proxy."""
         return self._view

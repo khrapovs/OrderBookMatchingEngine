@@ -42,7 +42,7 @@ def test_market_orchestration_basic() -> None:
     market = Market(traders=[trader_1, trader_2], news_feed=feed, seed=42)
 
     assert len(market.traders) == 2
-    assert len(market.executed_trades) == 0
+    assert len(market.view.executed_trades) == 0
 
     t1 = datetime(2023, 1, 1, 12, 0, 0)
     trades = market.step(t1)
@@ -50,7 +50,7 @@ def test_market_orchestration_basic() -> None:
     # On step 1, both traders should place orders since next_trade_time is None.
     # Check that they were placed in matching engine.
     assert len(market.view.bids_depth) > 0 or len(market.view.asks_depth) > 0
-    assert len(market.executed_trades) == len(trades)
+    assert len(market.view.executed_trades) == len(trades)
 
 
 def test_market_crossing_trades() -> None:
@@ -63,7 +63,7 @@ def test_market_crossing_trades() -> None:
     assert len(trades) == 1
     assert trades[0].price == 100.0
     assert trades[0].size == 5.0
-    assert len(market.executed_trades) == 1
+    assert len(market.view.executed_trades) == 1
 
 
 def run_simulation(seed: int) -> list[float]:
