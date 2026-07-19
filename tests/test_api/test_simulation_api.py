@@ -11,7 +11,6 @@ from order_matching.api.utils import create_market
 @pytest.fixture
 def sim_client() -> Iterator[TestClient]:
     # Set up client with a real market for simulation testing
-    app.state.traders_enabled = True
     app.state.market = create_market(seed=42)
     app.state.trades = []
     with TestClient(app) as c:

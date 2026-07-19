@@ -5,10 +5,7 @@ from fastapi.testclient import TestClient
 
 
 def test_complete_workflow(*, client: TestClient, sample_limit_order: dict[str, Any]) -> None:
-    # 1. Reset engine
-    client.post("/reset", json={})
-
-    # 2. Place some non-crossing orders
+    # 1. Place some non-crossing orders
     buy_order = sample_limit_order.copy()
     buy_order["order_id"] = "buy_1"
     buy_order["price"] = 100.0
@@ -22,12 +19,12 @@ def test_complete_workflow(*, client: TestClient, sample_limit_order: dict[str, 
     sell_order["size"] = 5.0
     client.post("/place", json={"orders": [sell_order]})
 
-    # 3. View order book
+    # 2. View order book
     book = client.get("/orders").json()
     assert len(book["bids"]) == 1
     assert len(book["offers"]) == 1
 
-    # 4. Place a crossing order that executes a trade
+    # 3. Place a crossing order that executes a trade
     crossing_sell = sample_limit_order.copy()
     crossing_sell["order_id"] = "sell_2"
     crossing_sell["side"] = "SELL"
@@ -39,13 +36,13 @@ def test_complete_workflow(*, client: TestClient, sample_limit_order: dict[str, 
     match_response = client.post("/match", json={"timestamp": sample_limit_order["timestamp"]})
     assert match_response.status_code == 200
 
-    # 5. Check trades
+    # 4. Check trades
     trades = client.get("/trades").json()["trades"]
     assert len(trades) == 1
     assert trades[0]["price"] == 100.0
     assert trades[0]["size"] == 4.0
 
-    # 6. Verify remaining buy size in book
+    # 5. Verify remaining buy size in book
     book_after = client.get("/orders").json()
     assert book_after["bids"]["100.0"][0]["size"] == 6.0
 
