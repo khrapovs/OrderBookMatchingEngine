@@ -25,7 +25,6 @@ def client() -> Iterator[TestClient]:
 def reset_engine(_client: TestClient) -> MatchingEngine:
     app.state.traders_enabled = False
     app.state.market = create_market(traders=[])
-    app.state.engine = app.state.market.engine
     app.state.trades = []
     return app.state.engine
 

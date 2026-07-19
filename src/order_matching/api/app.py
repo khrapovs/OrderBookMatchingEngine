@@ -19,7 +19,6 @@ app = FastAPI(
 
 # Initialize global state and prepopulate it
 app.state.market = create_market()
-app.state.engine = app.state.market.engine
 app.state.trades = []
 
 # Permissive CORS middleware for demo use
