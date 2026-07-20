@@ -17,10 +17,10 @@ def test_market_view_empty_state() -> None:
     news_feed = NewsFeed()
     view = MarketView(order_book=engine.unprocessed_orders, news_feed=news_feed)
 
-    assert view.max_bid is None
-    assert view.min_offer is None
-    assert view.mid_price is None
-    assert view.spread is None
+    assert view.max_bid == 0
+    assert view.min_offer == float("inf")
+    assert view.mid_price == 0.0
+    assert view.spread == float("inf")
     assert view.last_trade_price is None
     assert view.bids_depth == []
     assert view.asks_depth == []
