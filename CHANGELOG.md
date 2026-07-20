@@ -1,3 +1,9 @@
+## 0.9.1 (2026-07-20)
+
+### Refactor
+
+- Simplify app state. Switch to OpenAPI examples. (#45)
+
 ## 0.9.0 (2026-07-18)
 
 ### Feat
