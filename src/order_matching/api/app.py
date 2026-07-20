@@ -10,6 +10,7 @@ from loguru import logger
 from order_matching import __version__
 from order_matching.api.routes import router
 from order_matching.api.utils import create_market
+from order_matching.executed_trades import ExecutedTrades
 
 app = FastAPI(
     title="Order Book Matching Engine API",
@@ -19,7 +20,7 @@ app = FastAPI(
 
 # Initialize global state and prepopulate it
 app.state.market = create_market()
-app.state.trades = []
+app.state.trades = ExecutedTrades()
 
 # Permissive CORS middleware for demo use
 app.add_middleware(

@@ -1,8 +1,8 @@
 from datetime import datetime
 
+from order_matching.executed_trades import ExecutedTrades
 from order_matching.order_book import OrderBook
 from order_matching.simulation.news_feed import NewsEvent, NewsFeed
-from order_matching.trade import Trade
 
 
 class MarketView:
@@ -19,22 +19,22 @@ class MarketView:
     def __init__(self, *, order_book: OrderBook, news_feed: NewsFeed) -> None:
         self._order_book = order_book
         self._news_feed = news_feed
-        self._executed_trades: list[Trade] = []
+        self._executed_trades: ExecutedTrades = ExecutedTrades()
 
     @property
-    def executed_trades(self) -> list[Trade]:
+    def executed_trades(self) -> ExecutedTrades:
         """Historical list of executed trades in the simulation."""
         return self._executed_trades
 
-    def update(self, *, trades: list[Trade]) -> None:
+    def update(self, *, trades: ExecutedTrades) -> None:
         """Update the market view with newly executed trades.
 
         Parameters
         ----------
-        trades : list[Trade]
+        trades : ExecutedTrades
             The list of trades executed during the latest step.
         """
-        self._executed_trades.extend(trades)
+        self._executed_trades += trades
 
     @property
     def max_bid(self) -> float | None:
@@ -65,7 +65,7 @@ class MarketView:
     @property
     def last_trade_price(self) -> float | None:
         """The price of the most recently executed trade."""
-        return self._executed_trades[-1].price if self._executed_trades else None
+        return self._executed_trades.last_trade_price
 
     @property
     def bids_depth(self) -> list[tuple[float, float]]:

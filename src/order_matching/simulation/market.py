@@ -1,10 +1,10 @@
 from datetime import datetime
 
+from order_matching.executed_trades import ExecutedTrades
 from order_matching.matching_engine import MatchingEngine
 from order_matching.simulation.market_view import MarketView
 from order_matching.simulation.news_feed import NewsFeed
 from order_matching.simulation.traders.base import BaseTrader
-from order_matching.trade import Trade
 
 
 class Market:
@@ -45,7 +45,7 @@ class Market:
         """The underlying matching engine."""
         return self._engine
 
-    def step(self, timestamp: datetime) -> list[Trade]:
+    def step(self, timestamp: datetime) -> ExecutedTrades:
         """Advance the simulation by one discrete tick.
 
         Queries all traders for new orders, submits them to the matching engine,
@@ -58,7 +58,7 @@ class Market:
 
         Returns
         -------
-        list[Trade]
+        ExecutedTrades
             The list of trades executed during this tick.
         """
         for trader in self._traders:
@@ -66,6 +66,6 @@ class Market:
             if orders is not None and not orders.is_empty:
                 self._engine.place(orders=orders)
 
-        trades = self._engine.match(timestamp=timestamp).trades
+        trades = self._engine.match(timestamp=timestamp)
         self._view.update(trades=trades)
         return trades

@@ -16,7 +16,6 @@ def match_orders(
     payload: Annotated[MatchRequest, Body(openapi_examples=MatchRequest.model_json_schema()["openapi_examples"])],
 ) -> MatchResponse:
     executed_trades = request.app.state.market.step(timestamp=to_naive(payload.timestamp))
-    # Accumulate trades in app state
-    request.app.state.trades.extend(executed_trades)
-    trades_res = [domain_trade_to_response(t) for t in executed_trades]
+    request.app.state.trades += executed_trades
+    trades_res = [domain_trade_to_response(t) for t in executed_trades.trades]
     return MatchResponse(trades=trades_res)

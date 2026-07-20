@@ -59,6 +59,18 @@ class TestExecutedTrades:
 
         TradeDataSchema.validate(executed_trades.to_frame(), lazy=True)
 
+    def test_last_trade_price(self) -> None:
+        executed_trades = ExecutedTrades()
+        assert executed_trades.last_trade_price is None
+        first_trade, second_trade = self._get_sample_trades()
+        executed_trades.add(trades=[first_trade])
+        assert executed_trades.last_trade_price == first_trade.price
+        executed_trades.add(trades=[first_trade, second_trade])
+        assert executed_trades.last_trade_price == second_trade.price
+        first_trade.timestamp = first_trade.timestamp + timedelta(days=1)
+        executed_trades.add(trades=[first_trade])
+        assert executed_trades.last_trade_price == first_trade.price
+
     def test_dunder_add(self) -> None:
         executed_trades_first = ExecutedTrades()
         first_trade, second_trade = self._get_sample_trades()
@@ -76,6 +88,11 @@ class TestExecutedTrades:
         assert executed_trades_first.trades == [first_trade]
         assert executed_trades_second.trades == [second_trade]
         assert executed_trades_third.trades == [first_trade]
+
+        executed_trades_first += executed_trades_second
+        executed_trades_first += executed_trades_third
+
+        assert executed_trades_first.trades == [first_trade, second_trade, first_trade]
 
     def _get_sample_trades(self) -> list[Trade]:
         return [

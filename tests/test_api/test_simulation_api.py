@@ -6,13 +6,14 @@ from fastapi.testclient import TestClient
 
 from order_matching.api.app import app
 from order_matching.api.utils import create_market
+from order_matching.executed_trades import ExecutedTrades
 
 
 @pytest.fixture
 def sim_client() -> Iterator[TestClient]:
     # Set up client with a real market for simulation testing
     app.state.market = create_market(seed=42)
-    app.state.trades = []
+    app.state.trades = ExecutedTrades()
     with TestClient(app) as c:
         yield c
 

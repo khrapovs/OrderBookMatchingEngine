@@ -52,7 +52,7 @@ def test_market_crossing_trades() -> None:
     market = Market(traders=[Buyer("buyer"), Seller("seller")], news_feed=NewsFeed())
     t0 = datetime(2023, 1, 1, 10, 0)
 
-    trades = market.step(t0)
+    trades = market.step(t0).trades
 
     # They cross at 100.0, so 1 trade should execute
     assert len(trades) == 1

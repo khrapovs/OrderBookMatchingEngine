@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from order_matching.enums import Side
+from order_matching.executed_trades import ExecutedTrades
 from order_matching.matching_engine import MatchingEngine
 from order_matching.order import LimitOrder
 from order_matching.orders import Orders
@@ -40,18 +41,20 @@ def test_market_view_with_orders_and_trades() -> None:
 
     engine.place(Orders([buy_1, buy_2, sell_1]))
 
-    executed_trades: list[Trade] = [
-        Trade(
-            side=Side.BUY,
-            price=101.0,
-            size=2.0,
-            incoming_order_id="in_1",
-            book_order_id="bk_1",
-            timestamp=t1,
-            execution=buy_1.execution,
-            trade_id="trade_1",
-        )
-    ]
+    executed_trades = ExecutedTrades(
+        trades=[
+            Trade(
+                side=Side.BUY,
+                price=101.0,
+                size=2.0,
+                incoming_order_id="in_1",
+                book_order_id="bk_1",
+                timestamp=t1,
+                execution=buy_1.execution,
+                trade_id="trade_1",
+            )
+        ]
+    )
 
     view = MarketView(order_book=engine.unprocessed_orders, news_feed=news_feed)
     view.update(trades=executed_trades)
@@ -61,7 +64,6 @@ def test_market_view_with_orders_and_trades() -> None:
     assert view.mid_price == 101.0
     assert view.spread == 2.0
     assert view.last_trade_price == 101.0
-
     assert view.bids_depth == [(100.0, 10.0), (99.0, 5.0)]
     assert view.asks_depth == [(102.0, 8.0)]
     assert len(view.get_news(datetime(2023, 1, 1, 11, 0))) == 1
