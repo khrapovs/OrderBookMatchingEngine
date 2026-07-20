@@ -2,6 +2,14 @@ from typing import Any
 
 from fastapi.testclient import TestClient
 
+from order_matching.api.models.requests import PlaceRequest
+
+
+def test_match_with_openapi_examples(client: TestClient) -> None:
+    for example in PlaceRequest.model_json_schema()["openapi_examples"].values():
+        response = client.post("/place", json=example["value"])
+        assert response.status_code == 200
+
 
 def test_place_single_limit_order_success(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     response = client.post("/place", json={"orders": [sample_limit_order]})

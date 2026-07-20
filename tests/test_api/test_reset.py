@@ -5,6 +5,12 @@ from fastapi.testclient import TestClient
 from order_matching.api.models.requests import ResetRequest
 
 
+def test_reset_with_openapi_examples(client: TestClient) -> None:
+    for example in ResetRequest.model_json_schema()["openapi_examples"].values():
+        reset_response = client.post("/reset", json=example["value"])
+        assert reset_response.status_code == 200
+
+
 def test_reset_without_seed_clears_state(client: TestClient, *, sample_limit_order: dict[str, Any]) -> None:
     # Place order
     client.post("/place", json={"orders": [sample_limit_order]})
@@ -30,9 +36,3 @@ def test_reset_with_seed(client: TestClient, *, sample_limit_order: dict[str, An
     # Verify we can still place orders and run matching successfully
     response = client.post("/place", json={"orders": [sample_limit_order]})
     assert response.status_code == 200
-
-
-def test_reset_with_openapi_examples(client: TestClient) -> None:
-    for example in ResetRequest.model_json_schema()["openapi_examples"].values():
-        reset_response = client.post("/reset", json=example["value"])
-        assert reset_response.status_code == 200
