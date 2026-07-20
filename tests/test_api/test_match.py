@@ -3,6 +3,14 @@ from typing import Any
 
 from fastapi.testclient import TestClient
 
+from order_matching.api.models.requests import MatchRequest
+
+
+def test_match_with_openapi_examples(client: TestClient) -> None:
+    for example in MatchRequest.model_json_schema()["openapi_examples"].values():
+        response = client.post("/match", json=example["value"])
+        assert response.status_code == 200
+
 
 def test_match_empty_order_book(client: TestClient, *, sample_timestamp: datetime) -> None:
     response = client.post("/match", json={"timestamp": sample_timestamp.isoformat()})

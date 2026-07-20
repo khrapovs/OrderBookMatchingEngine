@@ -70,7 +70,7 @@ class NoiseTrader(BaseTrader):
 
         side = Side.BUY if self._rng.random() < 0.5 else Side.SELL
         mid = market_view.mid_price
-        ref_price = mid if mid is not None else self._base_price
+        ref_price = mid if mid > 0.0 else self._base_price
 
         price = round(self._rng.lognormal(mean=math.log(ref_price), sigma=self._price_std_dev), 2)
         size = max(0.01, round(self._rng.uniform(*self._size_params), 2))

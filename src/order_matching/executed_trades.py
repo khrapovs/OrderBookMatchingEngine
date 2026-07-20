@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 
 if TYPE_CHECKING:
     from pandera.typing.polars import LazyFrame
@@ -57,6 +57,12 @@ class ExecutedTrades:
         """
         return self._trades[timestamp]
 
+    @property
+    def last_trade_price(self) -> float | None:
+        """The price of the most recently executed trade."""
+        # TODO: It is possible to have to trades with the same timestamp, hence, the price is ambiguous
+        return self._trades[max(self._trades.keys())][-1].price if self._trades else None
+
     def to_frame(self) -> LazyFrame[TradeDataSchema]:
         """Get polars DataFrame of all stored trades.
 
@@ -78,3 +84,12 @@ class ExecutedTrades:
         trades.add(trades=self.trades)
         trades.add(trades=other.trades)
         return trades
+
+    def __iter__(self) -> Iterator[Trade]:
+        return iter(self.trades)
+
+    def __next__(self) -> Trade:
+        return next(self.__iter__())
+
+    def __len__(self) -> int:
+        return len(self.trades)

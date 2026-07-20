@@ -7,27 +7,16 @@ from fastapi.testclient import TestClient
 
 from order_matching.api.app import app
 from order_matching.api.utils import create_market
-from order_matching.matching_engine import MatchingEngine
+from order_matching.executed_trades import ExecutedTrades
 
 
 @pytest.fixture
 def client() -> Iterator[TestClient]:
     # Reset application state for each test to guarantee isolation
-    app.state.traders_enabled = False
-    app.state.market = create_market(traders=[])
-    app.state.engine = app.state.market.engine
-    app.state.trades = []
+    app.state.market = create_market(traders=[], seed=42)
+    app.state.trades = ExecutedTrades()
     with TestClient(app) as c:
         yield c
-
-
-@pytest.fixture
-def reset_engine(_client: TestClient) -> MatchingEngine:
-    app.state.traders_enabled = False
-    app.state.market = create_market(traders=[])
-    app.state.engine = app.state.market.engine
-    app.state.trades = []
-    return app.state.engine
 
 
 @pytest.fixture

@@ -37,42 +37,46 @@ class PlaceRequest(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
-            "examples": [
-                {
-                    "orders": [
-                        {
-                            "order_type": "limit",
-                            "order_id": "order_001",
-                            "trader_id": "trader_alice",
-                            "side": "BUY",
-                            "size": 10.0,
-                            "price": 100.50,
-                            "timestamp": "2026-07-16T12:00:00",
-                        },
-                        {
-                            "order_type": "limit",
-                            "order_id": "order_002",
-                            "trader_id": "trader_bob",
-                            "side": "SELL",
-                            "size": 5.0,
-                            "price": 99.75,
-                            "timestamp": "2026-07-16T12:00:01",
-                        },
-                    ]
+            "openapi_examples": {
+                "two limit orders": {
+                    "value": {
+                        "orders": [
+                            {
+                                "order_type": "limit",
+                                "order_id": "order_001",
+                                "trader_id": "trader_alice",
+                                "side": "BUY",
+                                "size": 10.0,
+                                "price": 100.50,
+                                "timestamp": "2026-07-16T12:00:00",
+                            },
+                            {
+                                "order_type": "limit",
+                                "order_id": "order_002",
+                                "trader_id": "trader_bob",
+                                "side": "SELL",
+                                "size": 5.0,
+                                "price": 99.75,
+                                "timestamp": "2026-07-16T12:00:01",
+                            },
+                        ]
+                    }
                 },
-                {
-                    "orders": [
-                        {
-                            "order_type": "market",
-                            "order_id": "order_003",
-                            "trader_id": "trader_charlie",
-                            "side": "BUY",
-                            "size": 15.0,
-                            "timestamp": "2026-07-16T12:00:02",
-                        }
-                    ]
+                "one market order": {
+                    "value": {
+                        "orders": [
+                            {
+                                "order_type": "market",
+                                "order_id": "order_003",
+                                "trader_id": "trader_charlie",
+                                "side": "BUY",
+                                "size": 15.0,
+                                "timestamp": "2026-07-16T12:00:02",
+                            }
+                        ]
+                    }
                 },
-            ]
+            }
         },
     )
     orders: Annotated[list[OrderRequest], Field(min_length=1)]
@@ -82,10 +86,10 @@ class MatchRequest(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
-            "examples": [
-                {"timestamp": "2026-07-16T12:00:00"},
-                {"timestamp": "2026-07-16T14:30:00"},
-            ]
+            "openapi_examples": {
+                "first": {"value": {"timestamp": "2026-07-16T12:00:00"}},
+                "second": {"value": {"timestamp": "2026-07-16T14:30:00"}},
+            }
         },
     )
     timestamp: datetime
@@ -95,12 +99,7 @@ class ResetRequest(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
-            "examples": [
-                {"seed": 42, "prepopulate": False},
-                {"seed": 123, "prepopulate": True},
-                {},  # No seed - random state
-            ]
+            "openapi_examples": {"fixed seed": {"value": {"seed": 42}}, "no seed, random state": {"value": {}}}
         },
     )
     seed: int | None = None
-    prepopulate: bool = False

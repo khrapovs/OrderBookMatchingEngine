@@ -1,8 +1,8 @@
 from datetime import datetime
 
+from order_matching.executed_trades import ExecutedTrades
 from order_matching.order_book import OrderBook
 from order_matching.simulation.news_feed import NewsEvent, NewsFeed
-from order_matching.trade import Trade
 
 
 class MarketView:
@@ -19,53 +19,47 @@ class MarketView:
     def __init__(self, *, order_book: OrderBook, news_feed: NewsFeed) -> None:
         self._order_book = order_book
         self._news_feed = news_feed
-        self._executed_trades: list[Trade] = []
+        self._executed_trades: ExecutedTrades = ExecutedTrades()
 
     @property
-    def executed_trades(self) -> list[Trade]:
+    def executed_trades(self) -> ExecutedTrades:
         """Historical list of executed trades in the simulation."""
         return self._executed_trades
 
-    def update(self, *, trades: list[Trade]) -> None:
+    def update(self, *, trades: ExecutedTrades) -> None:
         """Update the market view with newly executed trades.
 
         Parameters
         ----------
-        trades : list[Trade]
+        trades : ExecutedTrades
             The list of trades executed during the latest step.
         """
-        self._executed_trades.extend(trades)
+        self._executed_trades += trades
 
     @property
-    def max_bid(self) -> float | None:
+    def max_bid(self) -> float:
         """The highest bid price currently in the order book."""
-        bids = self._order_book.bids
-        return max(bids.keys()) if bids else None
+        return self._order_book.max_bid
 
     @property
-    def min_offer(self) -> float | None:
+    def min_offer(self) -> float:
         """The lowest offer price currently in the order book."""
-        offers = self._order_book.offers
-        return min(offers.keys()) if offers else None
+        return self._order_book.min_offer
 
     @property
-    def mid_price(self) -> float | None:
+    def mid_price(self) -> float:
         """The mid price of the bid-ask spread."""
-        bid = self.max_bid
-        offer = self.min_offer
-        return (bid + offer) / 2.0 if bid is not None and offer is not None else None
+        return self._order_book.mid_price
 
     @property
-    def spread(self) -> float | None:
+    def spread(self) -> float:
         """The difference between the lowest offer and highest bid price."""
-        bid = self.max_bid
-        offer = self.min_offer
-        return offer - bid if bid is not None and offer is not None else None
+        return self._order_book.spread
 
     @property
     def last_trade_price(self) -> float | None:
         """The price of the most recently executed trade."""
-        return self._executed_trades[-1].price if self._executed_trades else None
+        return self._executed_trades.last_trade_price
 
     @property
     def bids_depth(self) -> list[tuple[float, float]]:
@@ -76,9 +70,7 @@ class MarketView:
         list[tuple[float, float]]
             List of (price, size) tuples.
         """
-        bids = self._order_book.bids
-        sorted_prices = sorted(bids.keys(), reverse=True)
-        return [(price, sum(order.size for order in bids[price])) for price in sorted_prices]
+        return self._order_book.bids_depth
 
     @property
     def asks_depth(self) -> list[tuple[float, float]]:
@@ -89,9 +81,7 @@ class MarketView:
         list[tuple[float, float]]
             List of (price, size) tuples.
         """
-        offers = self._order_book.offers
-        sorted_prices = sorted(offers.keys())
-        return [(price, sum(order.size for order in offers[price])) for price in sorted_prices]
+        return self._order_book.asks_depth
 
     def get_news(self, timestamp: datetime) -> list[NewsEvent]:
         """Poll the news feed for all events up to the given timestamp.

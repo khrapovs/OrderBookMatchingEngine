@@ -317,3 +317,41 @@ class OrderBook:
             return min(self.offers.keys())
         else:
             return float("inf")
+
+    @property
+    def mid_price(self) -> float:
+        """The mid price of the bid-ask spread."""
+        bid = self.max_bid
+        offer = self.min_offer
+        return (bid + offer) / 2.0 if offer != float("inf") else 0.0
+
+    @property
+    def spread(self) -> float:
+        """The difference between the lowest offer and highest bid price."""
+        return self.min_offer - self.max_bid
+
+    @property
+    def bids_depth(self) -> list[tuple[float, float]]:
+        """Bids price levels and total size at each level, sorted by price descending.
+
+        Returns
+        -------
+        list[tuple[float, float]]
+            List of (price, size) tuples.
+        """
+        bids = self.bids
+        sorted_prices = sorted(bids.keys(), reverse=True)
+        return [(price, sum(order.size for order in bids[price])) for price in sorted_prices]
+
+    @property
+    def asks_depth(self) -> list[tuple[float, float]]:
+        """Asks price levels and total size at each level, sorted by price ascending.
+
+        Returns
+        -------
+        list[tuple[float, float]]
+            List of (price, size) tuples.
+        """
+        offers = self.offers
+        sorted_prices = sorted(offers.keys())
+        return [(price, sum(order.size for order in offers[price])) for price in sorted_prices]

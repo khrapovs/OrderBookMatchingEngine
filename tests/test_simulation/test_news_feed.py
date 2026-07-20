@@ -41,3 +41,9 @@ def test_news_feed_sorting_and_retrieval() -> None:
 
     # Query way after
     assert feed.get_news(datetime(2023, 1, 1, 12, 0)) == [event_2, event_1, event_3]
+
+
+def test_news_feed_filtering() -> None:
+    news_feed = NewsFeed([NewsEvent(timestamp=datetime(2023, 1, 1, 10, 0), headline="News 1", impact=0.1)])
+
+    assert len(news_feed.get_news(datetime(2023, 1, 1, 11, 0))) == 1
