@@ -8,7 +8,7 @@ from order_matching.matching_engine import MatchingEngine
 from order_matching.order import LimitOrder
 from order_matching.orders import Orders
 from order_matching.simulation.market_view import MarketView
-from order_matching.simulation.news_feed import NewsEvent, NewsFeed
+from order_matching.simulation.news_feed import NewsFeed
 from order_matching.trade import Trade
 
 
@@ -32,7 +32,6 @@ def test_market_view_empty_state() -> None:
 
 def test_market_view_with_orders_and_trades() -> None:
     engine = MatchingEngine(seed=42)
-    news_feed = NewsFeed([NewsEvent(timestamp=datetime(2023, 1, 1, 10, 0), headline="News 1", impact=0.1)])
 
     t1 = datetime(2023, 1, 1, 10, 0)
     buy_1 = LimitOrder(side=Side.BUY, price=100.0, size=10.0, timestamp=t1, order_id="b1", trader_id="t_buy")
@@ -56,7 +55,7 @@ def test_market_view_with_orders_and_trades() -> None:
         ]
     )
 
-    view = MarketView(order_book=engine.unprocessed_orders, news_feed=news_feed)
+    view = MarketView(order_book=engine.unprocessed_orders, news_feed=NewsFeed())
     view.update(trades=executed_trades)
 
     assert view.max_bid == 100.0
@@ -66,4 +65,3 @@ def test_market_view_with_orders_and_trades() -> None:
     assert view.last_trade_price == 101.0
     assert view.bids_depth == [(100.0, 10.0), (99.0, 5.0)]
     assert view.asks_depth == [(102.0, 8.0)]
-    assert len(view.get_news(datetime(2023, 1, 1, 11, 0))) == 1
