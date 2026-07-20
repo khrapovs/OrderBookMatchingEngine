@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Request
+from typing import Annotated
+
+from fastapi import APIRouter, Body, Request
 from loguru import logger
 
 from order_matching.api.models.requests import ResetRequest
@@ -9,7 +11,11 @@ router = APIRouter()
 
 
 @router.post("/reset")
-def reset_engine(*, request: Request, payload: ResetRequest) -> ResetResponse:
+def reset_engine(
+    *,
+    request: Request,
+    payload: Annotated[ResetRequest, Body(openapi_examples=ResetRequest.model_json_schema()["openapi_examples"])],
+) -> ResetResponse:
     # Reinitialize market and engine in app state
     request.app.state.market = create_market(seed=payload.seed)
     request.app.state.trades = []

@@ -82,10 +82,10 @@ class MatchRequest(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
-            "examples": [
-                {"timestamp": "2026-07-16T12:00:00"},
-                {"timestamp": "2026-07-16T14:30:00"},
-            ]
+            "openapi_examples": {
+                "first": {"value": {"timestamp": "2026-07-16T12:00:00"}},
+                "second": {"value": {"timestamp": "2026-07-16T14:30:00"}},
+            }
         },
     )
     timestamp: datetime
@@ -95,10 +95,7 @@ class ResetRequest(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
-            "examples": [
-                {"seed": 42},
-                {},  # No seed - random state
-            ]
+            "openapi_examples": {"fixed seed": {"value": {"seed": 42}}, "no seed, random state": {"value": {}}}
         },
     )
     seed: int | None = None
