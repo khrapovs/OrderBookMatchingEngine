@@ -145,7 +145,7 @@ function setupEventListeners() {
 
   btnModalConfirm.addEventListener('click', () => {
     const seed = resetSeedInput.value ? parseInt(resetSeedInput.value) : null;
-    handleReset(seed, false);
+    handleReset(seed);
     closeModal();
   });
 }
@@ -278,9 +278,9 @@ async function handleMatchTrigger() {
   }
 }
 
-async function handleReset(seed, prepopulate) {
+async function handleReset(seed) {
   try {
-    const data = await resetEngine(seed, prepopulate);
+    const data = await resetEngine(seed);
     showToast(data.message || 'Market state reset successfully!', 'success');
     refreshDashboard();
   } catch (err) {

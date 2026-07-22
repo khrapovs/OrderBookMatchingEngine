@@ -63,14 +63,13 @@ export async function matchOrders(timestampStr) {
 /**
  * Reset the matching engine.
  * @param {number|null} seed - Seed for random generator
- * @param {boolean} prepopulate - Prepopulate with mock orders
  * @returns {Promise<Object>} API response
  */
-export async function resetEngine(seed, prepopulate) {
+export async function resetEngine(seed) {
   return request('/reset', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ seed: seed, prepopulate: prepopulate })
+    body: JSON.stringify({ seed: seed })
   }, 'Failed to reset market state');
 }
 
