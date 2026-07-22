@@ -12,6 +12,9 @@ export default [
         clearInterval: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
+        LightweightCharts: "readonly",
+        ResizeObserver: "readonly",
+        CustomEvent: "readonly",
       },
     },
     rules: {

@@ -13,7 +13,7 @@ This repository provides a high-performance order book matching engine implement
 - **Core Engine**: Price-time priority matching supporting limit/market orders, order cancellation, and expiration.
 - **Market Simulation**: A discrete-time state-passing simulation framework featuring registered trading agents (such as Poisson-arrival `NoiseTrader` entities), an event-driven `NewsFeed`, and a read-only `MarketView` proxy wrapper.
 - **REST API**: FastAPI server for remote order placement, manual or automated matching/simulation runs, and engine controls.
-- **Web UI**: Modern glassmorphic SPA dashboard featuring an integrated live-updating market simulation, manual order entry/cancellation, trades list, and an interactive SVG depth chart.
+- **Web UI**: Modern glassmorphic SPA dashboard featuring an integrated live-updating market simulation, manual order entry/cancellation, trades list, interactive SVG depth chart, and real-time OHLC candlestick chart visualization.
 - **Data Export**: Direct conversion of order books, trades, and summary states into Polars LazyFrames (optional dependency).
 
 ## Install
@@ -113,6 +113,7 @@ Features include:
 - **Engine Control & Pause/Resume**: The automated matching runs and the simulation steps run every second by default. They can be paused or resumed dynamically using the clickable **Engine Status** button in the header, freezing the simulated market state.
 - **Order Placement & Cancellation**: Easily place new limit or market orders manually and cancel outstanding orders in real-time.
 - **Depth Chart Visualization**: An interactive, responsive SVG cumulative depth chart with vertical cursor tracking and detailed hover tooltips.
+- **Candlestick Chart Visualization**: Real-time OHLC (Open, High, Low, Close) candlestick chart powered by [Lightweight Charts](https://tradingview.github.io/lightweight-charts/) with configurable time intervals (5s, 15s, 30s, 1m), zoom, pan, and crosshair interactions for visualizing price evolution during simulation runs.
 - **Real-Time Feeds**: Auto-refreshing logs of outstanding orders, recent trade ticks, current bid-ask spread, and top bid/ask levels.
 - **Market Reset**: Modal controls to clear the entire market state and restart the simulation from scratch, with support for random seed specification.
 
