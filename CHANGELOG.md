@@ -1,3 +1,9 @@
+## 0.10.0 (2026-07-22)
+
+### Feat
+
+- Add candlestick chart to the frontend (#47)
+
 ## 0.9.1 (2026-07-20)
 
 ### Refactor
