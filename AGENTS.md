@@ -112,4 +112,15 @@ When the user requests a durable behavior change, record it here or in the relev
 
 ## Child DOX Index
 
-This project is not yet indexed. Before continuing you must scan the project, build the DOX tree and replace this message with the actual index. Go deep and scan files recursively to properly evaluate complexity and create nested DOX files where needed.
+- `src/AGENTS.md` - Production source code root containing order_matching package
+  - `src/order_matching/AGENTS.md` - Core matching engine package (order book, orders, trades, matching logic)
+    - `src/order_matching/api/AGENTS.md` - FastAPI REST API layer with routes, models, and web dashboard
+    - `src/order_matching/simulation/AGENTS.md` - Market simulation framework with traders and news feed
+    - `src/order_matching/exporters/AGENTS.md` - Data export to Polars LazyFrames
+- `tests/AGENTS.md` - Test suite covering core engine, API, simulation, and exporters
+
+**Root-owned files** (no child DOX needed):
+- `docs_src/` - MkDocs documentation generation
+- `.github/` - CI/CD workflows, PR templates, openspec skills
+- Configuration files: `pyproject.toml`, `.pre-commit-config.yaml`, `mkdocs.yaml`, etc.
+- `README.md`, `CHANGELOG.md`, `LICENSE` - project documentation
