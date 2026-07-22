@@ -12,10 +12,18 @@ import {
   renderRecentTrades
 } from './ui.js';
 import { renderDepthChart } from './chart.js';
+import {
+  initCandlestickChart,
+  renderCandlestickChart,
+  setupIntervalSelector,
+  computeCandles,
+  getCurrentInterval
+} from './candlestick.js';
 
 // STATE
 let refreshTimer = null;
 let isMatchingActive = true;
+let allTrades = []; // Store trades for candlestick computation
 
 // DOM ELEMENTS
 const btnToggleEngine = document.getElementById('btn-toggle-engine');
@@ -47,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Set intervals for input updates
   setInterval(updateTimestampInputs, 1000);
+
+  // Initialize candlestick chart
+  const candlestickContainer = document.getElementById('candlestick-chart-container');
+  if (candlestickContainer) {
+    initCandlestickChart(candlestickContainer);
+    setupIntervalSelector();
+  }
 
   // Attach Event Listeners
   setupEventListeners();
@@ -97,6 +112,20 @@ function setupEventListeners() {
 
   // Toggle engine online/paused
   btnToggleEngine.addEventListener('click', toggleAutoMatching);
+
+  // Chart tab toggle
+  const chartTabs = document.querySelectorAll('.chart-tab');
+  chartTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      const tabName = e.target.dataset.tab;
+      switchChartTab(tabName);
+    });
+  });
+
+  // Interval change handler
+  window.addEventListener('intervalChanged', () => {
+    updateCandlestickChart();
+  });
 
   // Reset modal logic
   btnReset.addEventListener('click', () => {
@@ -264,11 +293,60 @@ async function refreshDashboard() {
   try {
     const { orderBookData, tradeData, summaryData } = await fetchMarketState();
 
+    // Store trades for candlestick computation
+    allTrades = tradeData;
+
     renderSummaryTables(summaryData);
     renderOutstandingOrders(orderBookData);
     renderRecentTrades(tradeData);
     renderDepthChart(summaryData);
+
+    // Update candlestick chart if visible
+    updateCandlestickChart();
   } catch (err) {
     console.error('Failed to poll dashboard data:', err);
+  }
+}
+
+// CHART TAB SWITCHING
+function switchChartTab(tabName) {
+  const tabs = document.querySelectorAll('.chart-tab');
+  const depthView = document.getElementById('depth-chart-view');
+  const candlestickView = document.getElementById('candlestick-chart-view');
+
+  tabs.forEach(tab => {
+    if (tab.dataset.tab === tabName) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
+
+  if (tabName === 'depth') {
+    depthView.style.display = 'block';
+    candlestickView.style.display = 'none';
+  } else if (tabName === 'candlestick') {
+    depthView.style.display = 'none';
+    candlestickView.style.display = 'block';
+    // Refresh candlestick when switched to
+    updateCandlestickChart();
+  }
+}
+
+// CANDLESTICK CHART UPDATE
+function updateCandlestickChart() {
+  const interval = getCurrentInterval();
+  const candles = computeCandles(allTrades, interval);
+
+  const emptyMessage = document.getElementById('candlestick-empty-message');
+  const chartContainer = document.getElementById('candlestick-chart-container');
+
+  if (candles.length > 0) {
+    emptyMessage.style.display = 'none';
+    chartContainer.style.display = 'block';
+    renderCandlestickChart(candles);
+  } else {
+    emptyMessage.style.display = 'block';
+    chartContainer.style.display = 'none';
   }
 }

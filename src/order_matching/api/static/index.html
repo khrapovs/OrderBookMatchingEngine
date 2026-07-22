@@ -11,6 +11,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js" integrity="sha384-LFVfJHqsfJO7S5EWYqWMRGOWkzUrAJXFBxQcZ6AphT2l3AXqLPFPgXqf7F1hB5Xw" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -129,35 +130,55 @@
       <!-- COLUMN 2: DEPTH CHART & ORDER BOOK SUMMARY -->
       <section class="panel panel-visualization">
         <div class="panel-header">
-          <h2>Market Depth (Price & Volume Histogram)</h2>
+          <div class="chart-tabs">
+            <button class="chart-tab active" data-tab="depth">Market Depth</button>
+            <button class="chart-tab" data-tab="candlestick">Candlesticks</button>
+          </div>
         </div>
         <div class="panel-body chart-container">
-          <div class="depth-chart-wrapper">
-            <svg id="depth-chart" width="100%" height="240" viewBox="0 0 600 240" preserveAspectRatio="none">
-              <!-- Grid Lines -->
-              <g class="grid-lines"></g>
-              <!-- Areas and Lines -->
-              <path class="depth-path depth-bids-area" d="" />
-              <path class="depth-path depth-asks-area" d="" />
-              <path class="depth-line depth-bids-line" d="" />
-              <path class="depth-line depth-asks-line" d="" />
-              <!-- Hover elements -->
-              <g class="chart-tooltip" style="display: none;">
-                <line class="tooltip-line" x1="0" y1="0" x2="0" y2="240"></line>
-                <circle class="tooltip-circle" r="5"></circle>
-                <rect class="tooltip-bg" rx="4" ry="4" width="120" height="50"></rect>
-                <text class="tooltip-text-price" x="0" y="0"></text>
-                <text class="tooltip-text-size" x="0" y="0"></text>
-              </g>
-              <!-- Center Axis Line -->
-              <line class="center-axis" x1="300" y1="0" x2="300" y2="240" style="display: none;"></line>
-            </svg>
-            <div id="chart-overlay-empty" class="chart-empty-message">No orders in the book to visualize</div>
+          <!-- Depth Chart View -->
+          <div id="depth-chart-view" class="chart-view">
+            <div class="depth-chart-wrapper">
+              <svg id="depth-chart" width="100%" height="240" viewBox="0 0 600 240" preserveAspectRatio="none">
+                <!-- Grid Lines -->
+                <g class="grid-lines"></g>
+                <!-- Areas and Lines -->
+                <path class="depth-path depth-bids-area" d="" />
+                <path class="depth-path depth-asks-area" d="" />
+                <path class="depth-line depth-bids-line" d="" />
+                <path class="depth-line depth-asks-line" d="" />
+                <!-- Hover elements -->
+                <g class="chart-tooltip" style="display: none;">
+                  <line class="tooltip-line" x1="0" y1="0" x2="0" y2="240"></line>
+                  <circle class="tooltip-circle" r="5"></circle>
+                  <rect class="tooltip-bg" rx="4" ry="4" width="120" height="50"></rect>
+                  <text class="tooltip-text-price" x="0" y="0"></text>
+                  <text class="tooltip-text-size" x="0" y="0"></text>
+                </g>
+                <!-- Center Axis Line -->
+                <line class="center-axis" x1="300" y1="0" x2="300" y2="240" style="display: none;"></line>
+              </svg>
+              <div id="chart-overlay-empty" class="chart-empty-message">No orders in the book to visualize</div>
+            </div>
+            <div class="depth-labels">
+              <span class="label-bids-title">Bids (BUY)</span>
+              <span class="label-spread" id="spread-value">Spread: --</span>
+              <span class="label-asks-title">Asks (SELL)</span>
+            </div>
           </div>
-          <div class="depth-labels">
-            <span class="label-bids-title">Bids (BUY)</span>
-            <span class="label-spread" id="spread-value">Spread: --</span>
-            <span class="label-asks-title">Asks (SELL)</span>
+
+          <!-- Candlestick Chart View -->
+          <div id="candlestick-chart-view" class="chart-view" style="display: none;">
+            <div class="candlestick-header">
+              <div class="interval-selector">
+                <button class="interval-btn active" data-interval="5">5s</button>
+                <button class="interval-btn" data-interval="15">15s</button>
+                <button class="interval-btn" data-interval="30">30s</button>
+                <button class="interval-btn" data-interval="60">1m</button>
+              </div>
+            </div>
+            <div id="candlestick-chart-container" class="candlestick-chart-wrapper"></div>
+            <div id="candlestick-empty-message" class="chart-empty-message">No trades yet. Place orders and match to see price evolution.</div>
           </div>
         </div>
 
