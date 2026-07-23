@@ -73,7 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
   startPolling();
 });
 
-// EVENT LISTENERS SETUP
+/**
+ * Setup all event listeners for the dashboard UI.
+ * Attaches handlers for order submission, matching, chart tabs, modals, and auto-timestamp toggles.
+ */
 function setupEventListeners() {
   // Generate random order ID
   btnGenId.addEventListener('click', generateAndSetOrderId);
@@ -150,6 +153,10 @@ function setupEventListeners() {
   });
 }
 
+/**
+ * Toggle automatic order matching on/off.
+ * Updates UI status indicators and shows toast notification.
+ */
 function toggleAutoMatching() {
   isMatchingActive = !isMatchingActive;
   if (isMatchingActive) {
@@ -165,7 +172,10 @@ function toggleAutoMatching() {
   }
 }
 
-// TIMESTAMPS
+/**
+ * Update timestamp input fields with current time if auto-timestamp is enabled.
+ * Called on a 1-second interval to keep timestamps current.
+ */
 function updateTimestampInputs() {
   const now = new Date();
   const formatLocalISO = (date) => {
@@ -182,17 +192,28 @@ function updateTimestampInputs() {
   }
 }
 
+/**
+ * Generate a random order ID and populate the order ID input field.
+ * Format: ord_XXXX where XXXX is a 4-digit random number.
+ */
 function generateAndSetOrderId() {
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   orderIdInput.value = `ord_${randomNum}`;
 }
 
-// POLLING & AUTOMATIC MATCHING MANAGEMENT
+/**
+ * Start the polling loop for automatic matching and dashboard refresh.
+ * Clears any existing timer before starting a new one.
+ */
 function startPolling() {
   if (refreshTimer) clearTimeout(refreshTimer);
   refreshTimer = setTimeout(tick, 1000);
 }
 
+/**
+ * Polling tick handler that runs every second.
+ * Triggers auto-matching if enabled, refreshes dashboard, and schedules next tick.
+ */
 async function tick() {
   if (isMatchingActive) {
     try {
@@ -205,7 +226,11 @@ async function tick() {
   refreshTimer = setTimeout(tick, 1000);
 }
 
-// API OPERATIONS
+/**
+ * Handle order form submission.
+ * Validates form data, constructs order payload, and sends to API.
+ * @param {Event} e - Form submit event
+ */
 async function handleOrderSubmit(e) {
   e.preventDefault();
 
@@ -245,6 +270,11 @@ async function handleOrderSubmit(e) {
   }
 }
 
+/**
+ * Cancel an outstanding order by ID.
+ * Called from the order table's cancel button.
+ * @param {string} orderId - The order ID to cancel
+ */
 async function handleCancelOrder(orderId) {
   try {
     await cancelOrder(orderId);
@@ -256,6 +286,10 @@ async function handleCancelOrder(orderId) {
 }
 window.handleCancelOrder = handleCancelOrder;
 
+/**
+ * Manually trigger a matching run.
+ * Uses current or manual timestamp based on auto-timestamp checkbox state.
+ */
 async function handleMatchTrigger() {
   let timestampStr;
   if (matchAutoTimestampCheckbox.checked) {
@@ -278,6 +312,10 @@ async function handleMatchTrigger() {
   }
 }
 
+/**
+ * Reset the matching engine to initial state.
+ * @param {number|null} seed - Optional seed for random number generator
+ */
 async function handleReset(seed) {
   try {
     const data = await resetEngine(seed);
@@ -288,7 +326,10 @@ async function handleReset(seed) {
   }
 }
 
-// DASHBOARD REFRESH
+/**
+ * Refresh all dashboard components with current market state.
+ * Fetches orders, trades, and summary data, then updates all UI sections.
+ */
 async function refreshDashboard() {
   try {
     const { orderBookData, tradeData, summaryData } = await fetchMarketState();
@@ -308,7 +349,10 @@ async function refreshDashboard() {
   }
 }
 
-// CHART TAB SWITCHING
+/**
+ * Switch between depth chart and candlestick chart tabs.
+ * @param {string} tabName - Tab name ('depth' or 'candlestick')
+ */
 function switchChartTab(tabName) {
   const tabs = document.querySelectorAll('.chart-tab');
   const depthView = document.getElementById('depth-chart-view');
@@ -333,7 +377,10 @@ function switchChartTab(tabName) {
   }
 }
 
-// CANDLESTICK CHART UPDATE
+/**
+ * Update candlestick chart with current trade data.
+ * Computes candles from trade history and renders or shows empty state.
+ */
 function updateCandlestickChart() {
   const interval = getCurrentInterval();
   const candles = computeCandles(allTrades, interval);
