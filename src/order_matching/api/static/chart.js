@@ -1,6 +1,10 @@
 let chartOverlayEmpty = null;
 let depthChartSvg = null;
 
+/**
+ * Initialize cached references to DOM elements for the depth chart.
+ * Lazy initialization pattern to avoid accessing DOM before it's ready.
+ */
 function initDOMElements() {
   if (!chartOverlayEmpty) chartOverlayEmpty = document.getElementById('chart-overlay-empty');
   if (!depthChartSvg) depthChartSvg = document.getElementById('depth-chart');
@@ -187,7 +191,14 @@ export function renderDepthChart(summaryData) {
   setupChartTooltip(getX, getY, bidPoints, askPoints);
 }
 
-// INTERACTIVE TOOLTIP LOGIC
+/**
+ * Setup interactive tooltip for the depth chart.
+ * Shows price and cumulative size on mouse hover over the chart.
+ * @param {Function} getX - Function to convert price to X coordinate
+ * @param {Function} getY - Function to convert volume to Y coordinate
+ * @param {Array} bidPoints - Array of bid price/cumSize points
+ * @param {Array} askPoints - Array of ask price/cumSize points
+ */
 function setupChartTooltip(getX, getY, bidPoints, askPoints) {
   initDOMElements();
   if (!depthChartSvg) return;

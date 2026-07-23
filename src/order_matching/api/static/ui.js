@@ -6,6 +6,10 @@ let recentTradesBody = null;
 let spreadValue = null;
 let toastContainer = null;
 
+/**
+ * Initialize cached references to DOM elements for UI components.
+ * Lazy initialization pattern to avoid accessing DOM before it's ready.
+ */
 function initDOMElements() {
   if (!bidsSummaryBody) bidsSummaryBody = document.getElementById('bids-summary-body');
   if (!asksSummaryBody) asksSummaryBody = document.getElementById('asks-summary-body');

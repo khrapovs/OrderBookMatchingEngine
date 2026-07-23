@@ -2,6 +2,11 @@ const API_BASE = window.location.origin;
 
 /**
  * Helper to perform HTTP fetch requests and extract JSON/errors uniformly.
+ * @param {string} path - API endpoint path (relative to API_BASE)
+ * @param {Object} options - Fetch options (method, headers, body, etc.)
+ * @param {string} defaultErrorMsg - Default error message if API doesn't provide one
+ * @returns {Promise<Object>} Parsed JSON response
+ * @throws {Error} If the request fails or API returns an error
  */
 async function request(path, options = {}, defaultErrorMsg = 'Request failed') {
   const url = `${API_BASE}${path}`;
