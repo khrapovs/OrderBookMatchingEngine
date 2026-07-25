@@ -66,23 +66,21 @@ The system SHALL compute Open, High, Low, and Close prices for each time bucket 
 - **WHEN** a time bucket contains no trades
 - **THEN** no candle is rendered for that time bucket
 
-### Requirement: Tab toggle interface
-The dashboard SHALL provide a tab toggle to switch between the depth chart and candlestick chart views.
+### Requirement: Dual chart simultaneous display
+The dashboard SHALL display the Candlestick chart and Market Depth chart simultaneously in a dedicated top visualization grid.
 
-#### Scenario: User switches to candlestick view
-- **WHEN** user clicks the "Candlesticks" tab
-- **THEN** the depth chart is hidden
-- **THEN** the candlestick chart is displayed
+#### Scenario: Concurrent chart rendering
+- **WHEN** the dashboard loads or receives polled market state updates
+- **THEN** both the Candlestick chart and the Market Depth chart are rendered and updated concurrently without requiring tab switches
 
-#### Scenario: User switches to depth chart view
-- **WHEN** user clicks the "Depth Chart" tab (or "Market Depth" tab)
-- **THEN** the candlestick chart is hidden
-- **THEN** the depth chart is displayed
+#### Scenario: Two-to-one aspect width ratio
+- **WHEN** displayed on viewports with width greater than or equal to 1024px
+- **THEN** the Candlestick chart occupies two-thirds (2fr) of the top visualization band width
+- **THEN** the Market Depth chart occupies one-third (1fr) of the top visualization band width
 
-#### Scenario: Default view on load
-- **WHEN** the dashboard loads for the first time
-- **THEN** the depth chart view is displayed by default
-- **THEN** the candlestick tab is available but not active
+#### Scenario: Responsive stacking on small viewports
+- **WHEN** displayed on viewports with width less than 1024px
+- **THEN** the Candlestick chart and Market Depth chart stack vertically in full width
 
 ### Requirement: Interactive chart features
 The candlestick chart SHALL support standard financial chart interactions for exploring historical price data.
