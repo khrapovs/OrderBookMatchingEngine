@@ -8,6 +8,7 @@ from order_matching.api.routes.place import router as place_router
 from order_matching.api.routes.reset import router as reset_router
 from order_matching.api.routes.root import router as root_router
 from order_matching.api.routes.summary import router as summary_router
+from order_matching.api.routes.version import router as version_router
 
 router = APIRouter()
 router.include_router(root_router)
@@ -18,3 +19,4 @@ router.include_router(get_trades_router)
 router.include_router(cancel_order_router)
 router.include_router(reset_router)
 router.include_router(summary_router)
+router.include_router(version_router)

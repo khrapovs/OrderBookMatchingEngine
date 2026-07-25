@@ -3,13 +3,15 @@ import {
   cancelOrder,
   matchOrders,
   resetEngine,
-  fetchMarketState
+  fetchMarketState,
+  fetchVersion
 } from './api.js';
 import {
   showToast,
   renderSummaryTables,
   renderOutstandingOrders,
-  renderRecentTrades
+  renderRecentTrades,
+  renderVersion
 } from './ui.js';
 import { renderDepthChart } from './chart.js';
 import {
@@ -66,12 +68,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Attach Event Listeners
   setupEventListeners();
 
+  // Fetch and display package version
+  loadVersion();
+
   // Initial fetch
   refreshDashboard();
 
   // Start Polling (every 1 second)
   startPolling();
 });
+
+async function loadVersion() {
+  try {
+    const data = await fetchVersion();
+    if (data && data.version) {
+      renderVersion(data.version);
+    }
+  } catch {
+    // Ignore version fetch errors silently
+  }
+}
+
+
 
 /**
  * Setup all event listeners for the dashboard UI.

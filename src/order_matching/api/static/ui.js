@@ -179,3 +179,14 @@ export function renderRecentTrades(tradeData) {
     }).join('');
   }
 }
+
+/**
+ * Render package version in the version badge element.
+ * @param {string} version - Package version string
+ */
+export function renderVersion(version) {
+  const versionBadge = document.getElementById('version-badge');
+  if (versionBadge && version) {
+    versionBadge.innerText = `v${version}`;
+  }
+}

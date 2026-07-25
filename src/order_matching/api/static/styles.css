@@ -114,7 +114,27 @@ body {
   font-size: 12px;
   color: var(--text-secondary);
   margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
+
+.version-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted, #94a3b8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.2px;
+}
+
+.version-badge:empty {
+  display: none;
+}
+
 
 .header-controls {
   display: flex;

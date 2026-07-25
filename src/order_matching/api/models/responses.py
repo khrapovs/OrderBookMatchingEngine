@@ -77,3 +77,7 @@ class SummaryLevel(BaseModel):
     price: float
     size: float
     count: int
+
+
+class VersionResponse(BaseModel):
+    version: str
