@@ -1,3 +1,9 @@
+## 0.12.0 (2026-07-25)
+
+### Feat
+
+- Show package version in the frontend (#50)
+
 ## 0.11.0 (2026-07-25)
 
 ### Feat
