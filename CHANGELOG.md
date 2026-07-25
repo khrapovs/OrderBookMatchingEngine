@@ -1,3 +1,9 @@
+## 0.11.0 (2026-07-25)
+
+### Feat
+
+- Rearrange plots and table in the frontend (#49)
+
 ## 0.10.0 (2026-07-22)
 
 ### Feat
