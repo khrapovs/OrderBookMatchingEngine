@@ -90,6 +90,16 @@ And we will modify `src/order_matching/api/app.py` to mount the static files and
 - [ ] Manual matching works, sending the matching timestamp correctly.
 - [ ] Reset button successfully clears all order book and trade data.
 - [ ] Polling functions properly without memory leaks.
+- [ ] Package version is displayed in a styled tech badge next to the subtitle.
+
+### Requirement: Package Version Badge
+
+The dashboard UI SHALL display the package version of the order book matching engine in the header next to the subtitle.
+
+#### Scenario: Version badge rendered on page load
+- **WHEN** user loads the web dashboard
+- **THEN** the dashboard fetches GET /version and displays the package version in a styled tech badge next to the subtitle "High-Performance Matching Simulator"
+
 
 ## Open Questions / Assumptions
 1. **Root path route**: Should we mount the SPA directly at the root `/` and move Swagger to `/docs`? (Currently `/` redirects to `/docs`).

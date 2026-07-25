@@ -10,7 +10,7 @@ Owns REST API routes, request/response models, dependencies, utilities, and stat
 
 **Structure:**
 - `app.py` - FastAPI application entry point, middleware, static file mounting
-- `routes/` - API endpoint handlers (place, match, get_orders, get_trades, cancel_order, reset, summary, root)
+- `routes/` - API endpoint handlers (place, match, get_orders, get_trades, cancel_order, reset, summary, root, version)
 - `models/` - Pydantic request/response models and converters to/from core domain objects
 - `dependencies.py` - FastAPI dependency injection (shared matching engine state)
 - `utils.py` - API utilities (currently simulation state management)

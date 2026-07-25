@@ -95,3 +95,11 @@ export async function fetchMarketState() {
     summaryData
   };
 }
+
+/**
+ * Fetch package version information.
+ * @returns {Promise<Object>} Object containing version string
+ */
+export async function fetchVersion() {
+  return request('/version', {}, 'Failed to fetch version');
+}
