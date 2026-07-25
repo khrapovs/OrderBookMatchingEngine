@@ -185,25 +185,34 @@ button.status-indicator.paused #engine-status-dot {
   gap: 20px;
 }
 
-@media (max-width: 1024px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 340px 1fr 400px;
+  grid-template-columns: 2fr 1fr;
   gap: 20px;
   flex: 1;
 }
 
+.operational-left {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+}
+
 @media (max-width: 1280px) {
-  .dashboard-grid {
+  .operational-left {
     grid-template-columns: 320px 1fr;
   }
-  .panel-lists {
-    grid-column: span 2;
+}
+
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .operational-left {
+    grid-template-columns: 1fr;
   }
 }
 
