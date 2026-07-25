@@ -171,7 +171,26 @@ button.status-indicator.paused #engine-status-dot {
   100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-/* PANELS (GLASSMORPHIC CARDS) */
+/* PANELS & LAYOUT GRIDS */
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: 340px 1fr 400px;
@@ -192,7 +211,7 @@ button.status-indicator.paused #engine-status-dot {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  .panel-controls, .panel-visualization, .panel-lists {
+  .panel-controls, .panel-orderbook, .panel-lists {
     grid-column: span 1;
   }
 }

@@ -116,15 +116,6 @@ function setupEventListeners() {
   // Toggle engine online/paused
   btnToggleEngine.addEventListener('click', toggleAutoMatching);
 
-  // Chart tab toggle
-  const chartTabs = document.querySelectorAll('.chart-tab');
-  chartTabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      const tabName = e.target.dataset.tab;
-      switchChartTab(tabName);
-    });
-  });
-
   // Interval change handler
   window.addEventListener('intervalChanged', () => {
     updateCandlestickChart();
@@ -342,38 +333,10 @@ async function refreshDashboard() {
     renderRecentTrades(tradeData);
     renderDepthChart(summaryData);
 
-    // Update candlestick chart if visible
+    // Update candlestick chart
     updateCandlestickChart();
   } catch (err) {
     console.error('Failed to poll dashboard data:', err);
-  }
-}
-
-/**
- * Switch between depth chart and candlestick chart tabs.
- * @param {string} tabName - Tab name ('depth' or 'candlestick')
- */
-function switchChartTab(tabName) {
-  const tabs = document.querySelectorAll('.chart-tab');
-  const depthView = document.getElementById('depth-chart-view');
-  const candlestickView = document.getElementById('candlestick-chart-view');
-
-  tabs.forEach(tab => {
-    if (tab.dataset.tab === tabName) {
-      tab.classList.add('active');
-    } else {
-      tab.classList.remove('active');
-    }
-  });
-
-  if (tabName === 'depth') {
-    depthView.style.display = 'block';
-    candlestickView.style.display = 'none';
-  } else if (tabName === 'candlestick') {
-    depthView.style.display = 'none';
-    candlestickView.style.display = 'block';
-    // Refresh candlestick when switched to
-    updateCandlestickChart();
   }
 }
 

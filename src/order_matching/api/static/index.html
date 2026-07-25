@@ -40,104 +40,33 @@
     <!-- Notification system for errors and success messages -->
     <div id="toast-container" class="toast-container"></div>
 
-    <main class="dashboard-grid">
-      <!-- COLUMN 1: CONTROLS -->
-      <section class="panel panel-controls">
-        <div class="panel-header">
-          <h2>Place New Order</h2>
-        </div>
-        <div class="panel-body">
-          <form id="order-form" class="form-group">
-            <div class="toggle-group order-side-toggle">
-              <input type="radio" id="side-buy" name="side" value="BUY" checked>
-              <label for="side-buy" class="label-buy">BUY</label>
-
-              <input type="radio" id="side-sell" name="side" value="SELL">
-              <label for="side-sell" class="label-sell">SELL</label>
+    <main class="dashboard-content">
+      <!-- TOP VISUALIZATION ROW (2:1 Grid Ratio) -->
+      <section class="charts-grid">
+        <!-- CANDLESTICK CHART PANEL (2fr) -->
+        <div class="panel panel-candlestick">
+          <div class="panel-header">
+            <h2>Candlestick Chart (OHLC)</h2>
+            <div class="interval-selector">
+              <button class="interval-btn active" data-interval="5">5s</button>
+              <button class="interval-btn" data-interval="15">15s</button>
+              <button class="interval-btn" data-interval="30">30s</button>
+              <button class="interval-btn" data-interval="60">1m</button>
             </div>
-
-            <div class="toggle-group order-type-toggle">
-              <input type="radio" id="type-limit" name="order_type" value="limit" checked>
-              <label for="type-limit">Limit</label>
-
-              <input type="radio" id="type-market" name="order_type" value="market">
-              <label for="type-market">Market</label>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label for="order-price">Price</label>
-                <div class="input-with-unit">
-                  <input type="number" id="order-price" step="0.1" min="0.1" value="100.0" required>
-                  <span class="unit">USD</span>
-                </div>
-              </div>
-              <div class="form-field">
-                <label for="order-size">Quantity</label>
-                <input type="number" id="order-size" step="0.1" min="0.1" value="10.0" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label for="trader-id">Trader ID</label>
-                <input type="text" id="trader-id" value="trader_1" required>
-              </div>
-              <div class="form-field">
-                <label for="order-id">Order ID</label>
-                <div class="input-with-action">
-                  <input type="text" id="order-id" required>
-                  <button type="button" id="btn-gen-id" class="btn-small-icon" title="Generate New ID">🎲</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-field">
-              <div class="label-row">
-                <label for="order-timestamp">Timestamp</label>
-                <label class="checkbox-label">
-                  <input type="checkbox" id="auto-timestamp" checked> Auto
-                </label>
-              </div>
-              <input type="datetime-local" id="order-timestamp" disabled>
-            </div>
-
-            <button type="submit" id="btn-place-order" class="btn btn-primary btn-block">Place Order</button>
-          </form>
-        </div>
-
-        <div class="panel-divider"></div>
-
-        <div class="panel-header">
-          <h2>Matching Controller</h2>
-        </div>
-        <div class="panel-body">
-          <div class="form-group">
-            <div class="form-field">
-              <div class="label-row">
-                <label for="match-timestamp">Match Timestamp</label>
-                <label class="checkbox-label">
-                  <input type="checkbox" id="match-auto-timestamp" checked> Auto (Now)
-                </label>
-              </div>
-              <input type="datetime-local" id="match-timestamp" disabled>
-            </div>
-            <button id="btn-match" class="btn btn-accent btn-block">Match</button>
+          </div>
+          <div class="panel-body chart-container">
+            <div id="candlestick-chart-container" class="candlestick-chart-wrapper"></div>
+            <div id="candlestick-empty-message" class="chart-empty-message">No trades yet. Place orders and match to see price evolution.</div>
           </div>
         </div>
-      </section>
 
-      <!-- COLUMN 2: DEPTH CHART & ORDER BOOK SUMMARY -->
-      <section class="panel panel-visualization">
-        <div class="panel-header">
-          <div class="chart-tabs">
-            <button class="chart-tab active" data-tab="depth">Market Depth</button>
-            <button class="chart-tab" data-tab="candlestick">Candlesticks</button>
+        <!-- MARKET DEPTH CHART PANEL (1fr) -->
+        <div class="panel panel-depth">
+          <div class="panel-header">
+            <h2>Market Depth</h2>
+            <span class="label-spread" id="spread-value">Spread: --</span>
           </div>
-        </div>
-        <div class="panel-body chart-container">
-          <!-- Depth Chart View -->
-          <div id="depth-chart-view" class="chart-view">
+          <div class="panel-body chart-container">
             <div class="depth-chart-wrapper">
               <svg id="depth-chart" width="100%" height="240" viewBox="0 0 600 240" preserveAspectRatio="none">
                 <!-- Grid Lines -->
@@ -162,76 +91,150 @@
             </div>
             <div class="depth-labels">
               <span class="label-bids-title">Bids (BUY)</span>
-              <span class="label-spread" id="spread-value">Spread: --</span>
               <span class="label-asks-title">Asks (SELL)</span>
-            </div>
-          </div>
-
-          <!-- Candlestick Chart View -->
-          <div id="candlestick-chart-view" class="chart-view" style="display: none;">
-            <div class="candlestick-header">
-              <div class="interval-selector">
-                <button class="interval-btn active" data-interval="5">5s</button>
-                <button class="interval-btn" data-interval="15">15s</button>
-                <button class="interval-btn" data-interval="30">30s</button>
-                <button class="interval-btn" data-interval="60">1m</button>
-              </div>
-            </div>
-            <div id="candlestick-chart-container" class="candlestick-chart-wrapper"></div>
-            <div id="candlestick-empty-message" class="chart-empty-message">No trades yet. Place orders and match to see price evolution.</div>
-          </div>
-        </div>
-
-        <div class="panel-divider"></div>
-
-        <div class="panel-header flex-header">
-          <h2>Aggregated Order Book</h2>
-          <div class="book-tabs">
-            <span class="tab-active">Summary View</span>
-          </div>
-        </div>
-        <div class="panel-body scrollable-body book-tables-wrapper">
-          <div class="book-split-tables">
-            <!-- BIDS TABLE -->
-            <div class="book-table-container">
-              <h3>Bids (BUY)</h3>
-              <table class="book-table table-bids">
-                <thead>
-                  <tr>
-                    <th>Price (USD)</th>
-                    <th>Volume</th>
-                    <th>Count</th>
-                  </tr>
-                </thead>
-                <tbody id="bids-summary-body">
-                  <tr>
-                    <td colspan="3" class="empty-row">No active bids</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- ASKS TABLE -->
-            <div class="book-table-container">
-              <h3>Asks (SELL)</h3>
-              <table class="book-table table-asks">
-                <thead>
-                  <tr>
-                    <th>Price (USD)</th>
-                    <th>Volume</th>
-                    <th>Count</th>
-                  </tr>
-                </thead>
-                <tbody id="asks-summary-body">
-                  <tr>
-                    <td colspan="3" class="empty-row">No active asks</td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- MAIN OPERATIONAL GRID -->
+      <div class="dashboard-grid">
+        <!-- COLUMN 1: CONTROLS -->
+        <section class="panel panel-controls">
+          <div class="panel-header">
+            <h2>Place New Order</h2>
+          </div>
+          <div class="panel-body">
+            <form id="order-form" class="form-group">
+              <div class="toggle-group order-side-toggle">
+                <input type="radio" id="side-buy" name="side" value="BUY" checked>
+                <label for="side-buy" class="label-buy">BUY</label>
+
+                <input type="radio" id="side-sell" name="side" value="SELL">
+                <label for="side-sell" class="label-sell">SELL</label>
+              </div>
+
+              <div class="toggle-group order-type-toggle">
+                <input type="radio" id="type-limit" name="order_type" value="limit" checked>
+                <label for="type-limit">Limit</label>
+
+                <input type="radio" id="type-market" name="order_type" value="market">
+                <label for="type-market">Market</label>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="order-price">Price</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="order-price" step="0.1" min="0.1" value="100.0" required>
+                    <span class="unit">USD</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label for="order-size">Quantity</label>
+                  <input type="number" id="order-size" step="0.1" min="0.1" value="10.0" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="trader-id">Trader ID</label>
+                  <input type="text" id="trader-id" value="trader_1" required>
+                </div>
+                <div class="form-field">
+                  <label for="order-id">Order ID</label>
+                  <div class="input-with-action">
+                    <input type="text" id="order-id" required>
+                    <button type="button" id="btn-gen-id" class="btn-small-icon" title="Generate New ID">🎲</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div class="label-row">
+                  <label for="order-timestamp">Timestamp</label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="auto-timestamp" checked> Auto
+                  </label>
+                </div>
+                <input type="datetime-local" id="order-timestamp" disabled>
+              </div>
+
+              <button type="submit" id="btn-place-order" class="btn btn-primary btn-block">Place Order</button>
+            </form>
+          </div>
+
+          <div class="panel-divider"></div>
+
+          <div class="panel-header">
+            <h2>Matching Controller</h2>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <div class="form-field">
+                <div class="label-row">
+                  <label for="match-timestamp">Match Timestamp</label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="match-auto-timestamp" checked> Auto (Now)
+                  </label>
+                </div>
+                <input type="datetime-local" id="match-timestamp" disabled>
+              </div>
+              <button id="btn-match" class="btn btn-accent btn-block">Match</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- COLUMN 2: ORDER BOOK SUMMARY -->
+        <section class="panel panel-orderbook">
+          <div class="panel-header flex-header">
+            <h2>Aggregated Order Book</h2>
+            <div class="book-tabs">
+              <span class="tab-active">Summary View</span>
+            </div>
+          </div>
+          <div class="panel-body scrollable-body book-tables-wrapper">
+            <div class="book-split-tables">
+              <!-- BIDS TABLE -->
+              <div class="book-table-container">
+                <h3>Bids (BUY)</h3>
+                <table class="book-table table-bids">
+                  <thead>
+                    <tr>
+                      <th>Price (USD)</th>
+                      <th>Volume</th>
+                      <th>Count</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bids-summary-body">
+                    <tr>
+                      <td colspan="3" class="empty-row">No active bids</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- ASKS TABLE -->
+              <div class="book-table-container">
+                <h3>Asks (SELL)</h3>
+                <table class="book-table table-asks">
+                  <thead>
+                    <tr>
+                      <th>Price (USD)</th>
+                      <th>Volume</th>
+                      <th>Count</th>
+                    </tr>
+                  </thead>
+                  <tbody id="asks-summary-body">
+                    <tr>
+                      <td colspan="3" class="empty-row">No active asks</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
 
       <!-- COLUMN 3: LISTS (OUTSTANDING ORDERS & RECENT TRADES) -->
       <section class="panel panel-lists">
@@ -282,7 +285,8 @@
           </table>
         </div>
       </section>
-    </main>
+    </div>
+  </main>
   </div>
 
   <!-- Modal dialog for resetting seed -->
