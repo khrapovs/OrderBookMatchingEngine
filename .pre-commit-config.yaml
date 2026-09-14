@@ -13,9 +13,9 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.15.22
+    rev: v0.16.7
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [ --config, pyproject.toml, --fix, --exit-non-zero-on-fix ]
         types_or: [ python ]
       - id: ruff-format
@@ -23,12 +23,12 @@ repos:
         types_or: [ python ]
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.60
+    rev: v0.0.80
     hooks:
       - id: ty
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.7.0
+    rev: v10.10.0
     hooks:
       - id: eslint
         description: 'Lint javascript files.'
